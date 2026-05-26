@@ -386,20 +386,28 @@ section { position:relative; }
 #why { background:var(--cream); }
 .why-layout { display:grid; grid-template-columns:1fr 1.3fr; gap:80px; align-items:center; }
 .why-stats-visual {
-  display:grid; grid-template-columns:1fr 1fr; gap:20px;
+  display:flex; flex-direction:column; gap:16px;
 }
 .why-stat-card {
-  background:var(--white); border-radius:20px; padding:36px 24px;
-  border:1px solid rgba(31,22,53,0.07); text-align:center;
+  background:var(--white); border-radius:20px; padding:22px 28px;
+  border:1px solid rgba(31,22,53,0.07);
+  display:flex; align-items:center; gap:20px;
   transition:all 0.3s;
 }
-.why-stat-card:hover { transform:translateY(-6px); box-shadow:0 20px 50px rgba(31,22,53,0.1); }
+.why-stat-card:hover { transform:translateY(-4px); box-shadow:0 16px 40px rgba(31,22,53,0.1); }
 .why-stat-card.accent {
   background:var(--deep); color:var(--white);
 }
+.why-stat-icon {
+  width:54px; height:54px; border-radius:14px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  font-size:22px; background:rgba(94,158,140,0.12); color:var(--sage);
+}
+.why-stat-card.accent .why-stat-icon { background:rgba(255,255,255,0.1); color:var(--amber); }
+.why-stat-body { display:flex; flex-direction:column; }
 .why-stat-num {
-  font-family:'Cormorant Garamond',serif; font-size:52px; font-weight:600;
-  color:var(--sage); line-height:1; display:block; margin-bottom:8px;
+  font-family:'Cormorant Garamond',serif; font-size:40px; font-weight:600;
+  color:var(--sage); line-height:1; display:block; margin-bottom:4px;
 }
 .why-stat-card.accent .why-stat-num { color:var(--amber); }
 .why-stat-label { font-size:13px; color:var(--text-mid); font-weight:500; letter-spacing:0.5px; }
@@ -764,7 +772,7 @@ footer { background:var(--deep); color:rgba(255,255,255,0.6); padding:60px; }
           📅 Book Appointment
         </button>
         <a href="tel:+91 95126 79105" class="btn-secondary">
-          📞 Call Me
+          📞 Call the Doctor
         </a>
       </div>
     </div>
@@ -773,10 +781,6 @@ footer { background:var(--deep); color:rgba(255,255,255,0.6); padding:60px; }
     <div class="hero-visual">
       <div class="hero-visual-ring">
         <span class="hero-visual-icon">🧠</span>
-      </div>
-      <div class="hero-visual-card1">
-        <div class="stat-num">📍</div>
-        <div class="stat-label">Junagadh, Gujarat</div>
       </div>
       <div class="hero-visual-badge">
         📍 Junagadh<br>
@@ -938,16 +942,18 @@ footer { background:var(--deep); color:rgba(255,255,255,0.6); padding:60px; }
     <div class="why-layout">
       <div class="why-stats-visual reveal">
         <div class="why-stat-card">
-          <span class="why-stat-num">500+</span>
-          <span class="why-stat-label">Patients Treated</span>
+          <div class="why-stat-icon"><i class="fa-solid fa-user-group"></i></div>
+          <div class="why-stat-body">
+            <span class="why-stat-num">500+</span>
+            <span class="why-stat-label">Patients Treated</span>
+          </div>
         </div>
         <div class="why-stat-card accent">
-          <span class="why-stat-num">98%</span>
-          <span class="why-stat-label">Patient Satisfaction</span>
-        </div>
-        <div class="why-stat-card">
-          <span class="why-stat-num">6</span>
-          <span class="why-stat-label">Days a Week</span>
+          <div class="why-stat-icon"><i class="fa-solid fa-heart-pulse"></i></div>
+          <div class="why-stat-body">
+            <span class="why-stat-num">98%</span>
+            <span class="why-stat-label">Patient Satisfaction</span>
+          </div>
         </div>
       </div>
       <div class="reveal reveal-delay-2">
