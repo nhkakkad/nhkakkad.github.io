@@ -15,7 +15,7 @@ var CONTENT = {
   // ── Contact ──
   phone:    "+91 95126 79105",
   phoneRaw: "919512679105",   // country code + number, no spaces
-  email:    "kakkadnidhish@gmail.com",
+  email:    "nhk5596@gmail.com",
 
   // ── About ──
   aboutQuote: "Mental illness is not a personal failing. My goal is to make every patient feel safe, understood, and hopeful about their path forward.",
