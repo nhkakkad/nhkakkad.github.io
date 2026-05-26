@@ -1,4 +1,4 @@
-# Dr. [Doctor Name] — Psychiatrist Website
+# Dr. Nidhish Kakkad — Psychiatrist Website
 
 A professional website for a psychiatrist practice with:
 - **Public landing page** — intro, services, about
@@ -27,9 +27,9 @@ Search for `[` in the `src/` folder to find all placeholder text:
 
 | Placeholder | Replace with |
 |---|---|
-| `[Doctor Name]` | Full name, e.g. `Dr. Nidhish Sharma` |
+| `[Doctor Name]` | Full name, e.g. `Dr. Nidhish Kakkad` |
 | `[Hospital / Clinic Name]` | Clinic name |
-| `[City]` | City, e.g. `Mumbai` |
+| `[City]` | City, e.g. `Junagadh` |
 | `[Clinic Address, City]` | Full address |
 | `[Phone Number]` | Contact number |
 | `[Email Address]` | Contact email |
