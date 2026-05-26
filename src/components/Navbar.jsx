@@ -9,8 +9,7 @@ const NAV_LINKS = [
 
 export default function Navbar() {
   const [open, setOpen] = useState(false)
-  const { hash } = useLocation()
-  const currentPath = hash.replace('#', '') || '/'
+  const { pathname } = useLocation()
 
   return (
     <nav className="bg-white border-b border-slate-200 sticky top-0 z-50">
@@ -35,7 +34,7 @@ export default function Navbar() {
                 key={path}
                 to={path}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  currentPath === path
+                  pathname === path
                     ? 'text-teal-600 bg-teal-50'
                     : 'text-slate-600 hover:text-teal-600 hover:bg-slate-50'
                 }`}
@@ -75,7 +74,7 @@ export default function Navbar() {
                 to={path}
                 onClick={() => setOpen(false)}
                 className={`block px-4 py-2.5 rounded-lg text-sm font-medium ${
-                  currentPath === path
+                  pathname === path
                     ? 'text-teal-600 bg-teal-50'
                     : 'text-slate-600 hover:bg-slate-50'
                 }`}
