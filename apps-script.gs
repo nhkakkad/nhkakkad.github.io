@@ -110,11 +110,12 @@ function sendEmails(id, fullName, data) {
           '<div style="background:#f9f7f2;padding:28px 32px;border-radius:0 0 12px 12px;border:1px solid #e5e0d8">' +
           '<p style="color:#333;margin-bottom:20px">Dear ' + (data.fname || fullName) + ',</p>' +
           '<p style="color:#333;margin-bottom:20px">Thank you for reaching out. Your appointment request has been received and Dr. Nidhish Kakkad will confirm your slot within 24 hours.</p>' +
-          '<h3 style="color:#1f1635;font-size:15px;margin-bottom:12px">Your Details</h3>' +
+          '<h3 style="color:#1f1635;font-size:15px;margin-bottom:12px">Requested Slot</h3>' +
           row('Date', data.date || '—') +
           row('Time', data.timeSlot || '—') +
           row('Reason', data.reason || '—') +
-          '<p style="margin-top:20px;color:#333">If you need to reach out sooner, WhatsApp or call <strong>+91 95126 79105</strong>.</p>' +
+          '<p style="margin-top:20px;color:#888;font-size:13px;font-style:italic">This is not a confirmed appointment. You will receive a separate confirmation once the slot is approved.</p>' +
+          '<p style="margin-top:16px;color:#333">For urgent queries, WhatsApp or call <strong>+91 95126 79105</strong>.</p>' +
           '<p style="margin-top:24px;font-size:13px;color:#888">Booking ID: ' + id + '</p>' +
           '</div>' +
           '</div>',
