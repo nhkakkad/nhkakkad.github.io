@@ -793,9 +793,9 @@ footer { background:var(--deep); color:rgba(255,255,255,0.6); padding:60px; }
 <!-- ═══════════════════════ TRUST BAR ═══════════════════════ -->
 <div class="trust-bar">
   <div class="trust-item">
-    <span class="trust-icon">🏥</span>
+    <span class="trust-icon">🌐</span>
     <div class="trust-item-text">
-      <strong>Junagadh</strong><span>Gujarat, India</span>
+      <strong>Worldwide</strong><span>Video Consultation</span>
     </div>
   </div>
   <div class="trust-item">
@@ -952,7 +952,7 @@ footer { background:var(--deep); color:rgba(255,255,255,0.6); padding:60px; }
 <section id="book">
   <div class="section-inner book-inner">
     <div class="book-info reveal">
-      <p class="section-label">Book a Visit</p>
+      <p class="section-label">Book a Consultation</p>
       <h2 class="section-title">Ready to Take the<br><em>First Step?</em></h2>
       <p class="book-info-body">
         Booking is quick and easy. Complete the form and I will confirm your appointment within 24 hours. Seeking help is a sign of strength.
@@ -1001,8 +1001,8 @@ footer { background:var(--deep); color:rgba(255,255,255,0.6); padding:60px; }
         <div class="form-row">
           <div class="form-group" id="fg-phone">
             <label>Phone Number</label>
-            <input type="tel" placeholder="98765 43210" id="phone" maxlength="10"/>
-            <span class="error-msg">Enter a valid 10-digit mobile number.</span>
+            <input type="tel" placeholder="+91 98765 43210" id="phone"/>
+            <span class="error-msg">Enter a valid phone number.</span>
           </div>
           <div class="form-group" id="fg-email">
             <label>Email</label>
@@ -1032,7 +1032,7 @@ footer { background:var(--deep); color:rgba(255,255,255,0.6); padding:60px; }
           </div>
         </div>
         <div class="form-group" id="fg-reason">
-          <label>Reason for Visit</label>
+          <label>Reason for Consultation</label>
           <select id="reason">
             <option value="">Select a service…</option>
             <option>Initial Consultation</option>
@@ -1105,13 +1105,13 @@ footer { background:var(--deep); color:rgba(255,255,255,0.6); padding:60px; }
     <div class="info-cards">
       <div class="info-card reveal reveal-delay-1">
         <div class="info-icon">📋</div>
-        <h4>What to Bring</h4>
-        <p>Your ID, prior prescriptions, and a list of current medications. First visit? Please arrive 10 minutes early.</p>
+        <h4>What to Prepare</h4>
+        <p>A stable internet connection and a quiet, private space. Have any prior prescriptions or a list of current medications handy if you have them.</p>
       </div>
       <div class="info-card reveal reveal-delay-2">
         <div class="info-icon">💳</div>
         <h4>Fees &amp; Payment</h4>
-        <p>Payments accepted via Online Banking and UPI only. No cash accepted. Fees available on request. No hidden charges.</p>
+        <p>Payments accepted online. Fees available on request. No hidden charges.</p>
       </div>
       <div class="info-card reveal reveal-delay-3">
         <div class="info-icon">📅</div>
@@ -1205,8 +1205,8 @@ footer { background:var(--deep); color:rgba(255,255,255,0.6); padding:60px; }
       </div>
       <div class="form-group" id="m-fg-phone">
         <label>Phone Number</label>
-        <input type="tel" placeholder="98765 43210" id="m-phone" maxlength="10"/>
-        <span class="error-msg">Enter a valid 10-digit number.</span>
+        <input type="tel" placeholder="+91 98765 43210" id="m-phone"/>
+        <span class="error-msg">Enter a valid phone number.</span>
       </div>
       <div class="form-group" id="m-fg-email">
         <label>Email</label>
@@ -1235,7 +1235,7 @@ footer { background:var(--deep); color:rgba(255,255,255,0.6); padding:60px; }
         </div>
       </div>
       <div class="form-group" id="m-fg-reason">
-        <label>Reason for Visit</label>
+        <label>Reason for Consultation</label>
         <select id="m-reason">
           <option value="">Select a service…</option>
           <option>Initial Consultation</option>
@@ -1396,7 +1396,7 @@ function generateContent() {
       '</div>' +
       '<div class="hours-body">' + rows + '</div>' +
       '<div style="padding:14px 32px;background:rgba(94,158,140,0.06);border-top:1px solid rgba(94,158,140,0.15);">' +
-        '<p style="font-size:13px;color:var(--sage);font-weight:500;"><i class="fa-solid fa-credit-card" style="margin-right:6px;"></i>UPI · Online Banking · No Cash</p>' +
+        '<p style="font-size:13px;color:var(--sage);font-weight:500;"><i class="fa-solid fa-credit-card" style="margin-right:6px;"></i>Online Payment · No Hidden Charges</p>' +
       '</div>' +
       tele;
   }
@@ -1448,7 +1448,7 @@ function showError(id) {
   if (el) el.classList.add('has-error');
 }
 function val(id) { return (document.getElementById(id)?.value || '').trim(); }
-function isValidPhone(p) { return /^[6-9]\d{9}$/.test(p.replace(/\s/g, '')); }
+function isValidPhone(p) { var d = p.replace(/[\s\-().+]/g,''); return d.length >= 7 && d.length <= 15 && /^\d+$/.test(d); }
 function isValidDate(d) { return d && d >= today; }
 function isValidEmail(e) { return e && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e); }
 

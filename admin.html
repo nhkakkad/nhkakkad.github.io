@@ -36,7 +36,6 @@ body{ font-family:'DM Sans',sans-serif; background:var(--cream); color:var(--tex
 .btn-primary:hover{ background:var(--sage-light); transform:translateY(-1px); }
 .btn-ghost{ background:transparent; border:1.5px solid rgba(31,22,53,0.2); color:var(--text-mid); }
 .btn-ghost:hover{ border-color:var(--sage); color:var(--sage); }
-.btn-danger{ background:#fee2e2; color:var(--danger); border:1px solid #fecaca; }
 input,select,textarea{
   width:100%; padding:11px 14px;
   border:1.5px solid rgba(31,22,53,0.15); border-radius:10px;
@@ -69,6 +68,17 @@ label{ display:block; font-size:12px; font-weight:600; letter-spacing:1px; text-
 .auth-box .btn-primary{ width:100%; justify-content:center; padding:14px; font-size:15px; }
 .auth-error{ background:#fef2f2; border:1px solid #fecaca; color:var(--danger); border-radius:10px; padding:10px 14px; font-size:13px; margin-bottom:16px; display:none; }
 .auth-error.show{ display:block; }
+.setup-steps{ counter-reset:step; }
+.setup-step{ display:flex; gap:16px; margin-bottom:20px; align-items:flex-start; }
+.setup-step-num{
+  counter-increment:step; width:28px; height:28px; border-radius:50%;
+  background:var(--sage); color:var(--white); display:flex; align-items:center; justify-content:center;
+  font-size:13px; font-weight:700; flex-shrink:0; margin-top:2px;
+}
+.setup-step-num::after{ content:counter(step); }
+.setup-step p{ font-size:13px; color:var(--text-mid); line-height:1.6; }
+.setup-step p strong{ color:var(--text-dark); }
+code{ background:var(--cream-dark); padding:2px 6px; border-radius:4px; font-size:12px; color:var(--deep); }
 
 /* ─── DASHBOARD LAYOUT ─── */
 #dashboard{ display:none; flex-direction:column; min-height:100vh; }
@@ -98,10 +108,10 @@ label{ display:block; font-size:12px; font-weight:600; letter-spacing:1px; text-
 .stat-card{ padding:24px; text-align:center; }
 .stat-val{ font-family:'Cormorant Garamond',serif; font-size:44px; font-weight:600; line-height:1; display:block; margin-bottom:6px; }
 .stat-lbl{ font-size:12px; font-weight:500; letter-spacing:0.5px; color:var(--text-light); }
-.stat-card.s-total  .stat-val{ color:var(--deep); }
+.stat-card.s-total   .stat-val{ color:var(--deep); }
 .stat-card.s-pending .stat-val{ color:#d97706; }
 .stat-card.s-confirmed .stat-val{ color:#2563eb; }
-.stat-card.s-today .stat-val{ color:var(--sage); }
+.stat-card.s-today   .stat-val{ color:var(--sage); }
 
 /* ─── TOOLBAR ─── */
 .toolbar{ display:flex; gap:12px; flex-wrap:wrap; margin-bottom:16px; align-items:center; }
@@ -132,15 +142,13 @@ tbody td{ padding:13px 16px; color:var(--text-dark); }
 .badge-confirmed{ background:#dbeafe; color:#1e40af; }
 .badge-completed{ background:#dcfce7; color:#166534; }
 .badge-cancelled{ background:#fee2e2; color:#991b1b; }
-.badge-new      { background:#ede9fe; color:#5b21b6; }
-.badge-followup { background:#f1f5f9; color:#475569; }
 
 /* ─── EMPTY STATE ─── */
 .empty-state{ text-align:center; padding:60px 20px; color:var(--text-light); }
 .empty-state .es-icon{ font-size:48px; margin-bottom:16px; display:block; opacity:0.5; }
 .empty-state p{ font-size:15px; }
 
-/* ─── MODAL ─── */
+/* ─── DETAIL MODAL ─── */
 .overlay{ position:fixed; inset:0; background:rgba(20,14,42,0.7); backdrop-filter:blur(6px); z-index:100; display:none; align-items:center; justify-content:center; padding:16px; }
 .overlay.open{ display:flex; }
 .detail-modal{ background:var(--white); border-radius:20px; max-width:560px; width:100%; max-height:92vh; overflow-y:auto; padding:36px; position:relative; }
@@ -154,23 +162,8 @@ tbody td{ padding:13px 16px; color:var(--text-dark); }
 .reason-box{ background:var(--cream); border-radius:10px; padding:14px 16px; font-size:14px; color:var(--text-dark); line-height:1.6; margin-bottom:20px; }
 .modal-actions{ display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-top:20px; }
 .modal-actions select{ max-width:160px; padding:9px 12px; font-size:13px; }
-
-/* ─── STATUS SELECT IN TABLE ─── */
 .status-select{ font-size:12px; border:1.5px solid rgba(31,22,53,0.15); border-radius:8px; padding:5px 8px; background:var(--cream); cursor:pointer; }
 .status-select:focus{ outline:none; border-color:var(--sage); }
-
-/* ─── SETUP SCREEN ─── */
-.setup-steps{ counter-reset:step; }
-.setup-step{ display:flex; gap:16px; margin-bottom:20px; align-items:flex-start; }
-.setup-step-num{
-  counter-increment:step; width:28px; height:28px; border-radius:50%;
-  background:var(--sage); color:var(--white); display:flex; align-items:center; justify-content:center;
-  font-size:13px; font-weight:700; flex-shrink:0; margin-top:2px;
-}
-.setup-step-num::after{ content:counter(step); }
-.setup-step p{ font-size:13px; color:var(--text-mid); line-height:1.6; }
-.setup-step p strong{ color:var(--text-dark); }
-code{ background:var(--cream-dark); padding:2px 6px; border-radius:4px; font-size:12px; color:var(--deep); }
 
 /* ─── TOAST ─── */
 .toast{
@@ -190,7 +183,6 @@ code{ background:var(--cream-dark); padding:2px 6px; border-radius:4px; font-siz
   .detail-grid{ grid-template-columns:1fr; }
 }
 @media(max-width:600px){
-  .stats-grid{ grid-template-columns:1fr 1fr; }
   .auth-box{ padding:32px 24px; }
   .dash-header{ padding:14px 16px; }
   table { font-size:13px; }
@@ -203,9 +195,9 @@ code{ background:var(--cream-dark); padding:2px 6px; border-radius:4px; font-siz
 <!-- ═══ SETUP SCREEN ═══ -->
 <div class="centered-screen" id="setupScreen">
   <div class="auth-box">
-    <div class="auth-logo">🧠</div>
-    <h1>Admin Setup</h1>
-    <p>Configure your Google Sheets connection once. Settings are saved in this browser.</p>
+    <div class="auth-logo">⚙️</div>
+    <h1>Connect Google Sheets</h1>
+    <p>One-time setup. Enter your Apps Script details to start receiving appointments.</p>
     <div class="setup-steps">
       <div class="setup-step">
         <span class="setup-step-num"></span>
@@ -213,11 +205,11 @@ code{ background:var(--cream-dark); padding:2px 6px; border-radius:4px; font-siz
       </div>
       <div class="setup-step">
         <span class="setup-step-num"></span>
-        <p>In Apps Script: <strong>Deploy → New deployment → Web app → Anyone → Deploy</strong>. Copy the Web App URL.</p>
+        <p>Set your <code>SPREADSHEET_ID</code> and <code>SECRET_TOKEN</code> at the top of the script.</p>
       </div>
       <div class="setup-step">
         <span class="setup-step-num"></span>
-        <p>Set a <code>SECRET_TOKEN</code> inside the script. Use the same value below. Also set a password for this admin panel.</p>
+        <p><strong>Deploy → New deployment → Web app → Anyone → Deploy.</strong> Copy the Web App URL and paste it below along with your secret token.</p>
       </div>
     </div>
     <div id="setupError" class="auth-error"></div>
@@ -227,15 +219,11 @@ code{ background:var(--cream-dark); padding:2px 6px; border-radius:4px; font-siz
     </div>
     <div class="form-group">
       <label>Secret Token (must match script)</label>
-      <input type="text" id="setupToken" placeholder="your-secret-token"/>
-    </div>
-    <div class="form-group">
-      <label>Admin Password (choose one now)</label>
-      <input type="password" id="setupPass" placeholder="Min. 8 characters"/>
+      <input type="password" id="setupToken" placeholder="your-secret-token"/>
     </div>
     <button class="btn btn-primary" onclick="saveSetup()">Save &amp; Continue →</button>
     <p style="font-size:12px;color:var(--text-light);text-align:center;margin-top:16px;">
-      Settings stored only in this browser's localStorage. Not sent anywhere.
+      These settings are stored only in this browser's localStorage.
     </p>
   </div>
 </div>
@@ -245,12 +233,16 @@ code{ background:var(--cream-dark); padding:2px 6px; border-radius:4px; font-siz
   <div class="auth-box">
     <div class="auth-logo">🔐</div>
     <h1>Admin Panel</h1>
-    <p>Dr. Nidhish Kakkad · Junagadh</p>
+    <p>Dr. Nidhish Kakkad · Teleconsultation</p>
     <div id="loginError" class="auth-error"></div>
     <form onsubmit="doLogin(event)">
       <div class="form-group">
+        <label>Username</label>
+        <input type="text" id="loginUser" placeholder="Enter username" autocomplete="username" autofocus/>
+      </div>
+      <div class="form-group">
         <label>Password</label>
-        <input type="password" id="loginPass" placeholder="Enter admin password" autofocus/>
+        <input type="password" id="loginPass" placeholder="Enter password" autocomplete="current-password"/>
       </div>
       <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;padding:14px;font-size:15px;">
         Sign In →
@@ -266,7 +258,7 @@ code{ background:var(--cream-dark); padding:2px 6px; border-radius:4px; font-siz
 <div id="dashboard">
   <header class="dash-header">
     <div class="dash-logo">
-      <div class="dash-logo-icon">🧠</div>
+      <div class="dash-logo-icon">📋</div>
       <div class="dash-logo-text">
         Appointment Dashboard
         <span>Dr. Nidhish Kakkad</span>
@@ -280,11 +272,10 @@ code{ background:var(--cream-dark); padding:2px 6px; border-radius:4px; font-siz
   </header>
 
   <div class="dash-body">
-    <!-- Stats -->
     <div class="stats-grid">
       <div class="stat-card card s-total">
         <span class="stat-val" id="stat-total">—</span>
-        <span class="stat-lbl">Total Appointments</span>
+        <span class="stat-lbl">Total</span>
       </div>
       <div class="stat-card card s-pending">
         <span class="stat-val" id="stat-pending">—</span>
@@ -296,23 +287,21 @@ code{ background:var(--cream-dark); padding:2px 6px; border-radius:4px; font-siz
       </div>
       <div class="stat-card card s-today">
         <span class="stat-val" id="stat-today">—</span>
-        <span class="stat-lbl">Today's</span>
+        <span class="stat-lbl">Today</span>
       </div>
     </div>
 
-    <!-- Toolbar -->
     <div class="toolbar">
       <input type="search" id="searchInput" placeholder="Search name, phone, reason…" oninput="renderTable()"/>
-      <div class="filter-pills" id="filterPills">
-        <span class="pill active" data-f="All" onclick="setFilter(this)">All</span>
-        <span class="pill" data-f="Pending" onclick="setFilter(this)">Pending</span>
-        <span class="pill" data-f="Confirmed" onclick="setFilter(this)">Confirmed</span>
-        <span class="pill" data-f="Completed" onclick="setFilter(this)">Completed</span>
-        <span class="pill" data-f="Cancelled" onclick="setFilter(this)">Cancelled</span>
+      <div class="filter-pills">
+        <span class="pill active" data-f="All"       onclick="setFilter(this)">All</span>
+        <span class="pill"        data-f="Pending"   onclick="setFilter(this)">Pending</span>
+        <span class="pill"        data-f="Confirmed" onclick="setFilter(this)">Confirmed</span>
+        <span class="pill"        data-f="Completed" onclick="setFilter(this)">Completed</span>
+        <span class="pill"        data-f="Cancelled" onclick="setFilter(this)">Cancelled</span>
       </div>
     </div>
 
-    <!-- Table -->
     <div class="table-wrap" id="tableWrap">
       <div class="empty-state"><span class="es-icon">📋</span><p>Loading appointments…</p></div>
     </div>
@@ -321,7 +310,7 @@ code{ background:var(--cream-dark); padding:2px 6px; border-radius:4px; font-siz
 
 <!-- Detail Modal -->
 <div class="overlay" id="detailOverlay" onclick="closeDetail(event)">
-  <div class="detail-modal" id="detailModal">
+  <div class="detail-modal">
     <div class="modal-header">
       <div>
         <h2 id="dm-name">—</h2>
@@ -332,14 +321,11 @@ code{ background:var(--cream-dark); padding:2px 6px; border-radius:4px; font-siz
     <div class="detail-grid">
       <div class="detail-item"><div class="di-label">Email</div><div class="di-val" id="dm-email">—</div></div>
       <div class="detail-item"><div class="di-label">Phone</div><div class="di-val" id="dm-phone">—</div></div>
-      <div class="detail-item"><div class="di-label">Age</div><div class="di-val" id="dm-age">—</div></div>
-      <div class="detail-item"><div class="di-label">Gender</div><div class="di-val" id="dm-gender">—</div></div>
       <div class="detail-item"><div class="di-label">Preferred Date</div><div class="di-val" id="dm-date">—</div></div>
-      <div class="detail-item"><div class="di-label">Time Slot</div><div class="di-val" id="dm-time">—</div></div>
-      <div class="detail-item"><div class="di-label">Visit Type</div><div class="di-val" id="dm-visittype">—</div></div>
+      <div class="detail-item"><div class="di-label">Time Slot (IST)</div><div class="di-val" id="dm-time">—</div></div>
       <div class="detail-item"><div class="di-label">Submitted</div><div class="di-val" id="dm-submitted">—</div></div>
     </div>
-    <div><div class="di-label" style="margin-bottom:8px;">Reason for Consultation</div><div class="reason-box" id="dm-reason">—</div></div>
+    <div style="margin-bottom:20px;"><div class="di-label" style="margin-bottom:8px;">Reason for Consultation</div><div class="reason-box" id="dm-reason">—</div></div>
     <div class="form-group">
       <label>Doctor's Notes</label>
       <textarea id="dm-notes" rows="3" placeholder="Add clinical notes…"></textarea>
@@ -357,28 +343,24 @@ code{ background:var(--cream-dark); padding:2px 6px; border-radius:4px; font-siz
 <div class="toast" id="toast"></div>
 
 <script>
-// ─── STORAGE KEYS ────────────────────────────────────────────────
-const K = { url:'admin_url', token:'admin_token', pass:'admin_pass', auth:'admin_authed' };
+const ADMIN_USER = 'nhkakkad';
+const ADMIN_PASS = 'ParthIsGreat0512!';
+
+const K = { url:'admin_url', token:'admin_token', auth:'admin_authed' };
 const get = k => localStorage.getItem(k);
 const set = (k,v) => localStorage.setItem(k,v);
 const rm  = k => localStorage.removeItem(k);
 
-// ─── INIT ─────────────────────────────────────────────────────────
 (function init(){
-  if (!get(K.url) || !get(K.token) || !get(K.pass)) {
-    show('setupScreen'); return;
-  }
-  if (get(K.auth) === '1') {
-    show('dashboard'); loadAppointments(); return;
-  }
+  if (!get(K.url) || !get(K.token)) { show('setupScreen'); return; }
+  if (get(K.auth) === '1') { show('dashboard'); loadAppointments(); return; }
   show('loginScreen');
 })();
 
 function show(id){
   ['setupScreen','loginScreen','dashboard'].forEach(i => {
     const el = document.getElementById(i);
-    if (i === 'dashboard') el.style.display = (i===id?'flex':'none');
-    else el.style.display = (i===id?'flex':'none');
+    el.style.display = (i === id) ? 'flex' : 'none';
   });
 }
 
@@ -386,33 +368,31 @@ function show(id){
 function saveSetup(){
   const url   = document.getElementById('setupUrl').value.trim();
   const token = document.getElementById('setupToken').value.trim();
-  const pass  = document.getElementById('setupPass').value;
   const err   = document.getElementById('setupError');
   err.classList.remove('show');
-
   if (!url.startsWith('https://script.google.com')) {
     err.textContent = 'Please enter a valid Apps Script URL.'; err.classList.add('show'); return;
   }
   if (!token) { err.textContent = 'Secret token cannot be empty.'; err.classList.add('show'); return; }
-  if (pass.length < 8) { err.textContent = 'Password must be at least 8 characters.'; err.classList.add('show'); return; }
-
-  set(K.url, url); set(K.token, token); set(K.pass, pass);
+  set(K.url, url); set(K.token, token);
   show('loginScreen');
 }
-function resetSetup(){ ['admin_url','admin_token','admin_pass','admin_authed'].forEach(rm); location.reload(); }
+function resetSetup(){ [K.url, K.token, K.auth].forEach(rm); location.reload(); }
 
 // ─── LOGIN ────────────────────────────────────────────────────────
 function doLogin(e){
   e.preventDefault();
+  const user = document.getElementById('loginUser').value.trim();
   const pass = document.getElementById('loginPass').value;
   const err  = document.getElementById('loginError');
-  if (pass === get(K.pass)) {
-    set(K.auth,'1'); show('dashboard'); loadAppointments();
+  err.classList.remove('show');
+  if (user === ADMIN_USER && pass === ADMIN_PASS) {
+    set(K.auth, '1'); show('dashboard'); loadAppointments();
   } else {
-    err.textContent = 'Incorrect password. Please try again.'; err.classList.add('show');
+    err.textContent = 'Incorrect username or password.'; err.classList.add('show');
   }
 }
-function doLogout(){ rm(K.auth); show('loginScreen'); appointments=[]; }
+function doLogout(){ rm(K.auth); show('loginScreen'); appointments = []; }
 
 // ─── DATA ─────────────────────────────────────────────────────────
 let appointments = [];
@@ -430,33 +410,34 @@ async function loadAppointments(){
     appointments = data.appointments || [];
     updateStats(); renderTable();
   } catch(e) {
-    setTableContent(`<div class="empty-state"><span class="es-icon">❌</span><p>Failed to load: ${e.message}<br><small>Check your Apps Script URL and token in setup.</small></p></div>`);
+    setTableContent(`<div class="empty-state"><span class="es-icon">❌</span><p>Failed to load: ${e.message}<br><small>Check your Apps Script URL and token.</small></p></div>`);
   }
 }
 
 function updateStats(){
-  const today = new Date().toISOString().split('T')[0];
+  const _d = new Date();
+  const today = _d.getFullYear() + '-' + String(_d.getMonth()+1).padStart(2,'0') + '-' + String(_d.getDate()).padStart(2,'0');
   document.getElementById('stat-total').textContent     = appointments.length;
-  document.getElementById('stat-pending').textContent   = appointments.filter(a=>a.Status==='Pending').length;
-  document.getElementById('stat-confirmed').textContent = appointments.filter(a=>a.Status==='Confirmed').length;
-  document.getElementById('stat-today').textContent     = appointments.filter(a=>a.Date===today||a['Date']===today).length;
+  document.getElementById('stat-pending').textContent   = appointments.filter(a => a.Status === 'Pending').length;
+  document.getElementById('stat-confirmed').textContent = appointments.filter(a => a.Status === 'Confirmed').length;
+  document.getElementById('stat-today').textContent     = appointments.filter(a => a.Date === today).length;
 }
 
 function setFilter(el){
-  document.querySelectorAll('.pill').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
   el.classList.add('active');
   statusFilter = el.dataset.f;
   renderTable();
 }
 
 function renderTable(){
-  const q = (document.getElementById('searchInput').value||'').toLowerCase();
-  let rows = appointments
-    .filter(a => statusFilter==='All' || a.Status===statusFilter)
-    .filter(a => !q || [a.Name||'',a.Email||'',a.Phone||'',a.Reason||''].join(' ').toLowerCase().includes(q))
-    .sort((a,b)=> new Date(b['Submitted At']||0) - new Date(a['Submitted At']||0));
+  const q = (document.getElementById('searchInput').value || '').toLowerCase();
+  const rows = appointments
+    .filter(a => statusFilter === 'All' || a.Status === statusFilter)
+    .filter(a => !q || [a.Name||'', a.Email||'', a.Phone||'', a.Reason||''].join(' ').toLowerCase().includes(q))
+    .sort((a,b) => new Date(b['Submitted At']||0) - new Date(a['Submitted At']||0));
 
-  if (!rows.length){
+  if (!rows.length) {
     setTableContent('<div class="empty-state"><span class="es-icon">🔍</span><p>No appointments found.</p></div>');
     return;
   }
@@ -464,10 +445,10 @@ function renderTable(){
     <tr onclick="openDetail('${a.ID}')">
       <td><strong>${esc(a.Name||'—')}</strong></td>
       <td>${esc(a.Phone||'—')}</td>
+      <td>${esc(a.Email||'—')}</td>
       <td>${esc(a.Date||'—')}</td>
       <td>${esc(a['Time Slot']||'—')}</td>
       <td>${esc(a.Reason||'—').substring(0,30)}${(a.Reason||'').length>30?'…':''}</td>
-      <td><span class="badge badge-${(a['Visit Type']||'new').toLowerCase()}">${a['Visit Type']==='followup'?'Follow-up':'New'}</span></td>
       <td><span class="badge badge-${(a.Status||'pending').toLowerCase()}">${esc(a.Status||'Pending')}</span></td>
       <td onclick="event.stopPropagation()">
         <select class="status-select" onchange="quickStatus('${a.ID}',this.value)">
@@ -479,16 +460,14 @@ function renderTable(){
   document.getElementById('tableWrap').innerHTML = `
     <table>
       <thead><tr>
-        <th>Name</th><th>Phone</th><th>Date</th><th>Time</th>
-        <th>Reason</th><th>Type</th><th>Status</th><th>Update</th>
+        <th>Name</th><th>Phone</th><th>Email</th><th>Date</th><th>Time (IST)</th>
+        <th>Reason</th><th>Status</th><th>Update</th>
       </tr></thead>
       <tbody>${tbody}</tbody>
     </table>`;
 }
 
-function setTableContent(html){
-  document.getElementById('tableWrap').innerHTML = html;
-}
+function setTableContent(html){ document.getElementById('tableWrap').innerHTML = html; }
 function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
 // ─── QUICK STATUS ─────────────────────────────────────────────────
@@ -497,7 +476,7 @@ async function quickStatus(id, status){
   const token = get(K.token);
   try {
     await fetch(`${url}?action=updateStatus&token=${encodeURIComponent(token)}&id=${encodeURIComponent(id)}&status=${encodeURIComponent(status)}`);
-    appointments = appointments.map(a => a.ID===id ? {...a, Status:status} : a);
+    appointments = appointments.map(a => a.ID === id ? {...a, Status:status} : a);
     updateStats(); renderTable();
     showToast(`Status updated to "${status}"`);
   } catch { showToast('Update failed. Try again.', true); }
@@ -505,29 +484,25 @@ async function quickStatus(id, status){
 
 // ─── DETAIL MODAL ─────────────────────────────────────────────────
 function openDetail(id){
-  const a = appointments.find(x=>x.ID===id);
+  const a = appointments.find(x => x.ID === id);
   if (!a) return;
   selectedId = id;
-  document.getElementById('dm-name').textContent      = a.Name||'—';
-  document.getElementById('dm-email').textContent     = a.Email||'—';
-  document.getElementById('dm-phone').textContent     = a.Phone||'—';
-  document.getElementById('dm-age').textContent       = a.Age||'—';
-  document.getElementById('dm-gender').textContent    = a.Gender||'—';
-  document.getElementById('dm-date').textContent      = a.Date||'—';
-  document.getElementById('dm-time').textContent      = a['Time Slot']||'—';
-  document.getElementById('dm-visittype').textContent = a['Visit Type']==='followup'?'Follow-up':'New Patient';
-  document.getElementById('dm-reason').textContent    = a.Reason||'—';
-  document.getElementById('dm-notes').value           = a['Doctor Notes']||'';
-  document.getElementById('dm-status-select').value   = a.Status||'Pending';
+  document.getElementById('dm-name').textContent      = a.Name || '—';
+  document.getElementById('dm-email').textContent     = a.Email || '—';
+  document.getElementById('dm-phone').textContent     = a.Phone || '—';
+  document.getElementById('dm-date').textContent      = a.Date || '—';
+  document.getElementById('dm-time').textContent      = a['Time Slot'] || '—';
+  document.getElementById('dm-reason').textContent    = a.Reason || '—';
+  document.getElementById('dm-notes').value           = a['Doctor Notes'] || '';
+  document.getElementById('dm-status-select').value   = a.Status || 'Pending';
   const badge = document.getElementById('dm-status-badge');
-  badge.textContent = a.Status||'Pending';
+  badge.textContent = a.Status || 'Pending';
   badge.className = `badge badge-${(a.Status||'pending').toLowerCase()}`;
-  const sub = a['Submitted At'];
-  document.getElementById('dm-submitted').textContent = sub ? new Date(sub).toLocaleString('en-IN') : '—';
+  document.getElementById('dm-submitted').textContent = a['Submitted At'] ? new Date(a['Submitted At']).toLocaleString() : '—';
   document.getElementById('detailOverlay').classList.add('open');
 }
-function closeDetail(e){ if(e.target===document.getElementById('detailOverlay')) closeDetailModal(); }
-function closeDetailModal(){ document.getElementById('detailOverlay').classList.remove('open'); selectedId=null; }
+function closeDetail(e){ if (e.target === document.getElementById('detailOverlay')) closeDetailModal(); }
+function closeDetailModal(){ document.getElementById('detailOverlay').classList.remove('open'); selectedId = null; }
 
 async function saveDetail(){
   if (!selectedId) return;
@@ -540,10 +515,9 @@ async function saveDetail(){
       fetch(`${url}?action=updateStatus&token=${encodeURIComponent(token)}&id=${encodeURIComponent(selectedId)}&status=${encodeURIComponent(status)}`),
       fetch(`${url}?action=updateNotes&token=${encodeURIComponent(token)}&id=${encodeURIComponent(selectedId)}&notes=${encodeURIComponent(notes)}`),
     ]);
-    appointments = appointments.map(a => a.ID===selectedId ? {...a, Status:status, 'Doctor Notes':notes} : a);
-    updateStats(); renderTable();
-    closeDetailModal();
-    showToast('Appointment updated successfully.');
+    appointments = appointments.map(a => a.ID === selectedId ? {...a, Status:status, 'Doctor Notes':notes} : a);
+    updateStats(); renderTable(); closeDetailModal();
+    showToast('Appointment updated.');
   } catch { showToast('Save failed. Try again.', true); }
 }
 
@@ -551,11 +525,11 @@ async function saveDetail(){
 let toastTimer;
 function showToast(msg, isError=false){
   const t = document.getElementById('toast');
-  t.textContent = (isError?'⚠️ ':'✓ ') + msg;
-  t.style.background = isError?'#dc2626':'var(--deep)';
+  t.textContent = (isError ? '⚠️ ' : '✓ ') + msg;
+  t.style.background = isError ? '#dc2626' : 'var(--deep)';
   t.classList.add('show');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(()=>t.classList.remove('show'), 3000);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
 }
 </script>
 </body>
