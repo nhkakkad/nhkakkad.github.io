@@ -16,6 +16,7 @@
 
 const SPREADSHEET_ID = 'YOUR_GOOGLE_SHEET_ID_HERE';  // found in the sheet URL
 const SECRET_TOKEN   = 'YOUR_SECRET_TOKEN_HERE';      // long random string — keep secret
+const DOCTOR_EMAIL   = 'kakkadnidhish@gmail.com';     // where new booking alerts go
 
 const HEADERS = [
   'ID', 'Name', 'Email', 'Phone', 'Age', 'Gender',
@@ -46,9 +47,11 @@ function doPost(e) {
     const sheet = getSheet();
     const id = Utilities.getUuid();
 
+    const fullName = ((data.fname || '') + ' ' + (data.lname || '')).trim() || data.name || '';
+
     sheet.appendRow([
       id,
-      data.name        || '',
+      fullName,
       data.email       || '',
       data.phone       || '',
       data.age         || '',
@@ -57,15 +60,77 @@ function doPost(e) {
       data.timeSlot    || '',
       data.reason      || '',
       data.visitType   || '',
-      'Pending',        // initial status
-      '',               // doctor notes (blank)
+      'Pending',
+      '',
       data.submittedAt || new Date().toISOString(),
     ]);
+
+    sendEmails(id, fullName, data);
 
     return jsonResponse({ success: true, id });
   } catch (err) {
     return jsonResponse({ success: false, error: err.message });
   }
+}
+
+function sendEmails(id, fullName, data) {
+  try {
+    // ── Email to doctor ───────────────────────────────────────
+    MailApp.sendEmail({
+      to: DOCTOR_EMAIL,
+      subject: 'New Appointment Request — ' + fullName,
+      htmlBody:
+        '<div style="font-family:sans-serif;max-width:560px;margin:0 auto">' +
+        '<div style="background:#1f1635;padding:24px 32px;border-radius:12px 12px 0 0">' +
+        '<h2 style="color:#ffffff;margin:0;font-size:20px">New Appointment Request</h2>' +
+        '</div>' +
+        '<div style="background:#f9f7f2;padding:28px 32px;border-radius:0 0 12px 12px;border:1px solid #e5e0d8">' +
+        row('Patient', fullName) +
+        row('Phone', data.phone || '—') +
+        row('Email', data.email || '—') +
+        row('Date', data.date || '—') +
+        row('Time', data.timeSlot || '—') +
+        row('Reason', data.reason || '—') +
+        (data.notes ? row('Notes', data.notes) : '') +
+        '<p style="margin-top:24px;font-size:13px;color:#888">Booking ID: ' + id + '</p>' +
+        '</div>' +
+        '</div>',
+    });
+
+    // ── Confirmation email to patient ─────────────────────────
+    if (data.email) {
+      MailApp.sendEmail({
+        to: data.email,
+        subject: 'Appointment Request Received — Dr. Nidhish Kakkad',
+        htmlBody:
+          '<div style="font-family:sans-serif;max-width:560px;margin:0 auto">' +
+          '<div style="background:#1f1635;padding:24px 32px;border-radius:12px 12px 0 0">' +
+          '<h2 style="color:#ffffff;margin:0;font-size:20px">Your Request Has Been Received</h2>' +
+          '</div>' +
+          '<div style="background:#f9f7f2;padding:28px 32px;border-radius:0 0 12px 12px;border:1px solid #e5e0d8">' +
+          '<p style="color:#333;margin-bottom:20px">Dear ' + (data.fname || fullName) + ',</p>' +
+          '<p style="color:#333;margin-bottom:20px">Thank you for reaching out. Your appointment request has been received and Dr. Nidhish Kakkad will confirm your slot within 24 hours.</p>' +
+          '<h3 style="color:#1f1635;font-size:15px;margin-bottom:12px">Your Details</h3>' +
+          row('Date', data.date || '—') +
+          row('Time', data.timeSlot || '—') +
+          row('Reason', data.reason || '—') +
+          '<p style="margin-top:20px;color:#333">If you need to reach out sooner, WhatsApp or call <strong>+91 95126 79105</strong>.</p>' +
+          '<p style="margin-top:24px;font-size:13px;color:#888">Booking ID: ' + id + '</p>' +
+          '</div>' +
+          '</div>',
+      });
+    }
+  } catch (mailErr) {
+    // Don't fail the booking if email sending fails — log silently
+    console.error('Email send error:', mailErr.message);
+  }
+}
+
+function row(label, value) {
+  return '<div style="display:flex;gap:12px;padding:10px 0;border-bottom:1px solid #e5e0d8">' +
+    '<span style="color:#888;font-size:13px;min-width:80px">' + label + '</span>' +
+    '<span style="color:#1a1530;font-size:13px;font-weight:500">' + value + '</span>' +
+    '</div>';
 }
 
 // Called by the admin panel to read/update data
