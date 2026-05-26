@@ -285,18 +285,18 @@ section { position:relative; }
 }
 .service-card {
   cursor:pointer; perspective:1000px;
-  min-height:250px; position:relative; background:transparent;
+  height:300px; position:relative; background:transparent;
 }
 .service-inner {
-  position:relative; width:100%; min-height:250px;
+  position:relative; width:100%; height:100%;
   transition:transform 0.55s cubic-bezier(0.4,0.2,0.2,1);
   transform-style:preserve-3d;
 }
 .service-card.flipped .service-inner { transform:rotateY(180deg); }
 .service-front, .service-back {
-  position:absolute; inset:0;
+  position:absolute; inset:0; overflow:hidden;
   backface-visibility:hidden; -webkit-backface-visibility:hidden;
-  border-radius:20px; padding:30px 24px;
+  border-radius:20px; padding:26px 22px;
   border:1px solid rgba(31,22,53,0.07);
   display:flex; flex-direction:column;
 }
@@ -780,7 +780,7 @@ footer { background:var(--deep); color:rgba(255,255,255,0.6); padding:60px; }
 
     <div class="hero-visual">
       <div class="hero-visual-img-wrap">
-        <img src="therapy.png" alt="Therapy session illustration" class="hero-visual-img"/>
+        <img src="public/male-psychiatrist-taking-notes-while-600nw-2737706809.webp" alt="Therapy session illustration" class="hero-visual-img"/>
       </div>
     </div>
   </div>
