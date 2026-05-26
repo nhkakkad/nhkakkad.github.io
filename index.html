@@ -1063,13 +1063,6 @@ footer { background:var(--deep); color:rgba(255,255,255,0.6); padding:60px; }
           </div>
         </div>
         <div class="book-contact-item">
-          <div class="book-contact-icon">📍</div>
-          <div>
-            <strong style="color:var(--white);display:block;">Find Me</strong>
-            <span>[Clinic Name], Junagadh, Gujarat</span>
-          </div>
-        </div>
-        <div class="book-contact-item">
           <div class="book-contact-icon">✉️</div>
           <div>
             <strong style="color:var(--white);display:block;">Email</strong>
@@ -1496,7 +1489,7 @@ async function submitModal() {
     document.getElementById('modalForm').style.display = 'none';
     document.getElementById('modalSuccess').style.display = 'block';
   } catch {
-    setAlert('modalAlert','error','Something went wrong. Please call the clinic directly or try again.');
+    setAlert('modalAlert','error','Something went wrong. Please call directly or try again.');
   } finally {
     btn.disabled = false; btn.innerHTML = '📅 Request Appointment';
   }
@@ -1530,7 +1523,7 @@ async function submitForm() {
     document.getElementById('formContent').style.display = 'none';
     document.getElementById('formSuccess').style.display = 'block';
   } catch {
-    setAlert('formAlert','error','Something went wrong. Please call the clinic directly or try again.');
+    setAlert('formAlert','error','Something went wrong. Please call directly or try again.');
   } finally {
     btn.disabled = false; btn.innerHTML = '📅 Request Appointment';
   }
