@@ -7,26 +7,26 @@ var CONTENT = {
   // ── Doctor Details ──
   name:     "Dr. Nidhish Kakkad",
   title:    "Consultant Psychiatrist",
-  location: "Gujarat, India",
-  tagline:  "Online Psychiatry, Worldwide",
-  heroDesc: "Compassionate, evidence-based psychiatric care delivered entirely online — so you can get expert help from wherever you are, at a time that works for you.",
+  location: "Junagadh, Gujarat",
+  tagline:  "Junagadh's Trusted Mind Doctor",
+  heroDesc: "Compassionate, evidence-based psychiatric care for every chapter of your mental health journey — from first consultation to long-term recovery. Psychiatric care delivered entirely online — so you can get expert help from wherever you are, at a time that works for you. You are not alone.",
   acceptingPatients: true,   // shows/hides the "Accepting New Patients" badge
 
   // ── Contact ──
   phone:    "+91 95126 79105",
-  phoneRaw: "919512679105",   // country code + number, no spaces
-  email:    "kakkadnidhish@gmail.com",
+  phoneRaw: "+919512679105",   // country code + number, no spaces
+  email:    "nhk5596@gmail.com",
 
   // ── About ──
   aboutQuote: "Mental illness is not a personal failing. My goal is to make every patient feel safe, understood, and hopeful about their path forward.",
-  aboutBio:   "Dr. Nidhish Kakkad is a consultant psychiatrist specialising in diagnosing and treating a wide spectrum of mental health conditions. He sees patients entirely online, making expert psychiatric care accessible regardless of where you live. He combines the latest evidence-based treatments with a deeply human, patient-first approach that puts dignity at the centre of every consultation.",
+  aboutBio:   "Dr. Nidhish Kakkad is a consultant psychiatrist based in Junagadh, Gujarat, specialising in diagnosing and treating a wide spectrum of mental health conditions. He combines the latest evidence-based treatments with a deeply human, patient-first approach that puts dignity at the centre of every consultation.",
   languages:  ["Gujarati", "Hindi", "English"],
 
   // ── Stats ──
   statPatients:     "2500+",
   statSatisfaction: "98%",
 
-  // ── Practice Hours (all times in IST) ──
+  // ── Practice Hours ──
   // status: "open" | "limited" | "closed"
   hours: [
     { day: "Monday",    time: "10:00 AM – 8:00 PM (IST)", status: "open"    },
@@ -35,7 +35,7 @@ var CONTENT = {
     { day: "Thursday",  time: "10:00 AM – 8:00 PM (IST)", status: "open"    },
     { day: "Friday",    time: "10:00 AM – 8:00 PM (IST)", status: "open"    },
     { day: "Saturday",  time: "10:00 AM – 8:00 PM (IST)", status: "open"    },
-    { day: "Sunday",    time: "By appointment",            status: "limited" },
+    { day: "Sunday",    time: "By appointment",       status: "limited" },
   ],
   teleconsultationAvailable: true,
 
@@ -70,15 +70,15 @@ var CONTENT = {
   // ── Testimonials ──
   // stars: 5 or 4.5 | featured: true makes it the dark highlighted card | tele: true adds Teleconsultation tag
   testimonials: [
-    { stars: 5,   quote: "I've been seeing Dr. Kakkad online for over a year now. He doesn't rush consultations and always makes time to actually listen. The treatment plan has made a real difference to my daily life.", detail: "Long-term patient", tele: true },
+    { stars: 5,   quote: "I've been seeing Dr. Kakkad for over a year now. He doesn't rush consultations and always makes time to actually listen. The treatment plan has made a real difference to my daily life.", detail: "Long-term patient", tele: false },
     { stars: 4.5, quote: "I was nervous about doing a video consultation but Dr. Kakkad made it feel completely natural. My panic attacks are far less frequent now and I finally feel in control again.", detail: "Anxiety & Panic", tele: true, featured: true },
-    { stars: 5,   quote: "Our daughter was struggling and we didn't know where to turn. Dr. Kakkad explained everything clearly over video, answered all our questions, and never made us feel like we were overreacting.", detail: "Parent of patient", tele: true },
+    { stars: 5,   quote: "Our daughter was struggling and we didn't know where to turn. Dr. Kakkad explained everything clearly, answered all our questions, and never made us feel like we were overreacting.", detail: "Parent of patient", tele: false },
     { stars: 4.5, quote: "I wasn't sure about speaking to a psychiatrist online, but the session was completely private and judgement-free. I only wish I had reached out months earlier.", detail: "First consultation", tele: true },
     { stars: 5,   quote: "Work stress had completely taken over my life. After a few sessions with Dr. Kakkad I had practical strategies to manage it. The difference has been remarkable.", detail: "Stress & Burnout", tele: true },
-    { stars: 4.5, quote: "I'd been struggling with insomnia for two years. Dr. Kakkad identified an underlying condition I hadn't considered and within six weeks my sleep had improved significantly.", detail: "Sleep disorder", tele: true },
-    { stars: 5,   quote: "My GP referred me after months without the right diagnosis. Dr. Kakkad identified the issue in the first session online. The correct treatment has changed everything.", detail: "Referred patient", tele: true },
+    { stars: 4.5, quote: "I'd been struggling with insomnia for two years. Dr. Kakkad identified an underlying condition I hadn't considered and within six weeks my sleep had improved significantly.", detail: "Sleep disorder", tele: false },
+    { stars: 5,   quote: "My GP referred me after months without the right diagnosis. Dr. Kakkad identified the issue in the first session. The correct treatment has changed everything.", detail: "Referred patient", tele: false },
   ],
 
   // ── Footer ──
-  footerTagline: "Providing compassionate, evidence-based psychiatric care — online, for everyone.",
+  footerTagline: "Providing compassionate, evidence-based psychiatric care — online, for everyone. Your mental health matters.",
 };
