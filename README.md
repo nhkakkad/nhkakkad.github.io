@@ -1,4 +1,4 @@
-# Dr. [Doctor Name] — Psychiatrist Website
+# Dr. [Nidhish Kakkad] — Psychiatrist Website
 
 A professional website for a psychiatrist practice with:
 - **Public landing page** — intro, services, about
