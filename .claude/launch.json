@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "nhkakkad-site",
+      "runtimeExecutable": "/usr/local/bin/python3",
+      "runtimeArgs": ["-m", "http.server", "3456", "--directory", "/Users/parthbhatt/Documents/GitHub/nhkakkad.github.io"],
+      "port": 3456
+    }
+  ]
+}
