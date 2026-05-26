@@ -216,18 +216,6 @@ nav.scrolled {
   font-size:100px; line-height:1;
   filter:drop-shadow(0 0 40px rgba(94,158,140,0.4));
 }
-.hero-visual-card1 {
-  position:absolute; bottom:-20px; left:-20px;
-  background:rgba(255,255,255,0.08);
-  backdrop-filter:blur(20px);
-  border:1px solid rgba(255,255,255,0.12);
-  border-radius:20px; padding:20px 24px; min-width:180px;
-}
-.hero-visual-card1 .stat-num {
-  font-family:'Cormorant Garamond',serif;
-  font-size:42px; font-weight:600; color:var(--white); line-height:1;
-}
-.hero-visual-card1 .stat-label { color:rgba(255,255,255,0.6); font-size:13px; margin-top:4px; }
 .hero-visual-badge {
   position:absolute; top:20px; right:-10px;
   background:var(--amber); color:var(--deep);
@@ -594,31 +582,27 @@ section { position:relative; }
 
 /* ─── HOURS / MAP ─── */
 #info { background:var(--cream); }
-.info-grid { display:grid; grid-template-columns:1fr 1fr; gap:60px; align-items:start; margin-top:56px; }
-.hours-table { background:var(--white); border-radius:20px; overflow:hidden; box-shadow:0 8px 40px rgba(31,22,53,0.07); }
-.hours-header { background:var(--deep); padding:24px 32px; color:var(--white); }
-.hours-header h3 { font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:500; }
-.hours-row {
-  display:flex; justify-content:space-between; align-items:center;
-  padding:16px 32px; border-bottom:1px solid rgba(31,22,53,0.06);
-}
-.hours-row:last-of-type { border-bottom:none; }
-.hours-row .day { font-weight:500; color:var(--deep); }
-.hours-row .time { font-size:14px; color:var(--text-mid); }
-.badge-open { background:rgba(94,158,140,0.12); color:var(--sage); border-radius:50px; padding:3px 12px; font-size:11px; font-weight:600; }
-.badge-closed { background:rgba(31,22,53,0.08); color:var(--text-light); border-radius:50px; padding:3px 12px; font-size:11px; }
-.map-card { background:var(--white); border-radius:20px; overflow:hidden; box-shadow:0 8px 40px rgba(31,22,53,0.07); }
-.map-embed { display:block; width:100%; height:300px; border:0; }
-.map-info { padding:24px 28px; }
-.map-address { font-size:15px; color:var(--text-dark); font-weight:500; margin-bottom:6px; }
-.map-sub { font-size:13px; color:var(--text-light); }
-.directions-btn {
-  display:inline-flex; align-items:center; gap:8px; margin-top:14px;
-  background:var(--deep); color:var(--white);
-  padding:10px 22px; border-radius:50px; font-size:13px; font-weight:500;
-  text-decoration:none; transition:background 0.3s;
-}
-.directions-btn:hover { background:var(--sage); }
+.info-grid { display:grid; grid-template-columns:1.1fr 1fr; gap:60px; align-items:start; margin-top:56px; }
+.hours-table { background:var(--white); border-radius:24px; overflow:hidden; box-shadow:0 8px 40px rgba(31,22,53,0.07); }
+.hours-header { background:var(--deep); padding:24px 32px; color:var(--white); display:flex; align-items:center; gap:14px; }
+.hours-header-icon { width:42px; height:42px; background:rgba(94,158,140,0.18); border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
+.hours-header-text h3 { font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:500; }
+.hours-header-text p { font-size:11px; color:var(--sage-light); letter-spacing:1px; text-transform:uppercase; margin-top:2px; }
+.hours-body { padding:6px 0; }
+.hours-row { display:flex; align-items:center; gap:12px; padding:13px 32px; border-bottom:1px solid rgba(31,22,53,0.05); transition:background 0.2s; }
+.hours-row:last-child { border-bottom:none; }
+.hours-row:hover { background:rgba(94,158,140,0.04); }
+.hours-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+.hours-dot.open { background:var(--sage); }
+.hours-dot.limited { background:var(--amber); }
+.hours-dot.closed { background:#c8c5d4; }
+.hours-row .day { font-weight:500; color:var(--deep); font-size:14px; flex:1; }
+.hours-row .time { font-size:13px; color:var(--text-mid); }
+.hours-row.today { background:rgba(94,158,140,0.07); }
+.hours-row.today .day { color:var(--sage); font-weight:600; }
+.hours-footer { padding:14px 32px; background:rgba(94,158,140,0.06); border-top:1px solid rgba(94,158,140,0.15); display:flex; align-items:center; gap:8px; }
+.hours-footer i { color:var(--sage); font-size:13px; }
+.hours-footer span { font-size:12px; color:var(--sage); font-weight:500; }
 
 /* ─── PATIENT INFO ─── */
 #patient-info { background:var(--white); }
@@ -762,7 +746,7 @@ footer { background:var(--deep); color:rgba(255,255,255,0.6); padding:60px; }
     <li><a href="#services">Services</a></li>
     <li><a href="#about">About</a></li>
     <li><a href="#testimonials">Patients</a></li>
-    <li><a href="#info">Find Me</a></li>
+    <li><a href="#info">Practice Hours</a></li>
     <li><a href="#book" class="nav-cta">Book Now</a></li>
   </ul>
   <button class="nav-mobile-toggle" onclick="toggleMenu()" id="menuToggle">☰</button>
@@ -789,7 +773,7 @@ footer { background:var(--deep); color:rgba(255,255,255,0.6); padding:60px; }
         Dr. Nidhish <em>Kakkad</em><br>Psychiatrist
       </h1>
       <p class="hero-title-sub">Junagadh's Trusted Mind Doctor</p>
-      <p class="hero-desc">
+      <p class="hero-desc" data-c="heroDesc">
         Compassionate, evidence-based psychiatric care for every chapter of your mental health journey — from first consultation to long-term recovery. You are not alone.
       </p>
       <div class="hero-actions">
@@ -803,10 +787,6 @@ footer { background:var(--deep); color:rgba(255,255,255,0.6); padding:60px; }
     <div class="hero-visual">
       <div class="hero-visual-ring">
         <span class="hero-visual-icon">🧠</span>
-      </div>
-      <div class="hero-visual-badge">
-        📍 Junagadh<br>
-        <span style="font-size:11px;font-weight:400">Gujarat, India</span>
       </div>
     </div>
   </div>
@@ -851,136 +831,7 @@ footer { background:var(--deep); color:rgba(255,255,255,0.6); padding:60px; }
       <p class="section-label">What I Treat</p>
       <h2 class="section-title">Areas of <em>Expertise</em></h2>
     </div>
-    <div class="services-grid">
-      <div class="service-card reveal reveal-delay-1" onclick="this.classList.toggle('flipped')">
-        <div class="service-inner">
-          <div class="service-front">
-            <span class="service-icon">🧠</span>
-            <h3>Depression & Anxiety</h3>
-            <p>Evidence-based treatment for mood disorders, generalised anxiety, panic disorder, and social phobia.</p>
-            <span class="arrow">Tap to learn more →</span>
-          </div>
-          <div class="service-back">
-            <span class="service-icon">🧠</span>
-            <h3>Depression & Anxiety</h3>
-            <p>Depression and anxiety are highly manageable. A thorough assessment leads to a personalised plan covering MDD, GAD, panic disorder, and social anxiety — using medication and therapy referral where needed.</p>
-            <span class="arrow">← Tap to close</span>
-          </div>
-        </div>
-      </div>
-      <div class="service-card reveal reveal-delay-2" onclick="this.classList.toggle('flipped')">
-        <div class="service-inner">
-          <div class="service-front">
-            <span class="service-icon">🔄</span>
-            <h3>OCD</h3>
-            <p>Specialised care for obsessive-compulsive disorder using pharmacotherapy and behavioural interventions.</p>
-            <span class="arrow">Tap to learn more →</span>
-          </div>
-          <div class="service-back">
-            <span class="service-icon">🔄</span>
-            <h3>OCD</h3>
-            <p>OCD is highly treatable. SSRIs at effective doses alongside CBT-based guidance form the core treatment. Most patients see meaningful improvement within a few months of starting.</p>
-            <span class="arrow">← Tap to close</span>
-          </div>
-        </div>
-      </div>
-      <div class="service-card reveal reveal-delay-3" onclick="this.classList.toggle('flipped')">
-        <div class="service-inner">
-          <div class="service-front">
-            <span class="service-icon">⚡</span>
-            <h3>Bipolar Disorder</h3>
-            <p>Mood stabilisation, relapse prevention, and personalised long-term management plans.</p>
-            <span class="arrow">Tap to learn more →</span>
-          </div>
-          <div class="service-back">
-            <span class="service-icon">⚡</span>
-            <h3>Bipolar Disorder</h3>
-            <p>Bipolar disorder requires careful, ongoing management. Mood stabilisers and regular monitoring help maintain stability, while recognising early warning signs reduces the risk of relapse.</p>
-            <span class="arrow">← Tap to close</span>
-          </div>
-        </div>
-      </div>
-      <div class="service-card reveal reveal-delay-4" onclick="this.classList.toggle('flipped')">
-        <div class="service-inner">
-          <div class="service-front">
-            <span class="service-icon">🌱</span>
-            <h3>PTSD & Trauma</h3>
-            <p>Trauma-informed therapy and medication management for post-traumatic stress.</p>
-            <span class="arrow">Tap to learn more →</span>
-          </div>
-          <div class="service-back">
-            <span class="service-icon">🌱</span>
-            <h3>PTSD & Trauma</h3>
-            <p>Trauma recovery is possible. A thorough symptom assessment informs a care plan combining medication and therapy referral — all within a safe, non-judgemental setting.</p>
-            <span class="arrow">← Tap to close</span>
-          </div>
-        </div>
-      </div>
-      <div class="service-card reveal reveal-delay-1" onclick="this.classList.toggle('flipped')">
-        <div class="service-inner">
-          <div class="service-front">
-            <span class="service-icon">🌙</span>
-            <h3>Sleep Disorders</h3>
-            <p>Diagnosis and treatment of insomnia, hypersomnia, and sleep-related psychiatric conditions.</p>
-            <span class="arrow">Tap to learn more →</span>
-          </div>
-          <div class="service-back">
-            <span class="service-icon">🌙</span>
-            <h3>Sleep Disorders</h3>
-            <p>Sleep problems are often linked to an underlying psychiatric condition. A full assessment of root causes guides targeted treatment to help restore healthy, consistent sleep.</p>
-            <span class="arrow">← Tap to close</span>
-          </div>
-        </div>
-      </div>
-      <div class="service-card reveal reveal-delay-2" onclick="this.classList.toggle('flipped')">
-        <div class="service-inner">
-          <div class="service-front">
-            <span class="service-icon">🧩</span>
-            <h3>Schizophrenia</h3>
-            <p>Comprehensive, compassionate management of psychotic disorders and related conditions.</p>
-            <span class="arrow">Tap to learn more →</span>
-          </div>
-          <div class="service-back">
-            <span class="service-icon">🧩</span>
-            <h3>Schizophrenia</h3>
-            <p>Psychotic disorders are manageable with the right medication and support. Care planning involves families and includes regular monitoring to keep treatment effective over time.</p>
-            <span class="arrow">← Tap to close</span>
-          </div>
-        </div>
-      </div>
-      <div class="service-card reveal reveal-delay-3" onclick="this.classList.toggle('flipped')">
-        <div class="service-inner">
-          <div class="service-front">
-            <span class="service-icon">👶</span>
-            <h3>Child & Adolescent</h3>
-            <p>Psychiatric assessment and treatment tailored for children, teenagers, and their families.</p>
-            <span class="arrow">Tap to learn more →</span>
-          </div>
-          <div class="service-back">
-            <span class="service-icon">👶</span>
-            <h3>Child & Adolescent</h3>
-            <p>Age-appropriate assessments cover ADHD, anxiety, depression, and behavioural issues. Treatment plans are built in close collaboration with parents and, where helpful, schools.</p>
-            <span class="arrow">← Tap to close</span>
-          </div>
-        </div>
-      </div>
-      <div class="service-card reveal reveal-delay-4" onclick="this.classList.toggle('flipped')">
-        <div class="service-inner">
-          <div class="service-front">
-            <span class="service-icon">💊</span>
-            <h3>Addiction Medicine</h3>
-            <p>Supportive, non-judgemental care for substance use disorders and the road to recovery.</p>
-            <span class="arrow">Tap to learn more →</span>
-          </div>
-          <div class="service-back">
-            <span class="service-icon">💊</span>
-            <h3>Addiction Medicine</h3>
-            <p>Recovery is possible with the right support. Compassionate assessment, guided detox planning, and a structured relapse prevention programme form the foundation of care.</p>
-            <span class="arrow">← Tap to close</span>
-          </div>
-        </div>
-      </div>
-    </div>
+    <div class="services-grid" id="servicesGrid"></div>
   </div>
 </section>
 
@@ -998,10 +849,10 @@ footer { background:var(--deep); color:rgba(255,255,255,0.6); padding:60px; }
       <div class="about-text reveal reveal-delay-2">
         <p class="section-label">About the Doctor</p>
         <h2 class="section-title">Your Doctor,<br>Your <em>Ally</em></h2>
-        <p class="about-bio">
+        <p class="about-bio" data-c="aboutQuote">
           "Mental illness is not a personal failing. My goal is to make every patient feel safe, understood, and hopeful about their path forward."
         </p>
-        <p class="about-bio-body">
+        <p class="about-bio-body" data-c="aboutBio">
           Dr. Nidhish Kakkad is a consultant psychiatrist based in Junagadh, Gujarat, specialising in diagnosing and treating a wide spectrum of mental health conditions. He combines the latest evidence-based treatments with a deeply human, patient-first approach that puts dignity at the centre of every consultation.
         </p>
         <div class="credentials">
@@ -1046,14 +897,14 @@ footer { background:var(--deep); color:rgba(255,255,255,0.6); padding:60px; }
         <div class="why-stat-card">
           <div class="why-stat-icon"><i class="fa-solid fa-user-group"></i></div>
           <div class="why-stat-body">
-            <span class="why-stat-num">500+</span>
+            <span class="why-stat-num" data-c="statPatients">500+</span>
             <span class="why-stat-label">Patients Treated</span>
           </div>
         </div>
         <div class="why-stat-card accent">
           <div class="why-stat-icon"><i class="fa-solid fa-heart-pulse"></i></div>
           <div class="why-stat-body">
-            <span class="why-stat-num">98%</span>
+            <span class="why-stat-num" data-c="statSatisfaction">98%</span>
             <span class="why-stat-label">Patient Satisfaction</span>
           </div>
         </div>
@@ -1099,40 +950,7 @@ footer { background:var(--deep); color:rgba(255,255,255,0.6); padding:60px; }
       <h2 class="section-title" style="color:var(--white);">What My <em style="color:var(--amber)">Patients</em> Say</h2>
     </div>
     <div class="carousel-container reveal reveal-delay-1">
-      <div class="carousel-track" id="carouselTrack">
-        <div class="testimonial-card">
-          <div class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
-          <p class="testimonial-quote">"I've been seeing Dr. Kakkad for over a year now. He doesn't rush consultations and always makes time to actually listen. The treatment plan has made a real difference to my daily life."</p>
-          <div class="testimonial-author">
-            <div class="author-avatar">A</div>
-            <div><div class="author-name">Anonymous</div><div class="author-detail">Long-term patient</div></div>
-          </div>
-        </div>
-        <div class="testimonial-card featured">
-          <div class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div>
-          <p class="testimonial-quote">"I was nervous about doing a video consultation but Dr. Kakkad made it feel completely natural. My panic attacks are far less frequent now and I finally feel in control again."</p>
-          <div class="testimonial-author">
-            <div class="author-avatar">A</div>
-            <div><div class="author-name">Anonymous</div><div class="author-detail">Anxiety & Panic · Teleconsultation</div></div>
-          </div>
-        </div>
-        <div class="testimonial-card">
-          <div class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
-          <p class="testimonial-quote">"Our daughter was struggling and we didn't know where to turn. Dr. Kakkad explained everything clearly, answered all our questions, and never made us feel like we were overreacting."</p>
-          <div class="testimonial-author">
-            <div class="author-avatar">A</div>
-            <div><div class="author-name">Anonymous</div><div class="author-detail">Parent of patient</div></div>
-          </div>
-        </div>
-        <div class="testimonial-card">
-          <div class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div>
-          <p class="testimonial-quote">"I wasn't sure about speaking to a psychiatrist online, but the session was completely private and judgement-free. I only wish I had reached out months earlier."</p>
-          <div class="testimonial-author">
-            <div class="author-avatar">A</div>
-            <div><div class="author-name">Anonymous</div><div class="author-detail">First consultation · Teleconsultation</div></div>
-          </div>
-        </div>
-      </div>
+      <div class="carousel-track" id="carouselTrack"></div>
       <button class="carousel-btn prev" onclick="moveCarousel(-1)">&#10094;</button>
       <button class="carousel-btn next" onclick="moveCarousel(1)">&#10095;</button>
       <div class="carousel-dots" id="carouselDots"></div>
@@ -1154,21 +972,21 @@ footer { background:var(--deep); color:rgba(255,255,255,0.6); padding:60px; }
           <div class="book-contact-icon">📞</div>
           <div>
             <strong style="color:var(--white);display:block;">Call Me</strong>
-            <a href="tel:+919512679105">+91 95126 79105</a>
+            <a href="tel:+919512679105" data-c="phone">+91 95126 79105</a>
           </div>
         </div>
         <div class="book-contact-item">
           <div class="book-contact-icon"><i class="fa-brands fa-whatsapp" style="font-size:20px;"></i></div>
           <div>
             <strong style="color:var(--white);display:block;">WhatsApp</strong>
-            <a href="https://wa.me/919512679105">+91 95126 79105</a>
+            <a href="https://wa.me/919512679105" data-c="whatsapp">+91 95126 79105</a>
           </div>
         </div>
         <div class="book-contact-item">
           <div class="book-contact-icon">✉️</div>
           <div>
             <strong style="color:var(--white);display:block;">Email</strong>
-            <a href="mailto:kakkadnidhish@gmail.com">kakkadnidhish@gmail.com</a>
+            <a href="mailto:kakkadnidhish@gmail.com" data-c="email">kakkadnidhish@gmail.com</a>
           </div>
         </div>
       </div>
@@ -1247,7 +1065,7 @@ footer { background:var(--deep); color:rgba(255,255,255,0.6); padding:60px; }
         <button class="form-submit" onclick="submitForm()" id="formSubmitBtn">
           📅 Request Appointment
         </button>
-        <a href="https://wa.me/919512679105" class="whatsapp-btn">
+        <a href="https://wa.me/919512679105" class="whatsapp-btn" data-c="whatsapp">
           <i class="fa-brands fa-whatsapp" style="font-size:1.2em;"></i> Book via WhatsApp Instead
         </a>
       </div>
@@ -1266,23 +1084,11 @@ footer { background:var(--deep); color:rgba(255,255,255,0.6); padding:60px; }
 <section id="info">
   <div class="section-inner">
     <div class="reveal">
-      <p class="section-label">Find Me</p>
+      <p class="section-label">Practice Hours</p>
       <h2 class="section-title">Practice <em>Hours</em></h2>
     </div>
     <div class="info-grid">
-      <div class="hours-table reveal reveal-delay-1">
-        <div class="hours-header"><h3>🕒 Opening Hours</h3></div>
-        <div class="hours-row"><span class="day">Monday</span><span class="time">10:00 AM – 6:00 PM</span><span class="badge-open">Open</span></div>
-        <div class="hours-row"><span class="day">Tuesday</span><span class="time">10:00 AM – 6:00 PM</span><span class="badge-open">Open</span></div>
-        <div class="hours-row"><span class="day">Wednesday</span><span class="time">10:00 AM – 6:00 PM</span><span class="badge-open">Open</span></div>
-        <div class="hours-row"><span class="day">Thursday</span><span class="time">10:00 AM – 6:00 PM</span><span class="badge-open">Open</span></div>
-        <div class="hours-row"><span class="day">Friday</span><span class="time">10:00 AM – 6:00 PM</span><span class="badge-open">Open</span></div>
-        <div class="hours-row"><span class="day">Saturday</span><span class="time">10:00 AM – 2:00 PM</span><span class="badge-open">Open</span></div>
-        <div class="hours-row"><span class="day">Sunday</span><span class="time">By appointment</span><span class="badge-closed">Limited</span></div>
-        <div style="padding:16px 32px;background:rgba(94,158,140,0.06);border-top:1px solid rgba(94,158,140,0.15);">
-          <p style="font-size:13px;color:var(--sage);font-weight:500;">💳 UPI · Online Banking · No Cash</p>
-        </div>
-      </div>
+      <div class="hours-table reveal reveal-delay-1" id="hoursTable"></div>
       <div class="reveal reveal-delay-2">
         <div style="background:var(--white);border-radius:16px;padding:24px 28px;border:1px solid var(--cream-dark);">
           <h4 style="font-weight:600;color:var(--deep);margin-bottom:14px;">🆘 Mental Health Helplines</h4>
@@ -1342,7 +1148,7 @@ footer { background:var(--deep); color:rgba(255,255,255,0.6); padding:60px; }
             <span>Psychiatrist · Junagadh</span>
           </div>
         </a>
-        <p>Providing compassionate, evidence-based psychiatric care. Your mental health matters.</p>
+        <p data-c="footerTagline">Providing compassionate, evidence-based psychiatric care. Your mental health matters.</p>
       </div>
       <div class="footer-col">
         <h4>Quick Links</h4>
@@ -1351,7 +1157,7 @@ footer { background:var(--deep); color:rgba(255,255,255,0.6); padding:60px; }
           <li><a href="#services">Services</a></li>
           <li><a href="#about">About Dr. Kakkad</a></li>
           <li><a href="#testimonials">Patient Stories</a></li>
-          <li><a href="#info">Hours &amp; Location</a></li>
+          <li><a href="#info">Practice Hours</a></li>
         </ul>
       </div>
       <div class="footer-col">
@@ -1370,9 +1176,9 @@ footer { background:var(--deep); color:rgba(255,255,255,0.6); padding:60px; }
       <div class="footer-col">
         <h4>Contact</h4>
         <ul>
-          <li><a href="tel:+919512679105">📞 +91 95126 79105</a></li>
-          <li><a href="https://wa.me/919512679105">💬 WhatsApp</a></li>
-          <li><a href="mailto:kakkadnidhish@gmail.com">✉️ Email Us</a></li>
+          <li><a href="tel:+919512679105" data-c="phone">📞 +91 95126 79105</a></li>
+          <li><a href="https://wa.me/919512679105" data-c="whatsapp">💬 WhatsApp</a></li>
+          <li><a href="mailto:kakkadnidhish@gmail.com" data-c="email">✉️ Email Us</a></li>
           <li><a href="#info">📍 Junagadh, Gujarat</a></li>
         </ul>
       </div>
@@ -1452,7 +1258,7 @@ footer { background:var(--deep); color:rgba(255,255,255,0.6); padding:60px; }
         <span class="error-msg">Required.</span>
       </div>
       <button class="form-submit" onclick="submitModal()" id="modalSubmitBtn">📅 Request Appointment</button>
-      <a href="https://wa.me/919512679105" class="whatsapp-btn">
+      <a href="https://wa.me/919512679105" class="whatsapp-btn" data-c="whatsapp">
         <i class="fa-brands fa-whatsapp" style="font-size:1.2em;"></i> Book via WhatsApp Instead
       </a>
     </div>
@@ -1466,6 +1272,7 @@ footer { background:var(--deep); color:rgba(255,255,255,0.6); padding:60px; }
   </div>
 </div>
 
+<script src="content.js"></script>
 <script>
 // ─── CONFIG ───────────────────────────────────────────────────────
 // After deploying your Google Apps Script, replace the URL below.
@@ -1482,6 +1289,115 @@ const observer = new IntersectionObserver(entries => {
   entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
 }, { threshold: 0.12 });
 document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// ─── DYNAMIC CONTENT ──────────────────────────────────────────────
+function generateContent() {
+  if (!window.CONTENT) return;
+  var C = window.CONTENT;
+
+  // Static text
+  var staticFields = {
+    '[data-c="heroDesc"]':      C.heroDesc,
+    '[data-c="aboutQuote"]':    '"' + C.aboutQuote + '"',
+    '[data-c="aboutBio"]':      C.aboutBio,
+    '[data-c="footerTagline"]': C.footerTagline,
+    '[data-c="statPatients"]':  C.statPatients,
+    '[data-c="statSatisfaction"]': C.statSatisfaction,
+  };
+  Object.entries(staticFields).forEach(function([sel, val]) {
+    document.querySelectorAll(sel).forEach(function(el) { el.textContent = val; });
+  });
+
+  // Contact links
+  document.querySelectorAll('[data-c="phone"]').forEach(function(el) {
+    el.href = 'tel:+' + C.phoneRaw; el.textContent = C.phone;
+  });
+  document.querySelectorAll('[data-c="phoneText"]').forEach(function(el) { el.textContent = C.phone; });
+  document.querySelectorAll('[data-c="whatsapp"]').forEach(function(el) {
+    el.href = 'https://wa.me/' + C.phoneRaw; el.textContent = C.phone;
+  });
+  document.querySelectorAll('[data-c="email"]').forEach(function(el) {
+    el.href = 'mailto:' + C.email; el.textContent = C.email;
+  });
+
+  // Accepting patients badge
+  var badge = document.querySelector('.hero-badge');
+  if (badge) badge.style.display = C.acceptingPatients ? '' : 'none';
+
+  // Services grid
+  var grid = document.getElementById('servicesGrid');
+  if (grid && C.services) {
+    grid.innerHTML = C.services.map(function(s, i) {
+      var delay = 'reveal-delay-' + ((i % 4) + 1);
+      return '<div class="service-card reveal ' + delay + '" onclick="this.classList.toggle(\'flipped\')">' +
+        '<div class="service-inner">' +
+          '<div class="service-front">' +
+            '<span class="service-icon">' + s.icon + '</span>' +
+            '<h3>' + s.title + '</h3>' +
+            '<p>' + s.front + '</p>' +
+            '<span class="arrow">Tap to learn more →</span>' +
+          '</div>' +
+          '<div class="service-back">' +
+            '<span class="service-icon">' + s.icon + '</span>' +
+            '<h3>' + s.title + '</h3>' +
+            '<p>' + s.back + '</p>' +
+            '<span class="arrow">← Tap to close</span>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+    document.querySelectorAll('#servicesGrid .reveal').forEach(function(el) { observer.observe(el); });
+  }
+
+  // Testimonials
+  var track = document.getElementById('carouselTrack');
+  if (track && C.testimonials) {
+    track.innerHTML = C.testimonials.map(function(t) {
+      var featClass = t.featured ? ' featured' : '';
+      var stars = t.stars === 5
+        ? '<i class="fa-solid fa-star"></i>'.repeat(5)
+        : '<i class="fa-solid fa-star"></i>'.repeat(4) + '<i class="fa-solid fa-star-half-stroke"></i>';
+      var detail = t.detail + (t.tele ? ' · Teleconsultation' : '');
+      return '<div class="testimonial-card' + featClass + '">' +
+        '<div class="stars">' + stars + '</div>' +
+        '<p class="testimonial-quote">"' + t.quote + '"</p>' +
+        '<div class="testimonial-author">' +
+          '<div class="author-avatar">A</div>' +
+          '<div><div class="author-name">Anonymous</div><div class="author-detail">' + detail + '</div></div>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+  }
+
+  // Hours table
+  var hoursEl = document.getElementById('hoursTable');
+  if (hoursEl && C.hours) {
+    var todayIdx = new Date().getDay(); // 0=Sun
+    var dayMap = { Monday:1, Tuesday:2, Wednesday:3, Thursday:4, Friday:5, Saturday:6, Sunday:0 };
+    var rows = C.hours.map(function(h) {
+      var isToday = dayMap[h.day] === todayIdx;
+      return '<div class="hours-row' + (isToday ? ' today' : '') + '">' +
+        '<span class="hours-dot ' + h.status + '"></span>' +
+        '<span class="day">' + h.day + (isToday ? ' <small style="color:var(--sage);font-size:10px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;">Today</small>' : '') + '</span>' +
+        '<span class="time">' + h.time + '</span>' +
+      '</div>';
+    }).join('');
+    var tele = C.teleconsultationAvailable
+      ? '<div class="hours-footer"><i class="fa-solid fa-video"></i><span>Teleconsultation available — book online or call</span></div>'
+      : '';
+    hoursEl.innerHTML =
+      '<div class="hours-header">' +
+        '<div class="hours-header-icon">🕒</div>' +
+        '<div class="hours-header-text"><h3>Opening Hours</h3><p>In-person & Teleconsultation</p></div>' +
+      '</div>' +
+      '<div class="hours-body">' + rows + '</div>' +
+      '<div style="padding:14px 32px;background:rgba(94,158,140,0.06);border-top:1px solid rgba(94,158,140,0.15);">' +
+        '<p style="font-size:13px;color:var(--sage);font-weight:500;"><i class="fa-solid fa-credit-card" style="margin-right:6px;"></i>UPI · Online Banking · No Cash</p>' +
+      '</div>' +
+      tele;
+  }
+}
+generateContent();
 
 // ─── MOBILE MENU ──────────────────────────────────────────────────
 const navLinks = document.getElementById('navLinks');
