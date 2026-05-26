@@ -9,7 +9,7 @@ var CONTENT = {
   title:    "Consultant Psychiatrist",
   location: "Junagadh, Gujarat",
   tagline:  "Junagadh's Trusted Mind Doctor",
-  heroDesc: "Compassionate, evidence-based psychiatric care for every chapter of your mental health journey — from first consultation to long-term recovery. You are not alone.",
+  heroDesc: "Compassionate, evidence-based psychiatric care for every chapter of your mental health journey — from first consultation to long-term recovery. Psychiatric care delivered entirely online — so you can get expert help from wherever you are, at a time that works for you. You are not alone.",
   acceptingPatients: true,   // shows/hides the "Accepting New Patients" badge
 
   // ── Contact ──
@@ -80,5 +80,5 @@ var CONTENT = {
   ],
 
   // ── Footer ──
-  footerTagline: "Providing compassionate, evidence-based psychiatric care. Your mental health matters.",
+  footerTagline: "Providing compassionate, evidence-based psychiatric care — online, for everyone. Your mental health matters.",
 };
