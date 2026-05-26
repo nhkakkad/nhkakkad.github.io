@@ -343,8 +343,13 @@ tbody td{ padding:13px 16px; color:var(--text-dark); }
 <div class="toast" id="toast"></div>
 
 <script>
-const ADMIN_USER = 'nhkakkad';
-const ADMIN_PASS = 'ParthIsGreat0512!';
+const ADMIN_USER_HASH = '53758cc8504d40de3ac2a929eacc8c9158d54937939f6f0f2390ca6c75b7b201';
+const ADMIN_PASS_HASH = '751f01abd0f0f4c0d86cde44b75fcff0912ca383c13d457e89a4e5e314de0acf';
+
+async function sha256(str) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
 
 const K = { url:'admin_url', token:'admin_token', auth:'admin_authed' };
 const get = k => localStorage.getItem(k);
@@ -380,13 +385,14 @@ function saveSetup(){
 function resetSetup(){ [K.url, K.token, K.auth].forEach(rm); location.reload(); }
 
 // ─── LOGIN ────────────────────────────────────────────────────────
-function doLogin(e){
+async function doLogin(e){
   e.preventDefault();
   const user = document.getElementById('loginUser').value.trim();
   const pass = document.getElementById('loginPass').value;
   const err  = document.getElementById('loginError');
   err.classList.remove('show');
-  if (user === ADMIN_USER && pass === ADMIN_PASS) {
+  const [userHash, passHash] = await Promise.all([sha256(user), sha256(pass)]);
+  if (userHash === ADMIN_USER_HASH && passHash === ADMIN_PASS_HASH) {
     set(K.auth, '1'); show('dashboard'); loadAppointments();
   } else {
     err.textContent = 'Incorrect username or password.'; err.classList.add('show');
