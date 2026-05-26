@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Admin Panel — Dr. Nidhish Kakkad</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --deep:       #1f1635;
+  --deep-mid:   #140e2a;
+  --sage:       #5e9e8c;
+  --sage-light: #7bbdab;
+  --cream:      #faf8f3;
+  --cream-dark: #eeebe3;
+  --amber:      #e8a930;
+  --white:      #ffffff;
+  --text-dark:  #1a1530;
+  --text-mid:   #4d4475;
+  --text-light: #8878a8;
+  --danger:     #dc2626;
+  --success:    #16a34a;
+}
+*{ margin:0; padding:0; box-sizing:border-box; }
+body{ font-family:'DM Sans',sans-serif; background:var(--cream); color:var(--text-dark); min-height:100vh; }
+
+/* ─── SHARED ─── */
+.btn{
+  display:inline-flex; align-items:center; gap:8px;
+  padding:10px 20px; border-radius:10px; font-size:14px; font-weight:500;
+  cursor:pointer; border:none; transition:all 0.2s; text-decoration:none;
+}
+.btn-primary{ background:var(--sage); color:var(--white); }
+.btn-primary:hover{ background:var(--sage-light); transform:translateY(-1px); }
+.btn-ghost{ background:transparent; border:1.5px solid rgba(31,22,53,0.2); color:var(--text-mid); }
+.btn-ghost:hover{ border-color:var(--sage); color:var(--sage); }
+.btn-danger{ background:#fee2e2; color:var(--danger); border:1px solid #fecaca; }
+input,select,textarea{
+  width:100%; padding:11px 14px;
+  border:1.5px solid rgba(31,22,53,0.15); border-radius:10px;
+  font-family:'DM Sans',sans-serif; font-size:14px; color:var(--text-dark);
+  background:var(--cream); outline:none; transition:border-color 0.2s, box-shadow 0.2s;
+}
+input:focus,select:focus,textarea:focus{
+  border-color:var(--sage); box-shadow:0 0 0 3px rgba(94,158,140,0.12); background:var(--white);
+}
+label{ display:block; font-size:12px; font-weight:600; letter-spacing:1px; text-transform:uppercase; color:var(--text-mid); margin-bottom:6px; }
+.form-group{ margin-bottom:16px; }
+.card{ background:var(--white); border-radius:16px; border:1px solid rgba(31,22,53,0.07); box-shadow:0 2px 16px rgba(31,22,53,0.05); }
+
+/* ─── SETUP / LOGIN SCREENS ─── */
+.centered-screen{
+  min-height:100vh; display:flex; align-items:center; justify-content:center; padding:20px;
+  background:linear-gradient(135deg, var(--deep) 0%, var(--deep-mid) 100%);
+}
+.auth-box{
+  background:var(--white); border-radius:24px; padding:48px 40px;
+  max-width:440px; width:100%; box-shadow:0 40px 80px rgba(0,0,0,0.25);
+}
+.auth-logo{
+  width:56px; height:56px; background:var(--sage); border-radius:16px;
+  display:flex; align-items:center; justify-content:center; font-size:26px;
+  margin:0 auto 20px;
+}
+.auth-box h1{ font-family:'Cormorant Garamond',serif; font-size:28px; font-weight:600; color:var(--deep); text-align:center; margin-bottom:6px; }
+.auth-box p{ font-size:14px; color:var(--text-light); text-align:center; margin-bottom:28px; }
+.auth-box .btn-primary{ width:100%; justify-content:center; padding:14px; font-size:15px; }
+.auth-error{ background:#fef2f2; border:1px solid #fecaca; color:var(--danger); border-radius:10px; padding:10px 14px; font-size:13px; margin-bottom:16px; display:none; }
+.auth-error.show{ display:block; }
+
+/* ─── DASHBOARD LAYOUT ─── */
+#dashboard{ display:none; flex-direction:column; min-height:100vh; }
+.dash-header{
+  background:var(--deep); color:var(--white); padding:16px 32px;
+  display:flex; align-items:center; justify-content:space-between; gap:16px;
+}
+.dash-logo{ display:flex; align-items:center; gap:12px; }
+.dash-logo-icon{ width:36px; height:36px; background:var(--sage); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
+.dash-logo-text{ font-family:'Cormorant Garamond',serif; font-size:18px; font-weight:600; color:var(--white); }
+.dash-logo-text span{ display:block; font-size:11px; font-family:'DM Sans',sans-serif; font-weight:300; color:rgba(255,255,255,0.5); letter-spacing:1.5px; text-transform:uppercase; }
+.dash-header-actions{ display:flex; gap:12px; align-items:center; }
+.dash-header-actions a,.dash-header-actions button{
+  background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.12);
+  color:rgba(255,255,255,0.8); padding:8px 16px; border-radius:8px;
+  font-size:13px; font-weight:500; cursor:pointer; text-decoration:none;
+  transition:background 0.2s;
+}
+.dash-header-actions a:hover,.dash-header-actions button:hover{ background:rgba(255,255,255,0.15); color:var(--white); }
+.dash-header-actions .btn-logout{ color:#fca5a5; border-color:rgba(220,38,38,0.3); }
+.dash-header-actions .btn-logout:hover{ background:rgba(220,38,38,0.15); }
+
+.dash-body{ flex:1; padding:32px; max-width:1400px; margin:0 auto; width:100%; }
+
+/* ─── STATS ─── */
+.stats-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:28px; }
+.stat-card{ padding:24px; text-align:center; }
+.stat-val{ font-family:'Cormorant Garamond',serif; font-size:44px; font-weight:600; line-height:1; display:block; margin-bottom:6px; }
+.stat-lbl{ font-size:12px; font-weight:500; letter-spacing:0.5px; color:var(--text-light); }
+.stat-card.s-total  .stat-val{ color:var(--deep); }
+.stat-card.s-pending .stat-val{ color:#d97706; }
+.stat-card.s-confirmed .stat-val{ color:#2563eb; }
+.stat-card.s-today .stat-val{ color:var(--sage); }
+
+/* ─── TOOLBAR ─── */
+.toolbar{ display:flex; gap:12px; flex-wrap:wrap; margin-bottom:16px; align-items:center; }
+.toolbar input[type=search]{ max-width:280px; }
+.filter-pills{ display:flex; gap:8px; flex-wrap:wrap; }
+.pill{
+  padding:7px 14px; border-radius:50px; font-size:12px; font-weight:600;
+  cursor:pointer; border:1.5px solid rgba(31,22,53,0.15); background:var(--white);
+  color:var(--text-mid); transition:all 0.2s;
+}
+.pill.active{ background:var(--deep); border-color:var(--deep); color:var(--white); }
+.pill:hover:not(.active){ border-color:var(--sage); color:var(--sage); }
+
+/* ─── TABLE ─── */
+.table-wrap{ overflow-x:auto; border-radius:16px; border:1px solid rgba(31,22,53,0.07); box-shadow:0 2px 16px rgba(31,22,53,0.05); }
+table{ width:100%; border-collapse:collapse; background:var(--white); font-size:14px; }
+thead tr{ background:var(--cream); border-bottom:1px solid rgba(31,22,53,0.08); }
+thead th{ padding:12px 16px; text-align:left; font-size:11px; font-weight:600; letter-spacing:1px; text-transform:uppercase; color:var(--text-mid); white-space:nowrap; }
+tbody tr{ border-bottom:1px solid rgba(31,22,53,0.05); cursor:pointer; transition:background 0.15s; }
+tbody tr:last-child{ border-bottom:none; }
+tbody tr:hover{ background:var(--cream); }
+tbody td{ padding:13px 16px; color:var(--text-dark); }
+.badge{
+  display:inline-block; padding:3px 10px; border-radius:50px;
+  font-size:11px; font-weight:600; white-space:nowrap;
+}
+.badge-pending  { background:#fef3c7; color:#92400e; }
+.badge-confirmed{ background:#dbeafe; color:#1e40af; }
+.badge-completed{ background:#dcfce7; color:#166534; }
+.badge-cancelled{ background:#fee2e2; color:#991b1b; }
+.badge-new      { background:#ede9fe; color:#5b21b6; }
+.badge-followup { background:#f1f5f9; color:#475569; }
+
+/* ─── EMPTY STATE ─── */
+.empty-state{ text-align:center; padding:60px 20px; color:var(--text-light); }
+.empty-state .es-icon{ font-size:48px; margin-bottom:16px; display:block; opacity:0.5; }
+.empty-state p{ font-size:15px; }
+
+/* ─── MODAL ─── */
+.overlay{ position:fixed; inset:0; background:rgba(20,14,42,0.7); backdrop-filter:blur(6px); z-index:100; display:none; align-items:center; justify-content:center; padding:16px; }
+.overlay.open{ display:flex; }
+.detail-modal{ background:var(--white); border-radius:20px; max-width:560px; width:100%; max-height:92vh; overflow-y:auto; padding:36px; position:relative; }
+.modal-header{ display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:24px; }
+.modal-header h2{ font-family:'Cormorant Garamond',serif; font-size:26px; font-weight:600; color:var(--deep); }
+.modal-close-btn{ background:var(--cream); border:none; border-radius:50%; width:32px; height:32px; font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center; color:var(--text-mid); flex-shrink:0; }
+.modal-close-btn:hover{ background:var(--cream-dark); }
+.detail-grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px 20px; margin-bottom:20px; }
+.detail-item .di-label{ font-size:11px; font-weight:600; letter-spacing:1px; text-transform:uppercase; color:var(--text-light); margin-bottom:3px; }
+.detail-item .di-val{ font-size:14px; font-weight:500; color:var(--text-dark); }
+.reason-box{ background:var(--cream); border-radius:10px; padding:14px 16px; font-size:14px; color:var(--text-dark); line-height:1.6; margin-bottom:20px; }
+.modal-actions{ display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-top:20px; }
+.modal-actions select{ max-width:160px; padding:9px 12px; font-size:13px; }
+
+/* ─── STATUS SELECT IN TABLE ─── */
+.status-select{ font-size:12px; border:1.5px solid rgba(31,22,53,0.15); border-radius:8px; padding:5px 8px; background:var(--cream); cursor:pointer; }
+.status-select:focus{ outline:none; border-color:var(--sage); }
+
+/* ─── SETUP SCREEN ─── */
+.setup-steps{ counter-reset:step; }
+.setup-step{ display:flex; gap:16px; margin-bottom:20px; align-items:flex-start; }
+.setup-step-num{
+  counter-increment:step; width:28px; height:28px; border-radius:50%;
+  background:var(--sage); color:var(--white); display:flex; align-items:center; justify-content:center;
+  font-size:13px; font-weight:700; flex-shrink:0; margin-top:2px;
+}
+.setup-step-num::after{ content:counter(step); }
+.setup-step p{ font-size:13px; color:var(--text-mid); line-height:1.6; }
+.setup-step p strong{ color:var(--text-dark); }
+code{ background:var(--cream-dark); padding:2px 6px; border-radius:4px; font-size:12px; color:var(--deep); }
+
+/* ─── TOAST ─── */
+.toast{
+  position:fixed; bottom:24px; right:24px; z-index:200;
+  background:var(--deep); color:var(--white); padding:14px 20px;
+  border-radius:12px; font-size:13px; font-weight:500;
+  box-shadow:0 8px 30px rgba(0,0,0,0.25);
+  transform:translateY(80px); opacity:0; transition:all 0.3s;
+  max-width:320px;
+}
+.toast.show{ transform:translateY(0); opacity:1; }
+
+/* ─── RESPONSIVE ─── */
+@media(max-width:900px){
+  .stats-grid{ grid-template-columns:1fr 1fr; }
+  .dash-body{ padding:20px; }
+  .detail-grid{ grid-template-columns:1fr; }
+}
+@media(max-width:600px){
+  .stats-grid{ grid-template-columns:1fr 1fr; }
+  .auth-box{ padding:32px 24px; }
+  .dash-header{ padding:14px 16px; }
+  table { font-size:13px; }
+  thead th, tbody td { padding:10px 12px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ SETUP SCREEN ═══ -->
+<div class="centered-screen" id="setupScreen">
+  <div class="auth-box">
+    <div class="auth-logo">🧠</div>
+    <h1>Admin Setup</h1>
+    <p>Configure your Google Sheets connection once. Settings are saved in this browser.</p>
+    <div class="setup-steps">
+      <div class="setup-step">
+        <span class="setup-step-num"></span>
+        <p>Create a <strong>Google Sheet</strong>, then open <strong>Extensions → Apps Script</strong> and paste the code from <code>apps-script.gs</code>.</p>
+      </div>
+      <div class="setup-step">
+        <span class="setup-step-num"></span>
+        <p>In Apps Script: <strong>Deploy → New deployment → Web app → Anyone → Deploy</strong>. Copy the Web App URL.</p>
+      </div>
+      <div class="setup-step">
+        <span class="setup-step-num"></span>
+        <p>Set a <code>SECRET_TOKEN</code> inside the script. Use the same value below. Also set a password for this admin panel.</p>
+      </div>
+    </div>
+    <div id="setupError" class="auth-error"></div>
+    <div class="form-group">
+      <label>Apps Script Web App URL</label>
+      <input type="url" id="setupUrl" placeholder="https://script.google.com/macros/s/…/exec"/>
+    </div>
+    <div class="form-group">
+      <label>Secret Token (must match script)</label>
+      <input type="text" id="setupToken" placeholder="your-secret-token"/>
+    </div>
+    <div class="form-group">
+      <label>Admin Password (choose one now)</label>
+      <input type="password" id="setupPass" placeholder="Min. 8 characters"/>
+    </div>
+    <button class="btn btn-primary" onclick="saveSetup()">Save &amp; Continue →</button>
+    <p style="font-size:12px;color:var(--text-light);text-align:center;margin-top:16px;">
+      Settings stored only in this browser's localStorage. Not sent anywhere.
+    </p>
+  </div>
+</div>
+
+<!-- ═══ LOGIN SCREEN ═══ -->
+<div class="centered-screen" id="loginScreen" style="display:none;">
+  <div class="auth-box">
+    <div class="auth-logo">🔐</div>
+    <h1>Admin Panel</h1>
+    <p>Dr. Nidhish Kakkad · Junagadh</p>
+    <div id="loginError" class="auth-error"></div>
+    <form onsubmit="doLogin(event)">
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="loginPass" placeholder="Enter admin password" autofocus/>
+      </div>
+      <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;padding:14px;font-size:15px;">
+        Sign In →
+      </button>
+    </form>
+    <p style="font-size:12px;color:var(--text-light);text-align:center;margin-top:20px;">
+      <a href="#" onclick="resetSetup()" style="color:var(--sage);">Re-configure connection</a>
+    </p>
+  </div>
+</div>
+
+<!-- ═══ DASHBOARD ═══ -->
+<div id="dashboard">
+  <header class="dash-header">
+    <div class="dash-logo">
+      <div class="dash-logo-icon">🧠</div>
+      <div class="dash-logo-text">
+        Appointment Dashboard
+        <span>Dr. Nidhish Kakkad</span>
+      </div>
+    </div>
+    <div class="dash-header-actions">
+      <button onclick="loadAppointments()">↻ Refresh</button>
+      <a href="index.html">← Main Site</a>
+      <button class="btn-logout" onclick="doLogout()">Sign Out</button>
+    </div>
+  </header>
+
+  <div class="dash-body">
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-card card s-total">
+        <span class="stat-val" id="stat-total">—</span>
+        <span class="stat-lbl">Total Appointments</span>
+      </div>
+      <div class="stat-card card s-pending">
+        <span class="stat-val" id="stat-pending">—</span>
+        <span class="stat-lbl">Pending</span>
+      </div>
+      <div class="stat-card card s-confirmed">
+        <span class="stat-val" id="stat-confirmed">—</span>
+        <span class="stat-lbl">Confirmed</span>
+      </div>
+      <div class="stat-card card s-today">
+        <span class="stat-val" id="stat-today">—</span>
+        <span class="stat-lbl">Today's</span>
+      </div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <input type="search" id="searchInput" placeholder="Search name, phone, reason…" oninput="renderTable()"/>
+      <div class="filter-pills" id="filterPills">
+        <span class="pill active" data-f="All" onclick="setFilter(this)">All</span>
+        <span class="pill" data-f="Pending" onclick="setFilter(this)">Pending</span>
+        <span class="pill" data-f="Confirmed" onclick="setFilter(this)">Confirmed</span>
+        <span class="pill" data-f="Completed" onclick="setFilter(this)">Completed</span>
+        <span class="pill" data-f="Cancelled" onclick="setFilter(this)">Cancelled</span>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="table-wrap" id="tableWrap">
+      <div class="empty-state"><span class="es-icon">📋</span><p>Loading appointments…</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- Detail Modal -->
+<div class="overlay" id="detailOverlay" onclick="closeDetail(event)">
+  <div class="detail-modal" id="detailModal">
+    <div class="modal-header">
+      <div>
+        <h2 id="dm-name">—</h2>
+        <span id="dm-status-badge" class="badge" style="margin-top:6px;display:inline-block;"></span>
+      </div>
+      <button class="modal-close-btn" onclick="closeDetailModal()">✕</button>
+    </div>
+    <div class="detail-grid">
+      <div class="detail-item"><div class="di-label">Email</div><div class="di-val" id="dm-email">—</div></div>
+      <div class="detail-item"><div class="di-label">Phone</div><div class="di-val" id="dm-phone">—</div></div>
+      <div class="detail-item"><div class="di-label">Age</div><div class="di-val" id="dm-age">—</div></div>
+      <div class="detail-item"><div class="di-label">Gender</div><div class="di-val" id="dm-gender">—</div></div>
+      <div class="detail-item"><div class="di-label">Preferred Date</div><div class="di-val" id="dm-date">—</div></div>
+      <div class="detail-item"><div class="di-label">Time Slot</div><div class="di-val" id="dm-time">—</div></div>
+      <div class="detail-item"><div class="di-label">Visit Type</div><div class="di-val" id="dm-visittype">—</div></div>
+      <div class="detail-item"><div class="di-label">Submitted</div><div class="di-val" id="dm-submitted">—</div></div>
+    </div>
+    <div><div class="di-label" style="margin-bottom:8px;">Reason for Consultation</div><div class="reason-box" id="dm-reason">—</div></div>
+    <div class="form-group">
+      <label>Doctor's Notes</label>
+      <textarea id="dm-notes" rows="3" placeholder="Add clinical notes…"></textarea>
+    </div>
+    <div class="modal-actions">
+      <select id="dm-status-select" class="status-select">
+        <option>Pending</option><option>Confirmed</option><option>Completed</option><option>Cancelled</option>
+      </select>
+      <button class="btn btn-primary" onclick="saveDetail()">💾 Save</button>
+      <button class="btn btn-ghost" onclick="closeDetailModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ─── STORAGE KEYS ────────────────────────────────────────────────
+const K = { url:'admin_url', token:'admin_token', pass:'admin_pass', auth:'admin_authed' };
+const get = k => localStorage.getItem(k);
+const set = (k,v) => localStorage.setItem(k,v);
+const rm  = k => localStorage.removeItem(k);
+
+// ─── INIT ─────────────────────────────────────────────────────────
+(function init(){
+  if (!get(K.url) || !get(K.token) || !get(K.pass)) {
+    show('setupScreen'); return;
+  }
+  if (get(K.auth) === '1') {
+    show('dashboard'); loadAppointments(); return;
+  }
+  show('loginScreen');
+})();
+
+function show(id){
+  ['setupScreen','loginScreen','dashboard'].forEach(i => {
+    const el = document.getElementById(i);
+    if (i === 'dashboard') el.style.display = (i===id?'flex':'none');
+    else el.style.display = (i===id?'flex':'none');
+  });
+}
+
+// ─── SETUP ────────────────────────────────────────────────────────
+function saveSetup(){
+  const url   = document.getElementById('setupUrl').value.trim();
+  const token = document.getElementById('setupToken').value.trim();
+  const pass  = document.getElementById('setupPass').value;
+  const err   = document.getElementById('setupError');
+  err.classList.remove('show');
+
+  if (!url.startsWith('https://script.google.com')) {
+    err.textContent = 'Please enter a valid Apps Script URL.'; err.classList.add('show'); return;
+  }
+  if (!token) { err.textContent = 'Secret token cannot be empty.'; err.classList.add('show'); return; }
+  if (pass.length < 8) { err.textContent = 'Password must be at least 8 characters.'; err.classList.add('show'); return; }
+
+  set(K.url, url); set(K.token, token); set(K.pass, pass);
+  show('loginScreen');
+}
+function resetSetup(){ ['admin_url','admin_token','admin_pass','admin_authed'].forEach(rm); location.reload(); }
+
+// ─── LOGIN ────────────────────────────────────────────────────────
+function doLogin(e){
+  e.preventDefault();
+  const pass = document.getElementById('loginPass').value;
+  const err  = document.getElementById('loginError');
+  if (pass === get(K.pass)) {
+    set(K.auth,'1'); show('dashboard'); loadAppointments();
+  } else {
+    err.textContent = 'Incorrect password. Please try again.'; err.classList.add('show');
+  }
+}
+function doLogout(){ rm(K.auth); show('loginScreen'); appointments=[]; }
+
+// ─── DATA ─────────────────────────────────────────────────────────
+let appointments = [];
+let statusFilter = 'All';
+let selectedId   = null;
+
+async function loadAppointments(){
+  const url   = get(K.url);
+  const token = get(K.token);
+  setTableContent('<div class="empty-state"><span class="es-icon">⏳</span><p>Loading…</p></div>');
+  try {
+    const res  = await fetch(`${url}?action=getAppointments&token=${encodeURIComponent(token)}`);
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    appointments = data.appointments || [];
+    updateStats(); renderTable();
+  } catch(e) {
+    setTableContent(`<div class="empty-state"><span class="es-icon">❌</span><p>Failed to load: ${e.message}<br><small>Check your Apps Script URL and token in setup.</small></p></div>`);
+  }
+}
+
+function updateStats(){
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('stat-total').textContent     = appointments.length;
+  document.getElementById('stat-pending').textContent   = appointments.filter(a=>a.Status==='Pending').length;
+  document.getElementById('stat-confirmed').textContent = appointments.filter(a=>a.Status==='Confirmed').length;
+  document.getElementById('stat-today').textContent     = appointments.filter(a=>a.Date===today||a['Date']===today).length;
+}
+
+function setFilter(el){
+  document.querySelectorAll('.pill').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+  statusFilter = el.dataset.f;
+  renderTable();
+}
+
+function renderTable(){
+  const q = (document.getElementById('searchInput').value||'').toLowerCase();
+  let rows = appointments
+    .filter(a => statusFilter==='All' || a.Status===statusFilter)
+    .filter(a => !q || [a.Name||'',a.Email||'',a.Phone||'',a.Reason||''].join(' ').toLowerCase().includes(q))
+    .sort((a,b)=> new Date(b['Submitted At']||0) - new Date(a['Submitted At']||0));
+
+  if (!rows.length){
+    setTableContent('<div class="empty-state"><span class="es-icon">🔍</span><p>No appointments found.</p></div>');
+    return;
+  }
+  const tbody = rows.map(a => `
+    <tr onclick="openDetail('${a.ID}')">
+      <td><strong>${esc(a.Name||'—')}</strong></td>
+      <td>${esc(a.Phone||'—')}</td>
+      <td>${esc(a.Date||'—')}</td>
+      <td>${esc(a['Time Slot']||'—')}</td>
+      <td>${esc(a.Reason||'—').substring(0,30)}${(a.Reason||'').length>30?'…':''}</td>
+      <td><span class="badge badge-${(a['Visit Type']||'new').toLowerCase()}">${a['Visit Type']==='followup'?'Follow-up':'New'}</span></td>
+      <td><span class="badge badge-${(a.Status||'pending').toLowerCase()}">${esc(a.Status||'Pending')}</span></td>
+      <td onclick="event.stopPropagation()">
+        <select class="status-select" onchange="quickStatus('${a.ID}',this.value)">
+          ${['Pending','Confirmed','Completed','Cancelled'].map(s=>`<option${s===a.Status?' selected':''}>${s}</option>`).join('')}
+        </select>
+      </td>
+    </tr>`).join('');
+
+  document.getElementById('tableWrap').innerHTML = `
+    <table>
+      <thead><tr>
+        <th>Name</th><th>Phone</th><th>Date</th><th>Time</th>
+        <th>Reason</th><th>Type</th><th>Status</th><th>Update</th>
+      </tr></thead>
+      <tbody>${tbody}</tbody>
+    </table>`;
+}
+
+function setTableContent(html){
+  document.getElementById('tableWrap').innerHTML = html;
+}
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// ─── QUICK STATUS ─────────────────────────────────────────────────
+async function quickStatus(id, status){
+  const url   = get(K.url);
+  const token = get(K.token);
+  try {
+    await fetch(`${url}?action=updateStatus&token=${encodeURIComponent(token)}&id=${encodeURIComponent(id)}&status=${encodeURIComponent(status)}`);
+    appointments = appointments.map(a => a.ID===id ? {...a, Status:status} : a);
+    updateStats(); renderTable();
+    showToast(`Status updated to "${status}"`);
+  } catch { showToast('Update failed. Try again.', true); }
+}
+
+// ─── DETAIL MODAL ─────────────────────────────────────────────────
+function openDetail(id){
+  const a = appointments.find(x=>x.ID===id);
+  if (!a) return;
+  selectedId = id;
+  document.getElementById('dm-name').textContent      = a.Name||'—';
+  document.getElementById('dm-email').textContent     = a.Email||'—';
+  document.getElementById('dm-phone').textContent     = a.Phone||'—';
+  document.getElementById('dm-age').textContent       = a.Age||'—';
+  document.getElementById('dm-gender').textContent    = a.Gender||'—';
+  document.getElementById('dm-date').textContent      = a.Date||'—';
+  document.getElementById('dm-time').textContent      = a['Time Slot']||'—';
+  document.getElementById('dm-visittype').textContent = a['Visit Type']==='followup'?'Follow-up':'New Patient';
+  document.getElementById('dm-reason').textContent    = a.Reason||'—';
+  document.getElementById('dm-notes').value           = a['Doctor Notes']||'';
+  document.getElementById('dm-status-select').value   = a.Status||'Pending';
+  const badge = document.getElementById('dm-status-badge');
+  badge.textContent = a.Status||'Pending';
+  badge.className = `badge badge-${(a.Status||'pending').toLowerCase()}`;
+  const sub = a['Submitted At'];
+  document.getElementById('dm-submitted').textContent = sub ? new Date(sub).toLocaleString('en-IN') : '—';
+  document.getElementById('detailOverlay').classList.add('open');
+}
+function closeDetail(e){ if(e.target===document.getElementById('detailOverlay')) closeDetailModal(); }
+function closeDetailModal(){ document.getElementById('detailOverlay').classList.remove('open'); selectedId=null; }
+
+async function saveDetail(){
+  if (!selectedId) return;
+  const url    = get(K.url);
+  const token  = get(K.token);
+  const status = document.getElementById('dm-status-select').value;
+  const notes  = document.getElementById('dm-notes').value;
+  try {
+    await Promise.all([
+      fetch(`${url}?action=updateStatus&token=${encodeURIComponent(token)}&id=${encodeURIComponent(selectedId)}&status=${encodeURIComponent(status)}`),
+      fetch(`${url}?action=updateNotes&token=${encodeURIComponent(token)}&id=${encodeURIComponent(selectedId)}&notes=${encodeURIComponent(notes)}`),
+    ]);
+    appointments = appointments.map(a => a.ID===selectedId ? {...a, Status:status, 'Doctor Notes':notes} : a);
+    updateStats(); renderTable();
+    closeDetailModal();
+    showToast('Appointment updated successfully.');
+  } catch { showToast('Save failed. Try again.', true); }
+}
+
+// ─── TOAST ────────────────────────────────────────────────────────
+let toastTimer;
+function showToast(msg, isError=false){
+  const t = document.getElementById('toast');
+  t.textContent = (isError?'⚠️ ':'✓ ') + msg;
+  t.style.background = isError?'#dc2626':'var(--deep)';
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove('show'), 3000);
+}
+</script>
+</body>
+</html>
