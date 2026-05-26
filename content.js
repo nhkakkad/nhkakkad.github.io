@@ -41,16 +41,16 @@ var CONTENT = {
 
   // ── Services ──
   services: [
-    { icon: "🧠", title: "Depression & Anxiety",
+    { icon: "😧", title: "Depression & Anxiety",
       front: "Evidence-based treatment for mood disorders, generalised anxiety, panic disorder, and social phobia.",
       back:  "Depression and anxiety are highly manageable. A thorough assessment leads to a personalised plan covering MDD, GAD, panic disorder, and social anxiety — using medication and therapy referral where needed." },
     { icon: "🔄", title: "OCD",
       front: "Specialised care for obsessive-compulsive disorder using pharmacotherapy and behavioural interventions.",
       back:  "OCD is highly treatable. SSRIs at effective doses alongside CBT-based guidance form the core treatment. Most patients see meaningful improvement within a few months of starting." },
-    { icon: "⚡", title: "Bipolar Disorder",
+    { icon: "👥", title: "Bipolar Disorder",
       front: "Mood stabilisation, relapse prevention, and personalised long-term management plans.",
       back:  "Bipolar disorder requires careful, ongoing management. Mood stabilisers and regular monitoring help maintain stability, while recognising early warning signs reduces the risk of relapse." },
-    { icon: "🌱", title: "PTSD & Trauma",
+    { icon: "❗", title: "PTSD & Trauma",
       front: "Trauma-informed therapy and medication management for post-traumatic stress.",
       back:  "Trauma recovery is possible. A thorough symptom assessment informs a care plan combining medication and therapy referral — all within a safe, non-judgemental setting." },
     { icon: "🌙", title: "Sleep Disorders",
@@ -62,7 +62,7 @@ var CONTENT = {
     { icon: "👶", title: "Child & Adolescent",
       front: "Psychiatric assessment and treatment tailored for children, teenagers, and their families.",
       back:  "Age-appropriate assessments cover ADHD, anxiety, depression, and behavioural issues. Treatment plans are built in close collaboration with parents and, where helpful, schools." },
-    { icon: "💊", title: "Addiction Medicine",
+    { icon: "🚬", title: "Addiction Medicine",
       front: "Supportive, non-judgemental care for substance use disorders and the road to recovery.",
       back:  "Recovery is possible with the right support. Compassionate assessment, guided detox planning, and a structured relapse prevention programme form the foundation of care." },
   ],
