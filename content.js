@@ -23,7 +23,7 @@ var CONTENT = {
   languages:  ["Gujarati", "Hindi", "English"],
 
   // ── Stats ──
-  statPatients:     "500+",
+  statPatients:     "2500+",
   statSatisfaction: "98%",
 
   // ── Practice Hours ──
