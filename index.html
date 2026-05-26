@@ -386,28 +386,20 @@ section { position:relative; }
 #why { background:var(--cream); }
 .why-layout { display:grid; grid-template-columns:1fr 1.3fr; gap:80px; align-items:center; }
 .why-stats-visual {
-  display:flex; flex-direction:column; gap:16px;
+  display:grid; grid-template-columns:1fr 1fr; gap:20px;
 }
 .why-stat-card {
-  background:var(--white); border-radius:20px; padding:22px 28px;
-  border:1px solid rgba(31,22,53,0.07);
-  display:flex; align-items:center; gap:20px;
+  background:var(--white); border-radius:20px; padding:36px 24px;
+  border:1px solid rgba(31,22,53,0.07); text-align:center;
   transition:all 0.3s;
 }
-.why-stat-card:hover { transform:translateY(-4px); box-shadow:0 16px 40px rgba(31,22,53,0.1); }
+.why-stat-card:hover { transform:translateY(-6px); box-shadow:0 20px 50px rgba(31,22,53,0.1); }
 .why-stat-card.accent {
   background:var(--deep); color:var(--white);
 }
-.why-stat-icon {
-  width:54px; height:54px; border-radius:14px; flex-shrink:0;
-  display:flex; align-items:center; justify-content:center;
-  font-size:22px; background:rgba(94,158,140,0.12); color:var(--sage);
-}
-.why-stat-card.accent .why-stat-icon { background:rgba(255,255,255,0.1); color:var(--amber); }
-.why-stat-body { display:flex; flex-direction:column; }
 .why-stat-num {
-  font-family:'Cormorant Garamond',serif; font-size:40px; font-weight:600;
-  color:var(--sage); line-height:1; display:block; margin-bottom:4px;
+  font-family:'Cormorant Garamond',serif; font-size:52px; font-weight:600;
+  color:var(--sage); line-height:1; display:block; margin-bottom:8px;
 }
 .why-stat-card.accent .why-stat-num { color:var(--amber); }
 .why-stat-label { font-size:13px; color:var(--text-mid); font-weight:500; letter-spacing:0.5px; }
@@ -445,8 +437,8 @@ section { position:relative; }
 .testimonial-card.featured {
   background:var(--sage); border-color:var(--sage);
 }
-.stars { color:var(--amber); font-size:15px; margin-bottom:18px; display:flex; gap:3px; }
-.testimonial-card.featured .stars { color:rgba(255,255,255,0.85); }
+.stars { color:var(--amber); font-size:16px; margin-bottom:18px; letter-spacing:2px; }
+.testimonial-card.featured .stars { color:rgba(255,255,255,0.9); }
 .testimonial-quote {
   font-family:'Cormorant Garamond',serif; font-size:19px; font-style:italic;
   color:rgba(255,255,255,0.85); line-height:1.65; margin-bottom:24px;
@@ -772,7 +764,7 @@ footer { background:var(--deep); color:rgba(255,255,255,0.6); padding:60px; }
           📅 Book Appointment
         </button>
         <a href="tel:+91XXXXXXXXXX" class="btn-secondary">
-          📞 Call the Doctor
+          📞 Call the Clinic
         </a>
       </div>
     </div>
@@ -781,6 +773,10 @@ footer { background:var(--deep); color:rgba(255,255,255,0.6); padding:60px; }
     <div class="hero-visual">
       <div class="hero-visual-ring">
         <span class="hero-visual-icon">🧠</span>
+      </div>
+      <div class="hero-visual-card1">
+        <div class="stat-num">📍</div>
+        <div class="stat-label">Junagadh, Gujarat</div>
       </div>
       <div class="hero-visual-badge">
         📍 Junagadh<br>
@@ -796,6 +792,12 @@ footer { background:var(--deep); color:rgba(255,255,255,0.6); padding:60px; }
 
 <!-- ═══════════════════════ TRUST BAR ═══════════════════════ -->
 <div class="trust-bar">
+  <div class="trust-item">
+    <span class="trust-icon">🏥</span>
+    <div class="trust-item-text">
+      <strong>Junagadh</strong><span>Gujarat, India</span>
+    </div>
+  </div>
   <div class="trust-item">
     <span class="trust-icon">📍</span>
     <div class="trust-item-text">
@@ -942,18 +944,16 @@ footer { background:var(--deep); color:rgba(255,255,255,0.6); padding:60px; }
     <div class="why-layout">
       <div class="why-stats-visual reveal">
         <div class="why-stat-card">
-          <div class="why-stat-icon"><i class="fa-solid fa-user-group"></i></div>
-          <div class="why-stat-body">
-            <span class="why-stat-num">500+</span>
-            <span class="why-stat-label">Patients Treated</span>
-          </div>
+          <span class="why-stat-num">500+</span>
+          <span class="why-stat-label">Patients Treated</span>
         </div>
         <div class="why-stat-card accent">
-          <div class="why-stat-icon"><i class="fa-solid fa-heart-pulse"></i></div>
-          <div class="why-stat-body">
-            <span class="why-stat-num">98%</span>
-            <span class="why-stat-label">Patient Satisfaction</span>
-          </div>
+          <span class="why-stat-num">98%</span>
+          <span class="why-stat-label">Patient Satisfaction</span>
+        </div>
+        <div class="why-stat-card">
+          <span class="why-stat-num">6</span>
+          <span class="why-stat-label">Days a Week</span>
         </div>
       </div>
       <div class="reveal reveal-delay-2">
@@ -999,35 +999,43 @@ footer { background:var(--deep); color:rgba(255,255,255,0.6); padding:60px; }
     <div class="carousel-container reveal reveal-delay-1">
       <div class="carousel-track" id="carouselTrack">
         <div class="testimonial-card">
-          <div class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
-          <p class="testimonial-quote">"I've been seeing Dr. Kakkad for over a year now. He doesn't rush consultations and always makes time to actually listen. The treatment plan has made a real difference to my daily life."</p>
+          <div class="stars">★★★★★</div>
+          <p class="testimonial-quote">"Dr. Kakkad's calm, patient approach made all the difference. For the first time in years, I felt truly heard and understood."</p>
           <div class="testimonial-author">
-            <div class="author-avatar">A</div>
-            <div><div class="author-name">Anonymous</div><div class="author-detail">Long-term patient</div></div>
+            <div class="author-avatar">RP</div>
+            <div><div class="author-name">Anonymous</div><div class="author-detail">Patient for 2 years</div></div>
           </div>
         </div>
         <div class="testimonial-card featured">
-          <div class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div>
-          <p class="testimonial-quote">"I was nervous about doing a video consultation but Dr. Kakkad made it feel completely natural. My panic attacks are far less frequent now and I finally feel in control again."</p>
+          <div class="stars">★★★★★</div>
+          <p class="testimonial-quote">"My anxiety was completely out of control. Within three months of treatment, I had my life back. I owe so much to Dr. Kakkad."</p>
           <div class="testimonial-author">
-            <div class="author-avatar">A</div>
-            <div><div class="author-name">Anonymous</div><div class="author-detail">Anxiety & Panic · Teleconsultation</div></div>
+            <div class="author-avatar">AS</div>
+            <div><div class="author-name">Anonymous</div><div class="author-detail">Anxiety & OCD</div></div>
           </div>
         </div>
         <div class="testimonial-card">
-          <div class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
-          <p class="testimonial-quote">"Our daughter was struggling and we didn't know where to turn. Dr. Kakkad explained everything clearly, answered all our questions, and never made us feel like we were overreacting."</p>
+          <div class="stars">★★★★★</div>
+          <p class="testimonial-quote">"When my son was diagnosed, we were terrified. Dr. Kakkad guided our whole family through the process with so much compassion."</p>
           <div class="testimonial-author">
-            <div class="author-avatar">A</div>
+            <div class="author-avatar">MJ</div>
             <div><div class="author-name">Anonymous</div><div class="author-detail">Parent of patient</div></div>
           </div>
         </div>
         <div class="testimonial-card">
-          <div class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div>
-          <p class="testimonial-quote">"I wasn't sure about speaking to a psychiatrist online, but the session was completely private and judgement-free. I only wish I had reached out months earlier."</p>
+          <div class="stars">★★★★★</div>
+          <p class="testimonial-quote">"I was sceptical about seeking help, but the consultation was completely confidential and non-judgemental. I wish I had come sooner."</p>
           <div class="testimonial-author">
-            <div class="author-avatar">A</div>
-            <div><div class="author-name">Anonymous</div><div class="author-detail">First consultation · Teleconsultation</div></div>
+            <div class="author-avatar">NK</div>
+            <div><div class="author-name">Anonymous</div><div class="author-detail">Depression patient</div></div>
+          </div>
+        </div>
+        <div class="testimonial-card">
+          <div class="stars">★★★★★</div>
+          <p class="testimonial-quote">"The clinic is welcoming, the staff is warm, and the doctor remembers your name. This is healthcare done the right way."</p>
+          <div class="testimonial-author">
+            <div class="author-avatar">DM</div>
+            <div><div class="author-name">Anonymous</div><div class="author-detail">Referred patient</div></div>
           </div>
         </div>
       </div>
@@ -1051,7 +1059,7 @@ footer { background:var(--deep); color:rgba(255,255,255,0.6); padding:60px; }
         <div class="book-contact-item">
           <div class="book-contact-icon">📞</div>
           <div>
-            <strong style="color:var(--white);display:block;">Call the Doctor</strong>
+            <strong style="color:var(--white);display:block;">Call the Clinic</strong>
             <a href="tel:+91XXXXXXXXXX">+91 XXXXX XXXXX</a>
           </div>
         </div>
