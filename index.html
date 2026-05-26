@@ -200,21 +200,16 @@ nav.scrolled {
   position:relative; animation:fadeInRight 1s ease 0.3s both;
   display:flex; align-items:center; justify-content:center;
 }
-.hero-visual-ring {
-  width:380px; height:380px; border-radius:50%;
-  background:rgba(94,158,140,0.07);
+.hero-visual-img-wrap {
+  width:400px; height:400px; border-radius:32px;
+  background:rgba(255,255,255,0.06);
   border:1px solid rgba(94,158,140,0.2);
+  overflow:hidden;
   display:flex; align-items:center; justify-content:center;
-  position:relative;
+  box-shadow:0 24px 80px rgba(0,0,0,0.25);
 }
-.hero-visual-ring::before {
-  content:''; position:absolute; inset:20px;
-  border-radius:50%;
-  border:1px dashed rgba(94,158,140,0.2);
-}
-.hero-visual-icon {
-  font-size:100px; line-height:1;
-  filter:drop-shadow(0 0 40px rgba(94,158,140,0.4));
+.hero-visual-img {
+  width:100%; height:100%; object-fit:cover; display:block;
 }
 .hero-visual-badge {
   position:absolute; top:20px; right:-10px;
@@ -783,10 +778,9 @@ footer { background:var(--deep); color:rgba(255,255,255,0.6); padding:60px; }
       </div>
     </div>
 
-    <!-- Decorative visual (replace with real photo when available) -->
     <div class="hero-visual">
-      <div class="hero-visual-ring">
-        <span class="hero-visual-icon">🧠</span>
+      <div class="hero-visual-img-wrap">
+        <img src="therapy.png" alt="Therapy session illustration" class="hero-visual-img"/>
       </div>
     </div>
   </div>
@@ -1199,7 +1193,7 @@ footer { background:var(--deep); color:rgba(255,255,255,0.6); padding:60px; }
     <button class="modal-close" onclick="closeModal()">✕</button>
     <div id="modalForm">
       <h2>Book Appointment</h2>
-      <p class="modal-sub">Fill in your details and we'll confirm within 24 hours.</p>
+      <p class="modal-sub">Fill in your details and I'll confirm within 24 hours.</p>
       <div id="modalAlert" class="form-alert"></div>
       <div class="form-row">
         <div class="form-group" id="m-fg-fname">
