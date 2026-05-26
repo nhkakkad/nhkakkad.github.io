@@ -1008,9 +1008,10 @@ footer { background:var(--deep); color:rgba(255,255,255,0.6); padding:60px; }
             <input type="tel" placeholder="98765 43210" id="phone" maxlength="10"/>
             <span class="error-msg">Enter a valid 10-digit mobile number.</span>
           </div>
-          <div class="form-group">
-            <label>Email (optional)</label>
+          <div class="form-group" id="fg-email">
+            <label>Email</label>
             <input type="email" placeholder="parth@email.com" id="email"/>
+            <span class="error-msg">Enter a valid email address.</span>
           </div>
         </div>
         <div class="form-row">
@@ -1170,10 +1171,10 @@ footer { background:var(--deep); color:rgba(255,255,255,0.6); padding:60px; }
       <div class="footer-col">
         <h4>Contact</h4>
         <ul>
-          <li><a href="tel:+919512679105" data-c="phone">📞 +91 95126 79105</a></li>
-          <li><a href="https://wa.me/919512679105" data-c="whatsapp">💬 WhatsApp</a></li>
-          <li><a href="mailto:kakkadnidhish@gmail.com" data-c="email">✉️ Email Us</a></li>
-          <li><a href="#info">📍 Junagadh, Gujarat</a></li>
+          <li><a href="tel:+919512679105" data-c="phone-footer"><i class="fa-solid fa-phone"></i> +91 95126 79105</a></li>
+          <li><a href="https://wa.me/919512679105" data-c="whatsapp-footer"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a></li>
+          <li><a href="mailto:kakkadnidhish@gmail.com" data-c="email-footer"><i class="fa-solid fa-envelope"></i> Email Me</a></li>
+          <li><a href="#info">Junagadh, Gujarat</a></li>
         </ul>
       </div>
     </div>
@@ -1211,6 +1212,11 @@ footer { background:var(--deep); color:rgba(255,255,255,0.6); padding:60px; }
         <label>Phone Number</label>
         <input type="tel" placeholder="98765 43210" id="m-phone" maxlength="10"/>
         <span class="error-msg">Enter a valid 10-digit number.</span>
+      </div>
+      <div class="form-group" id="m-fg-email">
+        <label>Email</label>
+        <input type="email" placeholder="parth@email.com" id="m-email"/>
+        <span class="error-msg">Enter a valid email address.</span>
       </div>
       <div class="form-row">
         <div class="form-group" id="m-fg-date">
@@ -1309,6 +1315,15 @@ function generateContent() {
   document.querySelectorAll('[data-c="phoneText"]').forEach(function(el) { el.textContent = C.phone; });
   document.querySelectorAll('[data-c="whatsapp"]').forEach(function(el) {
     el.href = 'https://wa.me/' + C.phoneRaw; el.textContent = C.phone;
+  });
+  document.querySelectorAll('[data-c="whatsapp-footer"]').forEach(function(el) {
+    el.href = 'https://wa.me/' + C.phoneRaw;
+  });
+  document.querySelectorAll('[data-c="phone-footer"]').forEach(function(el) {
+    el.href = 'tel:+' + C.phoneRaw;
+  });
+  document.querySelectorAll('[data-c="email-footer"]').forEach(function(el) {
+    el.href = 'mailto:' + C.email;
   });
   document.querySelectorAll('[data-c="email"]').forEach(function(el) {
     el.href = 'mailto:' + C.email; el.textContent = C.email;
@@ -1417,6 +1432,7 @@ function closeModal() {
     document.getElementById('modalForm').style.display = '';
     document.getElementById('modalSuccess').style.display = 'none';
     setAlert('modalAlert', '', '');
+    ['m-fname','m-lname','m-phone','m-email'].forEach(id => { var el = document.getElementById(id); if (el) el.value = ''; });
   }, 300);
 }
 function closeModalOutside(e) {
@@ -1438,7 +1454,8 @@ function showError(id) {
 }
 function val(id) { return (document.getElementById(id)?.value || '').trim(); }
 function isValidPhone(p) { return /^[6-9]\d{9}$/.test(p.replace(/\s/g, '')); }
-function isValidDate(d) { return d && new Date(d) >= new Date(new Date().toDateString()); }
+function isValidDate(d) { return d && d >= today; }
+function isValidEmail(e) { return e && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e); }
 
 function collectData(prefix) {
   const p = prefix ? prefix + '-' : '';
@@ -1446,7 +1463,7 @@ function collectData(prefix) {
     fname:    val(p + 'fname'),
     lname:    val(p + 'lname'),
     phone:    val(p + 'phone'),
-    email:    val('email') || '',
+    email:    val(p + 'email') || val('email') || '',
     date:     val(p + 'date') || val('apptDate'),
     timeSlot: val(p + 'time') || val('apptTime'),
     reason:   val(p + 'reason') || val('reason'),
@@ -1469,7 +1486,7 @@ async function sendToSheets(data) {
 
 // ─── MODAL FORM ──────────────────────────────────────────────────
 async function submitModal() {
-  const errorIds = ['m-fg-fname','m-fg-lname','m-fg-phone','m-fg-date','m-fg-time','m-fg-reason'];
+  const errorIds = ['m-fg-fname','m-fg-lname','m-fg-phone','m-fg-email','m-fg-date','m-fg-time','m-fg-reason'];
   clearErrors(errorIds);
   setAlert('modalAlert','','');
 
@@ -1478,6 +1495,7 @@ async function submitModal() {
   if (!d.fname)               { showError('m-fg-fname'); ok = false; }
   if (!d.lname)               { showError('m-fg-lname'); ok = false; }
   if (!isValidPhone(d.phone)) { showError('m-fg-phone'); ok = false; }
+  if (!isValidEmail(d.email)) { showError('m-fg-email'); ok = false; }
   if (!isValidDate(d.date))   { showError('m-fg-date'); ok = false; }
   if (!d.timeSlot)            { showError('m-fg-time'); ok = false; }
   if (!d.reason)              { showError('m-fg-reason'); ok = false; }
@@ -1498,7 +1516,7 @@ async function submitModal() {
 
 // ─── SECTION FORM ────────────────────────────────────────────────
 async function submitForm() {
-  const errorIds = ['fg-fname','fg-lname','fg-phone','fg-date','fg-time','fg-reason'];
+  const errorIds = ['fg-fname','fg-lname','fg-phone','fg-email','fg-date','fg-time','fg-reason'];
   clearErrors(errorIds);
   setAlert('formAlert','','');
 
@@ -1512,6 +1530,7 @@ async function submitForm() {
   if (!d.fname)               { showError('fg-fname'); ok = false; }
   if (!d.lname)               { showError('fg-lname'); ok = false; }
   if (!isValidPhone(d.phone)) { showError('fg-phone'); ok = false; }
+  if (!isValidEmail(d.email)) { showError('fg-email'); ok = false; }
   if (!isValidDate(d.date))   { showError('fg-date'); ok = false; }
   if (!d.timeSlot)            { showError('fg-time'); ok = false; }
   if (!d.reason)              { showError('fg-reason'); ok = false; }
@@ -1536,7 +1555,8 @@ function resetMainForm() {
 }
 
 // ─── DATE MIN ─────────────────────────────────────────────────────
-const today = new Date().toISOString().split('T')[0];
+const _d = new Date();
+const today = _d.getFullYear() + '-' + String(_d.getMonth()+1).padStart(2,'0') + '-' + String(_d.getDate()).padStart(2,'0');
 document.getElementById('apptDate').min = today;
 document.getElementById('m-date').min = today;
 
