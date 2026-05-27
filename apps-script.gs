@@ -170,6 +170,30 @@ function doGet(e) {
     return updateCell(sheet, id, 'Doctor Notes', notes || '');
   }
 
+  // ── Update any allowed field (age, gender, time slot) ────
+  if (action === 'updateField') {
+    const field = e.parameter.field;
+    const value = e.parameter.value || '';
+    const allowed = ['Age', 'Gender', 'Time Slot'];
+    if (!id || !field) return jsonResponse({ error: 'Missing params' });
+    if (!allowed.includes(field)) return jsonResponse({ error: 'Field not allowed' });
+    return updateCell(sheet, id, field, value);
+  }
+
+  // ── Send status notification email to patient ────────────
+  if (action === 'notifyPatient') {
+    const type = e.parameter.type;
+    if (!id || !type) return jsonResponse({ error: 'Missing params' });
+    const values = sheet.getDataRange().getValues();
+    const headers = values[0];
+    const rowArr = values.slice(1).find(r => r[0] === id);
+    if (!rowArr) return jsonResponse({ error: 'Not found' });
+    const appt = {};
+    headers.forEach((h, i) => { appt[h] = rowArr[i]; });
+    sendStatusEmail(appt, type);
+    return jsonResponse({ success: true });
+  }
+
   return jsonResponse({ error: 'Unknown action' });
 }
 
@@ -186,6 +210,53 @@ function updateCell(sheet, id, columnName, value) {
     }
   }
   return jsonResponse({ error: 'Record not found' });
+}
+
+function sendStatusEmail(appt, type) {
+  try {
+    const email = String(appt['Email'] || '').trim();
+    if (!email) return;
+    const name = appt['Name'] || 'Patient';
+    const date = String(appt['Date'] || '—').slice(0, 10);
+    const slot = appt['Time Slot'] || '—';
+
+    if (type === 'confirmed') {
+      MailApp.sendEmail({
+        to: email,
+        subject: 'Appointment Confirmed — Dr. Nidhish Kakkad',
+        htmlBody:
+          '<div style="font-family:sans-serif;max-width:560px;margin:0 auto">' +
+          '<div style="background:#1f1635;padding:24px 32px;border-radius:12px 12px 0 0">' +
+          '<h2 style="color:#ffffff;margin:0;font-size:20px">Appointment Confirmed ✓</h2>' +
+          '</div>' +
+          '<div style="background:#f9f7f2;padding:28px 32px;border-radius:0 0 12px 12px;border:1px solid #e5e0d8">' +
+          '<p style="color:#333;margin-bottom:20px">Dear ' + name + ',</p>' +
+          '<p style="color:#333;margin-bottom:20px">Your appointment with Dr. Nidhish Kakkad has been confirmed.</p>' +
+          '<h3 style="color:#1f1635;font-size:15px;margin-bottom:12px">Confirmed Appointment</h3>' +
+          row('Date', date) +
+          row('Time', slot) +
+          '<p style="margin-top:20px;color:#333">Please be ready a few minutes before your slot. To reschedule, WhatsApp or call <strong>+91 95126 79105</strong>.</p>' +
+          '</div></div>',
+      });
+    } else if (type === 'cancelled') {
+      MailApp.sendEmail({
+        to: email,
+        subject: 'Appointment Cancelled — Dr. Nidhish Kakkad',
+        htmlBody:
+          '<div style="font-family:sans-serif;max-width:560px;margin:0 auto">' +
+          '<div style="background:#1f1635;padding:24px 32px;border-radius:12px 12px 0 0">' +
+          '<h2 style="color:#ffffff;margin:0;font-size:20px">Appointment Cancelled</h2>' +
+          '</div>' +
+          '<div style="background:#f9f7f2;padding:28px 32px;border-radius:0 0 12px 12px;border:1px solid #e5e0d8">' +
+          '<p style="color:#333;margin-bottom:20px">Dear ' + name + ',</p>' +
+          '<p style="color:#333;margin-bottom:20px">Unfortunately, your appointment request has been cancelled. Please reach out to book a new slot.</p>' +
+          '<p style="color:#333">To reschedule, visit the website or WhatsApp/call <strong>+91 95126 79105</strong>.</p>' +
+          '</div></div>',
+      });
+    }
+  } catch (err) {
+    console.error('Status email error:', err.message);
+  }
 }
 
 function jsonResponse(obj) {

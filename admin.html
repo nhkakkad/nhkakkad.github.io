@@ -192,41 +192,6 @@ tbody td{ padding:13px 16px; color:var(--text-dark); }
 </head>
 <body>
 
-<!-- ═══ SETUP SCREEN ═══ -->
-<div class="centered-screen" id="setupScreen">
-  <div class="auth-box">
-    <div class="auth-logo">⚙️</div>
-    <h1>Connect Google Sheets</h1>
-    <p>One-time setup. Enter your Apps Script details to start receiving appointments.</p>
-    <div class="setup-steps">
-      <div class="setup-step">
-        <span class="setup-step-num"></span>
-        <p>Create a <strong>Google Sheet</strong>, then open <strong>Extensions → Apps Script</strong> and paste the code from <code>apps-script.gs</code>.</p>
-      </div>
-      <div class="setup-step">
-        <span class="setup-step-num"></span>
-        <p>Set your <code>SPREADSHEET_ID</code> and <code>SECRET_TOKEN</code> at the top of the script.</p>
-      </div>
-      <div class="setup-step">
-        <span class="setup-step-num"></span>
-        <p><strong>Deploy → New deployment → Web app → Anyone → Deploy.</strong> Copy the Web App URL and paste it below along with your secret token.</p>
-      </div>
-    </div>
-    <div id="setupError" class="auth-error"></div>
-    <div class="form-group">
-      <label>Apps Script Web App URL</label>
-      <input type="url" id="setupUrl" placeholder="https://script.google.com/macros/s/…/exec"/>
-    </div>
-    <div class="form-group">
-      <label>Secret Token (must match script)</label>
-      <input type="password" id="setupToken" placeholder="your-secret-token"/>
-    </div>
-    <button class="btn btn-primary" onclick="saveSetup()">Save &amp; Continue →</button>
-    <p style="font-size:12px;color:var(--text-light);text-align:center;margin-top:16px;">
-      These settings are stored only in this browser's localStorage.
-    </p>
-  </div>
-</div>
 
 <!-- ═══ LOGIN SCREEN ═══ -->
 <div class="centered-screen" id="loginScreen" style="display:none;">
@@ -248,9 +213,6 @@ tbody td{ padding:13px 16px; color:var(--text-dark); }
         Sign In →
       </button>
     </form>
-    <p style="font-size:12px;color:var(--text-light);text-align:center;margin-top:20px;">
-      <a href="#" onclick="resetSetup()" style="color:var(--sage);">Re-configure connection</a>
-    </p>
   </div>
 </div>
 
@@ -326,12 +288,29 @@ tbody td{ padding:13px 16px; color:var(--text-dark); }
       <div class="detail-item"><div class="di-label">Submitted</div><div class="di-val" id="dm-submitted">—</div></div>
     </div>
     <div style="margin-bottom:20px;"><div class="di-label" style="margin-bottom:8px;">Reason for Consultation</div><div class="reason-box" id="dm-reason">—</div></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+      <div class="form-group" style="margin-bottom:0;">
+        <label>Age</label>
+        <input type="number" id="dm-age" min="1" max="120" placeholder="—"/>
+      </div>
+      <div class="form-group" style="margin-bottom:0;">
+        <label>Gender</label>
+        <select id="dm-gender">
+          <option value="">—</option>
+          <option>Male</option><option>Female</option><option>Other</option><option>Prefer not to say</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group" id="dm-slot-group" style="display:none;">
+      <label>Confirmed Time Slot (IST)</label>
+      <select id="dm-confirmed-slot"></select>
+    </div>
     <div class="form-group">
       <label>Doctor's Notes</label>
       <textarea id="dm-notes" rows="3" placeholder="Add clinical notes…"></textarea>
     </div>
     <div class="modal-actions">
-      <select id="dm-status-select" class="status-select">
+      <select id="dm-status-select" class="status-select" onchange="onStatusChange(this.value)">
         <option>Pending</option><option>Confirmed</option><option>Completed</option><option>Cancelled</option>
       </select>
       <button class="btn btn-primary" onclick="saveDetail()">💾 Save</button>
@@ -351,38 +330,25 @@ async function sha256(str) {
   return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
 }
 
-const K = { url:'admin_url', token:'admin_token', auth:'admin_authed' };
+const SCRIPT_URL      = 'https://script.google.com/macros/s/AKfycbzkjtEqDjermrIvVRpUurc7Irto9O87sfV6zfsQ6A3F8ImiimR6iPHvYmagXUNgSq0/exec';
+const HARDCODED_TOKEN = 'ParthIsGreat0512!';
+const K   = { auth:'admin_authed' };
 const get = k => localStorage.getItem(k);
 const set = (k,v) => localStorage.setItem(k,v);
 const rm  = k => localStorage.removeItem(k);
 
 (function init(){
-  if (!get(K.url) || !get(K.token)) { show('setupScreen'); return; }
   if (get(K.auth) === '1') { show('dashboard'); loadAppointments(); return; }
   show('loginScreen');
 })();
 
 function show(id){
-  ['setupScreen','loginScreen','dashboard'].forEach(i => {
+  ['loginScreen','dashboard'].forEach(i => {
     const el = document.getElementById(i);
-    el.style.display = (i === id) ? 'flex' : 'none';
+    if (el) el.style.display = (i === id) ? 'flex' : 'none';
   });
 }
 
-// ─── SETUP ────────────────────────────────────────────────────────
-function saveSetup(){
-  const url   = document.getElementById('setupUrl').value.trim();
-  const token = document.getElementById('setupToken').value.trim();
-  const err   = document.getElementById('setupError');
-  err.classList.remove('show');
-  if (!url.startsWith('https://script.google.com')) {
-    err.textContent = 'Please enter a valid Apps Script URL.'; err.classList.add('show'); return;
-  }
-  if (!token) { err.textContent = 'Secret token cannot be empty.'; err.classList.add('show'); return; }
-  set(K.url, url); set(K.token, token);
-  show('loginScreen');
-}
-function resetSetup(){ [K.url, K.token, K.auth].forEach(rm); location.reload(); }
 
 // ─── LOGIN ────────────────────────────────────────────────────────
 async function doLogin(e){
@@ -406,11 +372,9 @@ let statusFilter = 'All';
 let selectedId   = null;
 
 async function loadAppointments(){
-  const url   = get(K.url);
-  const token = get(K.token);
   setTableContent('<div class="empty-state"><span class="es-icon">⏳</span><p>Loading…</p></div>');
   try {
-    const res  = await fetch(`${url}?action=getAppointments&token=${encodeURIComponent(token)}`);
+    const res  = await fetch(`${SCRIPT_URL}?action=getAppointments&token=${encodeURIComponent(HARDCODED_TOKEN)}`);
     const data = await res.json();
     if (data.error) throw new Error(data.error);
     appointments = data.appointments || [];
@@ -476,12 +440,33 @@ function renderTable(){
 function setTableContent(html){ document.getElementById('tableWrap').innerHTML = html; }
 function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
+function fmtDate(v){
+  if (!v) return '—';
+  const s = String(v);
+  if (/^\d{4}-\d{2}-\d{2}/.test(s)) {
+    const [y,m,d] = s.slice(0,10).split('-');
+    return `${d}/${m}/${y}`;
+  }
+  const dt = new Date(v);
+  if (!isNaN(dt)) return `${String(dt.getDate()).padStart(2,'0')}/${String(dt.getMonth()+1).padStart(2,'0')}/${dt.getFullYear()}`;
+  return s.slice(0,10) || s;
+}
+
+function h12(h){ const hh = h%12||12; return `${hh}:00 ${h<12?'AM':'PM'}`; }
+function buildTimeSlots(){
+  const sel = document.getElementById('dm-confirmed-slot');
+  sel.innerHTML = '<option value="">Select a time slot…</option>';
+  for (let h = 10; h <= 20; h++)
+    sel.insertAdjacentHTML('beforeend', `<option value="${h12(h)} – ${h12(h+1)} IST">${h12(h)} – ${h12(h+1)} IST</option>`);
+}
+function onStatusChange(val){
+  document.getElementById('dm-slot-group').style.display = val === 'Confirmed' ? 'block' : 'none';
+}
+
 // ─── QUICK STATUS ─────────────────────────────────────────────────
 async function quickStatus(id, status){
-  const url   = get(K.url);
-  const token = get(K.token);
   try {
-    await fetch(`${url}?action=updateStatus&token=${encodeURIComponent(token)}&id=${encodeURIComponent(id)}&status=${encodeURIComponent(status)}`);
+    await fetch(`${SCRIPT_URL}?action=updateStatus&token=${encodeURIComponent(HARDCODED_TOKEN)}&id=${encodeURIComponent(id)}&status=${encodeURIComponent(status)}`);
     appointments = appointments.map(a => a.ID === id ? {...a, Status:status} : a);
     updateStats(); renderTable();
     showToast(`Status updated to "${status}"`);
@@ -493,18 +478,23 @@ function openDetail(id){
   const a = appointments.find(x => x.ID === id);
   if (!a) return;
   selectedId = id;
-  document.getElementById('dm-name').textContent      = a.Name || '—';
-  document.getElementById('dm-email').textContent     = a.Email || '—';
-  document.getElementById('dm-phone').textContent     = a.Phone || '—';
-  document.getElementById('dm-date').textContent      = a.Date || '—';
-  document.getElementById('dm-time').textContent      = a['Time Slot'] || '—';
-  document.getElementById('dm-reason').textContent    = a.Reason || '—';
-  document.getElementById('dm-notes').value           = a['Doctor Notes'] || '';
-  document.getElementById('dm-status-select').value   = a.Status || 'Pending';
+  const status = a.Status || 'Pending';
+  document.getElementById('dm-name').textContent    = a.Name || '—';
+  document.getElementById('dm-email').textContent   = a.Email || '—';
+  document.getElementById('dm-phone').textContent   = a.Phone || '—';
+  document.getElementById('dm-date').textContent    = fmtDate(a.Date);
+  document.getElementById('dm-time').textContent    = a['Time Slot'] || '—';
+  document.getElementById('dm-reason').textContent  = a.Reason || '—';
+  document.getElementById('dm-notes').value         = a['Doctor Notes'] || '';
+  document.getElementById('dm-age').value           = a.Age || '';
+  document.getElementById('dm-gender').value        = a.Gender || '';
+  document.getElementById('dm-submitted').textContent = fmtDate(a['Submitted At']);
+  document.getElementById('dm-status-select').value = status;
   const badge = document.getElementById('dm-status-badge');
-  badge.textContent = a.Status || 'Pending';
-  badge.className = `badge badge-${(a.Status||'pending').toLowerCase()}`;
-  document.getElementById('dm-submitted').textContent = a['Submitted At'] ? new Date(a['Submitted At']).toLocaleString() : '—';
+  badge.textContent = status;
+  badge.className = `badge badge-${status.toLowerCase()}`;
+  buildTimeSlots();
+  onStatusChange(status);
   document.getElementById('detailOverlay').classList.add('open');
 }
 function closeDetail(e){ if (e.target === document.getElementById('detailOverlay')) closeDetailModal(); }
@@ -512,18 +502,40 @@ function closeDetailModal(){ document.getElementById('detailOverlay').classList.
 
 async function saveDetail(){
   if (!selectedId) return;
-  const url    = get(K.url);
-  const token  = get(K.token);
-  const status = document.getElementById('dm-status-select').value;
-  const notes  = document.getElementById('dm-notes').value;
+  const status        = document.getElementById('dm-status-select').value;
+  const notes         = document.getElementById('dm-notes').value;
+  const age           = document.getElementById('dm-age').value.trim();
+  const gender        = document.getElementById('dm-gender').value;
+  const confirmedSlot = status === 'Confirmed' ? document.getElementById('dm-confirmed-slot').value : '';
+
+  if (status === 'Confirmed' && !confirmedSlot) {
+    showToast('Please select a confirmed time slot.', true); return;
+  }
+
+  const prev       = appointments.find(a => a.ID === selectedId);
+  const prevStatus = prev?.Status;
+  const enc = v => encodeURIComponent(v);
+  const base = `${SCRIPT_URL}?token=${enc(HARDCODED_TOKEN)}&id=${enc(selectedId)}`;
+
+  const fetches = [
+    fetch(`${base}&action=updateStatus&status=${enc(status)}`),
+    fetch(`${base}&action=updateNotes&notes=${enc(notes)}`),
+    fetch(`${base}&action=updateField&field=${enc('Age')}&value=${enc(age)}`),
+    fetch(`${base}&action=updateField&field=${enc('Gender')}&value=${enc(gender)}`),
+  ];
+  if (confirmedSlot) fetches.push(fetch(`${base}&action=updateField&field=${enc('Time Slot')}&value=${enc(confirmedSlot)}`));
+
   try {
-    await Promise.all([
-      fetch(`${url}?action=updateStatus&token=${encodeURIComponent(token)}&id=${encodeURIComponent(selectedId)}&status=${encodeURIComponent(status)}`),
-      fetch(`${url}?action=updateNotes&token=${encodeURIComponent(token)}&id=${encodeURIComponent(selectedId)}&notes=${encodeURIComponent(notes)}`),
-    ]);
-    appointments = appointments.map(a => a.ID === selectedId ? {...a, Status:status, 'Doctor Notes':notes} : a);
+    await Promise.all(fetches);
+    if (status !== prevStatus && (status === 'Confirmed' || status === 'Cancelled')) {
+      await fetch(`${base}&action=notifyPatient&type=${enc(status.toLowerCase())}`);
+    }
+    appointments = appointments.map(a => a.ID === selectedId ? {
+      ...a, Status:status, 'Doctor Notes':notes, Age:age, Gender:gender,
+      ...(confirmedSlot ? {'Time Slot':confirmedSlot} : {}),
+    } : a);
     updateStats(); renderTable(); closeDetailModal();
-    showToast('Appointment updated.');
+    showToast(status === 'Confirmed' ? 'Confirmed & email sent.' : status === 'Cancelled' ? 'Cancelled & patient notified.' : 'Appointment saved.');
   } catch { showToast('Save failed. Try again.', true); }
 }
 
