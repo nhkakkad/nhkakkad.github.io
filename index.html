@@ -479,40 +479,36 @@ section { position:relative; }
   width:500px; height:500px; background:rgba(255,255,255,0.04); border-radius:50%;
 }
 .book-inner {
-  display:grid; grid-template-columns:1fr 1.3fr;
-  gap:80px; align-items:start; position:relative; z-index:1;
+  display:grid; grid-template-columns:1fr 1.4fr;
+  gap:60px; align-items:start; position:relative; z-index:1;
 }
 .book-info .section-label { color:rgba(255,255,255,0.7); }
 .book-info .section-label::before { background:rgba(255,255,255,0.7); }
-.book-info .section-title { color:var(--white); }
-.book-info-body { color:rgba(255,255,255,0.75); font-size:16px; line-height:1.75; margin:24px 0; }
-.book-contact-items { display:flex; flex-direction:column; gap:16px; }
-.book-contact-item { display:flex; align-items:center; gap:16px; color:rgba(255,255,255,0.85); font-size:15px; }
+.book-info .section-title { color:var(--white); margin-bottom:0; }
+.book-contact-items { display:flex; flex-direction:column; gap:10px; margin-top:24px; margin-bottom:28px; }
+.book-contact-item { display:flex; align-items:center; gap:12px; color:rgba(255,255,255,0.75); font-size:14px; }
 .book-contact-icon {
-  width:44px; height:44px; background:rgba(255,255,255,0.15);
-  border-radius:12px; display:flex; align-items:center; justify-content:center;
-  font-size:20px; flex-shrink:0;
+  width:36px; height:36px; background:rgba(255,255,255,0.1);
+  border-radius:10px; display:flex; align-items:center; justify-content:center;
+  font-size:16px; flex-shrink:0;
 }
-.book-contact-item a { color:var(--white); text-decoration:none; font-weight:500; }
+.book-contact-item a { color:rgba(255,255,255,0.9); text-decoration:none; }
+.book-contact-item a:hover { color:var(--white); }
 .book-form {
-  background:var(--white); border-radius:28px; padding:48px 44px;
-  box-shadow:0 40px 80px rgba(0,0,0,0.25);
+  background:var(--white); border-radius:24px; padding:32px 28px;
+  box-shadow:0 24px 60px rgba(0,0,0,0.2);
 }
-.book-form h3 {
-  font-family:'Cormorant Garamond',serif; font-size:28px; font-weight:600;
-  color:var(--deep); margin-bottom:32px;
-}
-.form-row { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
-.form-group { margin-bottom:18px; }
+.form-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.form-group { margin-bottom:12px; }
 .form-group label {
-  display:block; font-size:12px; font-weight:600;
-  letter-spacing:1px; text-transform:uppercase; color:var(--text-mid); margin-bottom:8px;
+  display:block; font-size:12px; font-weight:500;
+  color:var(--text-mid); margin-bottom:5px;
 }
 .form-group input,
 .form-group select,
 .form-group textarea {
-  width:100%; padding:13px 16px;
-  border:1.5px solid rgba(31,22,53,0.12); border-radius:12px;
+  width:100%; padding:10px 13px;
+  border:1.5px solid rgba(31,22,53,0.12); border-radius:10px;
   font-family:'DM Sans',sans-serif; font-size:14px; color:var(--deep);
   background:var(--cream); transition:border-color 0.3s, box-shadow 0.3s; outline:none;
 }
@@ -523,7 +519,7 @@ section { position:relative; }
   box-shadow:0 0 0 3px rgba(94,158,140,0.15);
   background:var(--white);
 }
-.form-group textarea { resize:none; min-height:90px; }
+.form-group textarea { resize:none; min-height:72px; }
 .form-group .error-msg { color:#e05050; font-size:12px; margin-top:5px; display:none; }
 .form-group.has-error input,
 .form-group.has-error select,
@@ -554,12 +550,12 @@ section { position:relative; }
 
 /* ─── HOURS ─── */
 .hours-table { background:var(--white); border-radius:24px; overflow:hidden; box-shadow:0 8px 40px rgba(31,22,53,0.07); }
-.hours-header { background:var(--deep); padding:24px 32px; color:var(--white); display:flex; align-items:center; gap:14px; }
-.hours-header-icon { width:42px; height:42px; background:rgba(94,158,140,0.18); border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
-.hours-header-text h3 { font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:500; }
-.hours-header-text p { font-size:11px; color:var(--sage-light); letter-spacing:1px; text-transform:uppercase; margin-top:2px; }
-.hours-body { padding:6px 0; }
-.hours-row { display:flex; align-items:center; gap:12px; padding:13px 32px; border-bottom:1px solid rgba(31,22,53,0.05); transition:background 0.2s; }
+.hours-header { background:var(--deep); padding:16px 20px; color:var(--white); display:flex; align-items:center; gap:12px; }
+.hours-header-icon { width:34px; height:34px; background:rgba(94,158,140,0.18); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:15px; flex-shrink:0; }
+.hours-header-text h3 { font-family:'Cormorant Garamond',serif; font-size:18px; font-weight:500; }
+.hours-header-text p { font-size:10px; color:var(--sage-light); letter-spacing:1px; text-transform:uppercase; margin-top:1px; }
+.hours-body { padding:2px 0; }
+.hours-row { display:flex; align-items:center; gap:10px; padding:9px 20px; border-bottom:1px solid rgba(31,22,53,0.05); transition:background 0.2s; }
 .hours-row:last-child { border-bottom:none; }
 .hours-row:hover { background:rgba(94,158,140,0.04); }
 .hours-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
@@ -570,7 +566,7 @@ section { position:relative; }
 .hours-row .time { font-size:13px; color:var(--text-mid); }
 .hours-row.today { background:rgba(94,158,140,0.07); }
 .hours-row.today .day { color:var(--sage); font-weight:600; }
-.hours-footer { padding:14px 32px; background:rgba(94,158,140,0.06); border-top:1px solid rgba(94,158,140,0.15); display:flex; align-items:center; gap:8px; }
+.hours-footer { padding:10px 20px; background:rgba(94,158,140,0.06); border-top:1px solid rgba(94,158,140,0.15); display:flex; align-items:center; gap:8px; }
 .hours-footer i { color:var(--sage); font-size:13px; }
 .hours-footer span { font-size:12px; color:var(--sage); font-weight:500; }
 
@@ -715,7 +711,6 @@ footer { background:var(--deep); color:rgba(255,255,255,0.6); padding:60px; }
     <li><a href="#services">Expertise</a></li>
     <li><a href="#about">About</a></li>
     <li><a href="#testimonials">Patients</a></li>
-    <li><a href="#book">Practice Hours</a></li>
     <li><a href="#book" class="nav-cta">Book Now</a></li>
   </ul>
   <button class="nav-mobile-toggle" onclick="toggleMenu()" id="menuToggle">☰</button>
@@ -929,9 +924,6 @@ footer { background:var(--deep); color:rgba(255,255,255,0.6); padding:60px; }
     <div class="book-info reveal">
       <p class="section-label">Book a Consultation</p>
       <h2 class="section-title">Ready to Take the<br><em>First Step?</em></h2>
-      <p class="book-info-body">
-        Booking is quick and easy. Complete the form and I will confirm your appointment within 24 hours. Seeking help is a sign of strength.
-      </p>
       <div class="book-contact-items">
         <div class="book-contact-item">
           <div class="book-contact-icon">📞</div>
@@ -955,12 +947,10 @@ footer { background:var(--deep); color:rgba(255,255,255,0.6); padding:60px; }
           </div>
         </div>
       </div>
-      <p style="font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,0.6);margin:32px 0 14px;">Opening Hours</p>
       <div class="hours-table reveal reveal-delay-3" id="hoursTable"></div>
     </div>
 
     <div class="book-form reveal reveal-delay-2">
-      <h3>Book an Appointment</h3>
       <div id="formAlert" class="form-alert"></div>
       <div id="formContent">
         <div class="form-row">
@@ -1030,9 +1020,6 @@ footer { background:var(--deep); color:rgba(255,255,255,0.6); padding:60px; }
         <button class="form-submit" onclick="submitForm()" id="formSubmitBtn">
           📅 Request Appointment
         </button>
-        <a href="https://wa.me/919512679105" class="whatsapp-btn" data-c="whatsapp-href">
-          <i class="fa-brands fa-whatsapp" style="font-size:1.2em;"></i> Book via WhatsApp Instead
-        </a>
       </div>
       <div class="modal-success" id="formSuccess">
         <div class="check">✅</div>
@@ -1326,7 +1313,7 @@ function generateContent() {
   // Hours table
   var hoursEl = document.getElementById('hoursTable');
   if (hoursEl && C.hours) {
-    var todayIdx = new Date().getDay(); // 0=Sun
+    var todayIdx = new Date(Date.now() + 5.5 * 3600000).getUTCDay(); // day in IST
     var dayMap = { Monday:1, Tuesday:2, Wednesday:3, Thursday:4, Friday:5, Saturday:6, Sunday:0 };
     var rows = C.hours.map(function(h) {
       var isToday = dayMap[h.day] === todayIdx;
@@ -1342,7 +1329,7 @@ function generateContent() {
     hoursEl.innerHTML =
       '<div class="hours-header">' +
         '<div class="hours-header-icon">🕒</div>' +
-        '<div class="hours-header-text"><h3>Opening Hours</h3><p>Teleconsultation</p></div>' +
+        '<div class="hours-header-text"><h3>Prac Hours</h3><p>Teleconsultation</p></div>' +
       '</div>' +
       '<div class="hours-body">' + rows + '</div>' +
       '<div style="padding:14px 32px;background:rgba(94,158,140,0.06);border-top:1px solid rgba(94,158,140,0.15);">' +
