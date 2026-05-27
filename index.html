@@ -1471,7 +1471,7 @@ function collectData(prefix) {
 }
 
 async function sendToSheets(data) {
-  if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL === 'YOUR_APPS_SCRIPT_URL_HERE') {
+  if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL === 'https://script.google.com/macros/s/AKfycbzkjtEqDjermrIvVRpUurc7Irto9O87sfV6zfsQ6A3F8ImiimR6iPHvYmagXUNgSq0/exec') {
     // Fallback: simulate success if URL not yet configured
     return { success: true };
   }
