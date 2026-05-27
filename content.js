@@ -53,7 +53,7 @@ var CONTENT = {
     { icon: "❗", title: "PTSD & Trauma",
       front: "Trauma-informed therapy and medication management for post-traumatic stress.",
       back:  "Trauma recovery is possible. A thorough symptom assessment informs a care plan combining medication and therapy referral — all within a safe, non-judgemental setting." },
-    { icon: "🌙", title: "Sleep Disorders",
+    { icon: "🛌", title: "Sleep Disorders",
       front: "Diagnosis and treatment of insomnia, hypersomnia, and sleep-related psychiatric conditions.",
       back:  "Sleep problems are often linked to an underlying psychiatric condition. A full assessment of root causes guides targeted treatment to help restore healthy, consistent sleep." },
     { icon: "🧩", title: "Schizophrenia",
