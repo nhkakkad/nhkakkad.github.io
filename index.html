@@ -1169,7 +1169,7 @@ footer { background:var(--deep); color:rgba(255,255,255,0.6); padding:60px; }
     <button class="modal-close" onclick="closeModal()">✕</button>
     <div id="modalForm">
       <h2>Book Appointment</h2>
-      <p class="modal-sub">Fill in your details and I'll confirm within 24 hours.</p>
+      <p class="modal-sub">Fill in your details and I'll reach out within 24 hours to confirm your appointment.</p>
       <div id="modalAlert" class="form-alert"></div>
       <div class="form-row">
         <div class="form-group" id="m-fg-fname">
@@ -1254,7 +1254,7 @@ footer { background:var(--deep); color:rgba(255,255,255,0.6); padding:60px; }
     <div class="modal-success" id="modalSuccess">
       <div class="check">✅</div>
       <h3>You're Booked In!</h3>
-      <p>I'll call within 24 hours to confirm your appointment. See you soon!</p>
+      <p>I'll reach out within 24 hours to confirm your appointment. See you soon!</p>
       <br>
       <button class="form-submit" onclick="closeModal()" style="width:auto;padding:12px 28px;margin:0 auto;">Close</button>
     </div>
@@ -1471,10 +1471,6 @@ function collectData(prefix) {
 }
 
 async function sendToSheets(data) {
-  if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL === 'https://script.google.com/macros/s/AKfycbzkjtEqDjermrIvVRpUurc7Irto9O87sfV6zfsQ6A3F8ImiimR6iPHvYmagXUNgSq0/exec') {
-    // Fallback: simulate success if URL not yet configured
-    return { success: true };
-  }
   const res = await fetch(APPS_SCRIPT_URL, {
     method: 'POST',
     body: JSON.stringify(data),
