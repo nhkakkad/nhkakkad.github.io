@@ -457,16 +457,6 @@ section { position:relative; }
   display:flex; align-items:center; justify-content:center;
   gap:20px; margin-top:28px;
 }
-.carousel-btn {
-  background:rgba(255,255,255,0.1); color:var(--white); border:1px solid rgba(255,255,255,0.2);
-  border-radius:50%; width:44px; height:44px;
-  font-size:18px; cursor:pointer;
-  display:flex; align-items:center; justify-content:center;
-  transition:background 0.2s, border-color 0.2s;
-  flex-shrink:0;
-}
-.carousel-btn:hover { background:var(--sage); border-color:var(--sage); }
-.carousel-btn:disabled { opacity:0.3; cursor:default; }
 .carousel-dots { display:flex; align-items:center; gap:8px; }
 .carousel-dot {
   width:8px; height:8px; border-radius:50%;
@@ -562,9 +552,7 @@ section { position:relative; }
 .form-alert.error { background:#fef2f2; border:1px solid #fecaca; color:#b91c1c; display:block; }
 .form-alert.success { background:#f0fdf4; border:1px solid #bbf7d0; color:#15803d; display:block; }
 
-/* ─── HOURS / MAP ─── */
-#info { background:var(--cream); }
-.info-grid { display:grid; grid-template-columns:1.1fr 1fr; gap:60px; align-items:start; margin-top:56px; }
+/* ─── HOURS ─── */
 .hours-table { background:var(--white); border-radius:24px; overflow:hidden; box-shadow:0 8px 40px rgba(31,22,53,0.07); }
 .hours-header { background:var(--deep); padding:24px 32px; color:var(--white); display:flex; align-items:center; gap:14px; }
 .hours-header-icon { width:42px; height:42px; background:rgba(94,158,140,0.18); border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
@@ -686,8 +674,7 @@ footer { background:var(--deep); color:rgba(255,255,255,0.6); padding:60px; }
   .services-grid{ grid-template-columns:1fr 1fr; }
   .info-cards{ grid-template-columns:1fr 1fr; }
   .footer-top{ grid-template-columns:1fr 1fr; gap:36px; }
-  .info-grid{ grid-template-columns:1fr; }
-  .trust-bar{ flex-wrap:wrap; gap:30px; padding:28px 30px; }
+.trust-bar{ flex-wrap:wrap; gap:30px; padding:28px 30px; }
   .section-inner{ padding:70px 30px; }
   footer{ padding:48px 30px; }
   .why-stats-visual{ grid-template-columns:1fr 1fr; }
@@ -728,7 +715,7 @@ footer { background:var(--deep); color:rgba(255,255,255,0.6); padding:60px; }
     <li><a href="#services">Expertise</a></li>
     <li><a href="#about">About</a></li>
     <li><a href="#testimonials">Patients</a></li>
-    <li><a href="#info">Practice Hours</a></li>
+    <li><a href="#book">Practice Hours</a></li>
     <li><a href="#book" class="nav-cta">Book Now</a></li>
   </ul>
   <button class="nav-mobile-toggle" onclick="toggleMenu()" id="menuToggle">☰</button>
@@ -930,9 +917,7 @@ footer { background:var(--deep); color:rgba(255,255,255,0.6); padding:60px; }
         <div class="carousel-track" id="carouselTrack"></div>
       </div>
       <div class="carousel-nav">
-        <button class="carousel-btn" id="carouselPrev" onclick="moveCarousel(-1)">&#10094;</button>
         <div class="carousel-dots" id="carouselDots"></div>
-        <button class="carousel-btn" id="carouselNext" onclick="moveCarousel(1)">&#10095;</button>
       </div>
     </div>
   </div>
@@ -970,6 +955,8 @@ footer { background:var(--deep); color:rgba(255,255,255,0.6); padding:60px; }
           </div>
         </div>
       </div>
+      <p style="font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,0.6);margin:32px 0 14px;">Opening Hours</p>
+      <div class="hours-table reveal reveal-delay-3" id="hoursTable"></div>
     </div>
 
     <div class="book-form reveal reveal-delay-2">
@@ -1058,19 +1045,6 @@ footer { background:var(--deep); color:rgba(255,255,255,0.6); padding:60px; }
   </div>
 </section>
 
-<!-- ═══════════════════════ HOURS + MAP ═══════════════════════ -->
-<section id="info">
-  <div class="section-inner">
-    <div class="reveal">
-      <p class="section-label">Practice Hours</p>
-      <h2 class="section-title">Practice <em>Hours</em></h2>
-    </div>
-    <div class="info-grid">
-      <div class="hours-table reveal reveal-delay-1" id="hoursTable"></div>
-    </div>
-  </div>
-</section>
-
 <!-- ═══════════════════════ PATIENT INFO ═══════════════════════ -->
 <section id="patient-info">
   <div class="section-inner">
@@ -1124,7 +1098,7 @@ footer { background:var(--deep); color:rgba(255,255,255,0.6); padding:60px; }
           <li><a href="#services">Expertise</a></li>
           <li><a href="#about">About Dr. Kakkad</a></li>
           <li><a href="#testimonials">Patient Stories</a></li>
-          <li><a href="#info">Practice Hours</a></li>
+          <li><a href="#book">Practice Hours</a></li>
         </ul>
       </div>
       <div class="footer-col">
@@ -1196,7 +1170,7 @@ footer { background:var(--deep); color:rgba(255,255,255,0.6); padding:60px; }
           <span class="error-msg">Required.</span>
         </div>
         <div class="form-group" id="m-fg-time">
-          <label>Time</label>
+          <label>Preferred Time</label>
           <select id="m-time">
             <option value="">Select preferred slot…</option>
             <option>Morning (9 AM – 12 PM IST)</option>
@@ -1224,6 +1198,10 @@ footer { background:var(--deep); color:rgba(255,255,255,0.6); padding:60px; }
           <option>Other</option>
         </select>
         <span class="error-msg">Required.</span>
+      </div>
+      <div class="form-group">
+        <label>Additional Notes</label>
+        <textarea placeholder="Any relevant symptoms or information for the doctor…" id="m-notes"></textarea>
       </div>
       <button class="form-submit" onclick="submitModal()" id="modalSubmitBtn">📅 Request Appointment</button>
       <a href="https://wa.me/919512679105" class="whatsapp-btn" data-c="whatsapp-href">
@@ -1399,7 +1377,7 @@ function closeModal() {
     document.getElementById('modalForm').style.display = '';
     document.getElementById('modalSuccess').style.display = 'none';
     setAlert('modalAlert', '', '');
-    ['m-fname','m-lname','m-phone','m-email'].forEach(id => { var el = document.getElementById(id); if (el) el.value = ''; });
+    ['m-fname','m-lname','m-phone','m-email','m-notes'].forEach(id => { var el = document.getElementById(id); if (el) el.value = ''; });
   }, 300);
 }
 function closeModalOutside(e) {
@@ -1434,7 +1412,7 @@ function collectData(prefix) {
     date:     val(p + 'date') || val('apptDate'),
     timeSlot: val(p + 'time') || val('apptTime'),
     reason:   val(p + 'reason') || val('reason'),
-    notes:    val('notes') || '',
+    notes:    val(p + 'notes') || val('notes') || '',
     submittedAt: new Date().toISOString(),
   };
 }
@@ -1535,8 +1513,6 @@ document.getElementById('yr').textContent = new Date().getFullYear();
 const track   = document.getElementById('carouselTrack');
 const cards   = track.querySelectorAll('.testimonial-card');
 const dotsEl  = document.getElementById('carouselDots');
-const btnPrev = document.getElementById('carouselPrev');
-const btnNext = document.getElementById('carouselNext');
 const GAP = 20;
 let currentIndex = 0, autoTimer;
 
@@ -1546,14 +1522,21 @@ function getVisible() {
   return 1;
 }
 
+function activeDotIndex() {
+  const vis = getVisible();
+  const maxIndex = Math.max(0, cards.length - vis);
+  const pages = Math.ceil(cards.length / vis);
+  return currentIndex >= maxIndex ? pages - 1 : Math.floor(currentIndex / vis);
+}
+
 function buildDots() {
   const vis = getVisible();
   const pages = Math.ceil(cards.length / vis);
-  const activePage = Math.floor(currentIndex / vis);
+  const active = activeDotIndex();
   dotsEl.innerHTML = '';
   for (let i = 0; i < pages; i++) {
     const d = document.createElement('button');
-    d.className = 'carousel-dot' + (i === activePage ? ' active' : '');
+    d.className = 'carousel-dot' + (i === active ? ' active' : '');
     d.setAttribute('aria-label', 'Page ' + (i + 1));
     d.addEventListener('click', () => goTo(i * vis));
     dotsEl.appendChild(d);
@@ -1561,10 +1544,9 @@ function buildDots() {
 }
 
 function updateDots() {
-  const vis = getVisible();
-  const activePage = Math.floor(currentIndex / vis);
+  const active = activeDotIndex();
   dotsEl.querySelectorAll('.carousel-dot').forEach((d, i) =>
-    d.classList.toggle('active', i === activePage));
+    d.classList.toggle('active', i === active));
 }
 
 function goTo(index) {
@@ -1573,8 +1555,6 @@ function goTo(index) {
   currentIndex = Math.max(0, Math.min(index, maxIndex));
   const cardWidth = cards[0].offsetWidth;
   track.style.transform = 'translateX(-' + (currentIndex * (cardWidth + GAP)) + 'px)';
-  btnPrev.disabled = currentIndex === 0;
-  btnNext.disabled = currentIndex >= maxIndex;
   updateDots();
   resetAuto();
 }
@@ -1583,8 +1563,8 @@ function moveCarousel(dir) { goTo(currentIndex + dir * getVisible()); }
 function autoPlay() {
   autoTimer = setInterval(() => {
     const vis = getVisible();
-    const next = currentIndex + vis;
-    goTo(next >= cards.length ? 0 : next);
+    const maxIndex = Math.max(0, cards.length - vis);
+    goTo(currentIndex >= maxIndex ? 0 : currentIndex + vis);
   }, 4500);
 }
 function resetAuto() { clearInterval(autoTimer); autoPlay(); }
