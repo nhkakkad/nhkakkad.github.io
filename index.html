@@ -485,15 +485,6 @@ section { position:relative; }
 .book-info .section-label { color:rgba(255,255,255,0.7); }
 .book-info .section-label::before { background:rgba(255,255,255,0.7); }
 .book-info .section-title { color:var(--white); margin-bottom:0; }
-.book-contact-items { display:flex; flex-direction:column; gap:10px; margin-top:24px; margin-bottom:28px; }
-.book-contact-item { display:flex; align-items:center; gap:12px; color:rgba(255,255,255,0.75); font-size:14px; }
-.book-contact-icon {
-  width:36px; height:36px; background:rgba(255,255,255,0.1);
-  border-radius:10px; display:flex; align-items:center; justify-content:center;
-  font-size:16px; flex-shrink:0;
-}
-.book-contact-item a { color:rgba(255,255,255,0.9); text-decoration:none; }
-.book-contact-item a:hover { color:var(--white); }
 .book-form {
   background:var(--white); border-radius:24px; padding:32px 28px;
   box-shadow:0 24px 60px rgba(0,0,0,0.2);
@@ -520,6 +511,7 @@ section { position:relative; }
   background:var(--white);
 }
 .form-group textarea { resize:none; min-height:72px; }
+.form-group select:disabled { opacity:0.45; cursor:not-allowed; }
 .form-group .error-msg { color:#e05050; font-size:12px; margin-top:5px; display:none; }
 .form-group.has-error input,
 .form-group.has-error select,
@@ -924,29 +916,7 @@ footer { background:var(--deep); color:rgba(255,255,255,0.6); padding:60px; }
     <div class="book-info reveal">
       <p class="section-label">Book a Consultation</p>
       <h2 class="section-title">Ready to Take the<br><em>First Step?</em></h2>
-      <div class="book-contact-items">
-        <div class="book-contact-item">
-          <div class="book-contact-icon">📞</div>
-          <div>
-            <strong style="color:var(--white);display:block;">Call Me</strong>
-            <a href="tel:+919512679105" data-c="phone-href">Tap to Call</a>
-          </div>
-        </div>
-        <div class="book-contact-item">
-          <div class="book-contact-icon"><i class="fa-brands fa-whatsapp" style="font-size:20px;"></i></div>
-          <div>
-            <strong style="color:var(--white);display:block;">WhatsApp</strong>
-            <a href="https://wa.me/919512679105" data-c="whatsapp-href">Chat Now</a>
-          </div>
-        </div>
-        <div class="book-contact-item">
-          <div class="book-contact-icon">✉️</div>
-          <div>
-            <strong style="color:var(--white);display:block;">Email</strong>
-            <a href="mailto:kakkadnidhish@gmail.com" data-c="email">kakkadnidhish@gmail.com</a>
-          </div>
-        </div>
-      </div>
+      <p style="color:rgba(255,255,255,0.65);font-size:15px;line-height:1.7;margin:20px 0 28px;">Seeking help is a sign of strength.</p>
       <div class="hours-table reveal reveal-delay-3" id="hoursTable"></div>
     </div>
 
@@ -985,8 +955,8 @@ footer { background:var(--deep); color:rgba(255,255,255,0.6); padding:60px; }
           </div>
           <div class="form-group" id="fg-time">
             <label>Preferred Time</label>
-            <select id="apptTime">
-              <option value="">Select preferred slot…</option>
+            <select id="apptTime" disabled>
+              <option value="">Select a date first…</option>
               <option>Morning (9 AM – 12 PM IST)</option>
               <option>Afternoon (12 PM – 3 PM IST)</option>
               <option>Evening (3 PM – 7 PM IST)</option>
@@ -1158,8 +1128,8 @@ footer { background:var(--deep); color:rgba(255,255,255,0.6); padding:60px; }
         </div>
         <div class="form-group" id="m-fg-time">
           <label>Preferred Time</label>
-          <select id="m-time">
-            <option value="">Select preferred slot…</option>
+          <select id="m-time" disabled>
+            <option value="">Select a date first…</option>
             <option>Morning (9 AM – 12 PM IST)</option>
             <option>Afternoon (12 PM – 3 PM IST)</option>
             <option>Evening (3 PM – 7 PM IST)</option>
@@ -1365,6 +1335,8 @@ function closeModal() {
     document.getElementById('modalSuccess').style.display = 'none';
     setAlert('modalAlert', '', '');
     ['m-fname','m-lname','m-phone','m-email','m-notes'].forEach(id => { var el = document.getElementById(id); if (el) el.value = ''; });
+    document.getElementById('m-date').value = '';
+    updateTimeSlots('m-time', '');
   }, 300);
 }
 function closeModalOutside(e) {
@@ -1484,14 +1456,66 @@ function resetMainForm() {
   document.getElementById('formContent').style.display = '';
   document.getElementById('formSuccess').style.display = 'none';
   ['fname','lname','phone','email','notes'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('apptDate').value = '';
+  updateTimeSlots('apptTime', '');
 }
 
-// ─── DATE MIN ─────────────────────────────────────────────────────
-// Earliest bookable date = tomorrow in IST (UTC+5:30)
-// This also fixes the iOS/iPad date-picker issue where past dates remain selectable
-const today = new Date(Date.now() + 5.5 * 3600000 + 86400000).toISOString().slice(0, 10);
+// ─── IST DATE / TIME-SLOT LOGIC ───────────────────────────────────
+// Slot start hours in IST (24-h)
+const SLOT_STARTS = {
+  'Morning (9 AM – 12 PM IST)':   9,
+  'Afternoon (12 PM – 3 PM IST)': 12,
+  'Evening (3 PM – 7 PM IST)':    15,
+  'Night (7 PM – 9 PM IST)':      19,
+};
+
+function istNow() {
+  return new Date(Date.now() + 5.5 * 3600000);
+}
+
+// Earliest bookable date: today if any slot is ≥6 h away, else tomorrow
+function computeMinDate() {
+  const now = istNow();
+  const todayIST = now.toISOString().slice(0, 10);
+  const curH = now.getUTCHours() + now.getUTCMinutes() / 60;
+  const anyToday = Object.values(SLOT_STARTS).some(h => h >= curH + 6);
+  return anyToday ? todayIST : new Date(now.getTime() + 86400000).toISOString().slice(0, 10);
+}
+
+// Enable/disable options in a time-select based on chosen date
+function updateTimeSlots(selectId, selectedDate) {
+  const sel = document.getElementById(selectId);
+  if (!sel) return;
+  if (!selectedDate) {
+    sel.disabled = true;
+    sel.options[0].textContent = 'Select a date first…';
+    sel.value = '';
+    return;
+  }
+  sel.disabled = false;
+  sel.options[0].textContent = 'Select preferred slot…';
+  const now = istNow();
+  const todayIST = now.toISOString().slice(0, 10);
+  const curH = now.getUTCHours() + now.getUTCMinutes() / 60;
+  Array.from(sel.options).forEach(opt => {
+    if (!opt.value) return;
+    const slotH = SLOT_STARTS[opt.value];
+    opt.disabled = selectedDate === todayIST && (slotH === undefined || slotH < curH + 6);
+  });
+  // Clear selection if chosen slot became unavailable
+  if (sel.selectedIndex > 0 && sel.options[sel.selectedIndex].disabled) sel.value = '';
+}
+
+const today = computeMinDate();
 document.getElementById('apptDate').min = today;
 document.getElementById('m-date').min = today;
+
+document.getElementById('apptDate').addEventListener('change', function() {
+  updateTimeSlots('apptTime', this.value);
+});
+document.getElementById('m-date').addEventListener('change', function() {
+  updateTimeSlots('m-time', this.value);
+});
 
 // ─── FOOTER YEAR ──────────────────────────────────────────────────
 document.getElementById('yr').textContent = new Date().getFullYear();
