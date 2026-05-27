@@ -138,10 +138,11 @@ tbody td{ padding:13px 16px; color:var(--text-dark); }
   display:inline-block; padding:3px 10px; border-radius:50px;
   font-size:11px; font-weight:600; white-space:nowrap;
 }
-.badge-pending  { background:#fef3c7; color:#92400e; }
-.badge-confirmed{ background:#dbeafe; color:#1e40af; }
-.badge-completed{ background:#dcfce7; color:#166534; }
-.badge-cancelled{ background:#fee2e2; color:#991b1b; }
+.badge-pending     { background:#fef3c7; color:#92400e; }
+.badge-confirmed   { background:#dbeafe; color:#1e40af; }
+.badge-completed   { background:#dcfce7; color:#166534; }
+.badge-cancelled   { background:#fee2e2; color:#991b1b; }
+.badge-rescheduled { background:#ede9fe; color:#5b21b6; }
 
 /* ─── EMPTY STATE ─── */
 .empty-state{ text-align:center; padding:60px 20px; color:var(--text-light); }
@@ -256,11 +257,12 @@ tbody td{ padding:13px 16px; color:var(--text-dark); }
     <div class="toolbar">
       <input type="search" id="searchInput" placeholder="Search name, phone, reason…" oninput="renderTable()"/>
       <div class="filter-pills">
-        <span class="pill active" data-f="All"       onclick="setFilter(this)">All</span>
-        <span class="pill"        data-f="Pending"   onclick="setFilter(this)">Pending</span>
-        <span class="pill"        data-f="Confirmed" onclick="setFilter(this)">Confirmed</span>
-        <span class="pill"        data-f="Completed" onclick="setFilter(this)">Completed</span>
-        <span class="pill"        data-f="Cancelled" onclick="setFilter(this)">Cancelled</span>
+        <span class="pill active" data-f="All"          onclick="setFilter(this)">All</span>
+        <span class="pill"        data-f="Pending"      onclick="setFilter(this)">Pending</span>
+        <span class="pill"        data-f="Confirmed"    onclick="setFilter(this)">Confirmed</span>
+        <span class="pill"        data-f="Rescheduled"  onclick="setFilter(this)">Rescheduled</span>
+        <span class="pill"        data-f="Completed"    onclick="setFilter(this)">Completed</span>
+        <span class="pill"        data-f="Cancelled"    onclick="setFilter(this)">Cancelled</span>
       </div>
     </div>
 
@@ -290,6 +292,7 @@ tbody td{ padding:13px 16px; color:var(--text-dark); }
       <div class="detail-item"><div class="di-label">Submitted</div><div class="di-val" id="dm-submitted">—</div></div>
     </div>
     <div style="margin-bottom:20px;"><div class="di-label" style="margin-bottom:8px;">Reason for Consultation</div><div class="reason-box" id="dm-reason">—</div></div>
+    <div id="dm-patient-notes-group" style="margin-bottom:20px;"><div class="di-label" style="margin-bottom:8px;">Patient Notes</div><div class="reason-box" id="dm-patient-notes">—</div></div>
     <div class="form-group" id="dm-slot-group" style="display:none;">
       <label>Confirmed Time Slot (IST)</label>
       <select id="dm-confirmed-slot"></select>
@@ -299,9 +302,7 @@ tbody td{ padding:13px 16px; color:var(--text-dark); }
       <textarea id="dm-notes" rows="3" placeholder="Add clinical notes…"></textarea>
     </div>
     <div class="modal-actions">
-      <select id="dm-status-select" class="status-select" onchange="onStatusChange(this.value)">
-        <option>Pending</option><option>Confirmed</option><option>Completed</option><option>Cancelled</option>
-      </select>
+      <select id="dm-status-select" class="status-select" onchange="onStatusChange(this.value)"></select>
       <button class="btn btn-primary" onclick="saveDetail()">💾 Save</button>
       <button class="btn btn-ghost" onclick="closeDetailModal()">Cancel</button>
     </div>
@@ -443,8 +444,27 @@ function buildTimeSlots(){
   for (let h = 10; h <= 20; h++)
     sel.insertAdjacentHTML('beforeend', `<option value="${h12(h)} – ${h12(h+1)} IST">${h12(h)} – ${h12(h+1)} IST</option>`);
 }
+const STATUS_TRANSITIONS = {
+  'Pending':     ['Confirmed', 'Cancelled'],
+  'Confirmed':   ['Rescheduled', 'Completed', 'Cancelled'],
+  'Rescheduled': ['Completed', 'Cancelled'],
+  'Completed':   [],
+  'Cancelled':   [],
+};
+function buildStatusOptions(currentStatus) {
+  const all = ['Pending', 'Confirmed', 'Rescheduled', 'Completed', 'Cancelled'];
+  const available = STATUS_TRANSITIONS[currentStatus] || [];
+  const sel = document.getElementById('dm-status-select');
+  sel.innerHTML = all.map(s => {
+    const isCurrent  = s === currentStatus;
+    const isDisabled = !available.includes(s);
+    return `<option value="${s}"${isDisabled ? ' disabled' : ''}${isCurrent ? ' selected' : ''}>${s}</option>`;
+  }).join('');
+  sel.value = currentStatus;
+}
 function onStatusChange(val){
-  document.getElementById('dm-slot-group').style.display = val === 'Confirmed' ? 'block' : 'none';
+  document.getElementById('dm-slot-group').style.display =
+    (val === 'Confirmed' || val === 'Rescheduled') ? 'block' : 'none';
 }
 
 
@@ -461,11 +481,14 @@ function openDetail(id){
   document.getElementById('dm-time').textContent    = a['Time Slot'] || '—';
   document.getElementById('dm-reason').textContent  = a.Reason || '—';
   const sheetStr = v => (v === 0 || v == null) ? '' : String(v);
-  document.getElementById('dm-notes').value         = sheetStr(a['Doctor Notes']);
-  document.getElementById('dm-age').textContent     = sheetStr(a.Age)  || '—';
-  document.getElementById('dm-gender').textContent  = sheetStr(a.Gender) || '—';
+  document.getElementById('dm-notes').value              = sheetStr(a['Doctor Notes']);
+  document.getElementById('dm-age').textContent          = sheetStr(a.Age)    || '—';
+  document.getElementById('dm-gender').textContent       = sheetStr(a.Gender) || '—';
+  document.getElementById('dm-patient-notes').textContent = sheetStr(a['Patient Notes']) || '—';
+  const pnGroup = document.getElementById('dm-patient-notes-group');
+  pnGroup.style.display = (sheetStr(a['Patient Notes'])) ? 'block' : 'none';
   document.getElementById('dm-submitted').textContent = fmtDate(a['Submitted At']);
-  document.getElementById('dm-status-select').value = status;
+  buildStatusOptions(status);
   const badge = document.getElementById('dm-status-badge');
   badge.textContent = status;
   badge.className = `badge badge-${status.toLowerCase()}`;
@@ -481,15 +504,24 @@ async function saveDetail(){
   if (!selectedId) return;
   const status        = document.getElementById('dm-status-select').value;
   const notes         = document.getElementById('dm-notes').value;
-  const confirmedSlot = status === 'Confirmed' ? document.getElementById('dm-confirmed-slot').value : '';
+  const needsSlot    = status === 'Confirmed' || status === 'Rescheduled';
+  const confirmedSlot = needsSlot ? document.getElementById('dm-confirmed-slot').value : '';
 
-  if (status === 'Confirmed' && !confirmedSlot) {
-    showToast('Please select a confirmed time slot.', true); return;
+  if (needsSlot && !confirmedSlot) {
+    showToast('Please select a time slot.', true); return;
   }
 
   const prev       = appointments.find(a => a.ID === selectedId);
   const prevStatus = prev?.Status;
-  const enc = v => encodeURIComponent(v);
+
+  if (status !== prevStatus) {
+    const valid = (STATUS_TRANSITIONS[prevStatus] || []).includes(status);
+    if (!valid) {
+      showToast(`Cannot change from "${prevStatus}" to "${status}".`, true); return;
+    }
+  }
+
+  const enc  = v => encodeURIComponent(v);
   const base = `${SCRIPT_URL}?token=${enc(HARDCODED_TOKEN)}&id=${enc(selectedId)}`;
 
   const fetches = [
@@ -500,15 +532,20 @@ async function saveDetail(){
 
   try {
     await Promise.all(fetches);
-    if (status !== prevStatus) {
-      await fetch(`${base}&action=notifyPatient&type=${enc(status.toLowerCase())}`);
-    }
+    await fetch(`${base}&action=notifyPatient&type=${enc(status.toLowerCase())}`);
     appointments = appointments.map(a => a.ID === selectedId ? {
       ...a, Status:status, 'Doctor Notes':notes,
       ...(confirmedSlot ? {'Time Slot':confirmedSlot} : {}),
     } : a);
     updateStats(); renderTable(); closeDetailModal();
-    showToast(status === 'Confirmed' ? 'Confirmed & notifications sent.' : status === 'Cancelled' ? 'Cancelled & notifications sent.' : 'Appointment saved.');
+    const toastMsg = {
+      Confirmed:   'Confirmed & notifications sent.',
+      Cancelled:   'Cancelled & notifications sent.',
+      Rescheduled: 'Rescheduled & notifications sent.',
+      Completed:   'Marked as completed.',
+      Pending:     'Reset to pending.',
+    };
+    showToast(toastMsg[status] || 'Appointment saved.');
   } catch { showToast('Save failed. Try again.', true); }
 }
 
