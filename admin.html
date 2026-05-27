@@ -500,8 +500,12 @@ function openDetail(id){
 function closeDetail(e){ if (e.target === document.getElementById('detailOverlay')) closeDetailModal(); }
 function closeDetailModal(){ document.getElementById('detailOverlay').classList.remove('open'); selectedId = null; }
 
+let _saving = false;
 async function saveDetail(){
-  if (!selectedId) return;
+  if (!selectedId || _saving) return;
+  _saving = true;
+  const saveBtn = document.querySelector('.modal-actions .btn-primary');
+  if (saveBtn) { saveBtn.disabled = true; saveBtn.textContent = 'Saving…'; }
   const status        = document.getElementById('dm-status-select').value;
   const notes         = document.getElementById('dm-notes').value;
   const needsSlot    = status === 'Confirmed' || status === 'Rescheduled';
@@ -547,6 +551,10 @@ async function saveDetail(){
     };
     showToast(toastMsg[status] || 'Appointment saved.');
   } catch { showToast('Save failed. Try again.', true); }
+  finally {
+    _saving = false;
+    if (saveBtn) { saveBtn.disabled = false; saveBtn.innerHTML = '💾 Save'; }
+  }
 }
 
 // ─── TOAST ────────────────────────────────────────────────────────
