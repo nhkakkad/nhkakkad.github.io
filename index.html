@@ -99,7 +99,7 @@ nav.scrolled {
 }
 .menu-overlay {
   display:none; position:fixed; inset:0;
-  background:rgba(20,14,42,0.6); backdrop-filter:blur(4px); z-index:998;
+  background:rgba(20,14,42,0.6); z-index:998;
 }
 .menu-overlay.open { display:block; }
 .nav-links.open { z-index:999; }
@@ -690,8 +690,10 @@ footer { background:var(--deep); color:rgba(255,255,255,0.6); padding:60px; }
 
 /* Mobile nav open */
 .nav-links.open {
-  display:flex; flex-direction:column; position:fixed; inset:0;
-  background:var(--deep); align-items:center; justify-content:center;
+  display:flex; flex-direction:column;
+  position:fixed; top:0; left:0; right:0; bottom:0;
+  background:#1f1635; background:var(--deep);
+  align-items:center; justify-content:center;
   gap:32px; z-index:999;
 }
 .nav-links.open a{ font-size:20px; }
@@ -761,7 +763,6 @@ footer { background:var(--deep); color:rgba(255,255,255,0.6); padding:60px; }
     </div>
   </a>
   <ul class="nav-links" id="navLinks">
-    <li><a href="#home">Home</a></li>
     <li><a href="#services">Areas of Expertise</a></li>
     <li><a href="#about">About Dr. Kakkad</a></li>
     <li><a href="#testimonials">Patient Stories</a></li>
