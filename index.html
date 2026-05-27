@@ -502,6 +502,10 @@ section { position:relative; }
   border:1.5px solid rgba(31,22,53,0.12); border-radius:10px;
   font-family:'DM Sans',sans-serif; font-size:14px; color:var(--deep);
   background:var(--cream); transition:border-color 0.3s, box-shadow 0.3s; outline:none;
+  box-sizing:border-box;
+}
+.form-group input[type="date"] {
+  -webkit-appearance:none; appearance:none;
 }
 .form-group input:focus,
 .form-group select:focus,
@@ -700,10 +704,10 @@ footer { background:var(--deep); color:rgba(255,255,255,0.6); padding:60px; }
   </a>
   <ul class="nav-links" id="navLinks">
     <li><a href="#home">Home</a></li>
-    <li><a href="#services">Area of Expertise</a></li>
-    <li><a href="#about">About Me</a></li>
+    <li><a href="#services">Expertise</a></li>
+    <li><a href="#about">About Dr. Kakkad</a></li>
     <li><a href="#testimonials">Testimonies</a></li>
-    <li><a href="#book" class="nav-cta">Book Now</a></li>
+    <li><a href="#book" class="nav-cta">Book an Appointment</a></li>
   </ul>
   <button class="nav-mobile-toggle" onclick="toggleMenu()" id="menuToggle">☰</button>
   <div class="menu-overlay" id="menuOverlay" onclick="toggleMenu()"></div>
@@ -1355,6 +1359,16 @@ function showError(id) {
 function val(id) { return (document.getElementById(id)?.value || '').trim(); }
 function isValidPhone(p) { var d = p.replace(/[\s\-().+]/g,''); return d.length >= 7 && d.length <= 15 && /^\d+$/.test(d); }
 function isValidDate(d) { return d && d >= today; }
+function isSlotStillValid(date, timeSlot) {
+  if (!date || !timeSlot) return false;
+  const slotH = SLOT_STARTS[timeSlot];
+  if (slotH === undefined) return false;
+  const now = istNow();
+  const todayIST = now.toISOString().slice(0, 10);
+  if (date > todayIST) return true;
+  const curH = now.getUTCHours() + now.getUTCMinutes() / 60;
+  return slotH >= curH + 6;
+}
 function isValidEmail(e) { return e && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e); }
 
 function collectData(prefix) {
@@ -1396,9 +1410,10 @@ async function submitModal() {
   if (!d.lname)               { showError('m-fg-lname'); ok = false; }
   if (!isValidPhone(d.phone)) { showError('m-fg-phone'); ok = false; }
   if (!isValidEmail(d.email)) { showError('m-fg-email'); ok = false; }
-  if (!isValidDate(d.date))   { showError('m-fg-date'); ok = false; }
-  if (!d.timeSlot)            { showError('m-fg-time'); ok = false; }
-  if (!d.reason)              { showError('m-fg-reason'); ok = false; }
+  if (!isValidDate(d.date))               { showError('m-fg-date'); ok = false; }
+  if (!d.timeSlot)                        { showError('m-fg-time'); ok = false; }
+  else if (!isSlotStillValid(d.date, d.timeSlot)) { showError('m-fg-time'); ok = false; }
+  if (!d.reason)                          { showError('m-fg-reason'); ok = false; }
   if (!ok) return;
 
   const btn = document.getElementById('modalSubmitBtn');
@@ -1431,9 +1446,10 @@ async function submitForm() {
   if (!d.lname)               { showError('fg-lname'); ok = false; }
   if (!isValidPhone(d.phone)) { showError('fg-phone'); ok = false; }
   if (!isValidEmail(d.email)) { showError('fg-email'); ok = false; }
-  if (!isValidDate(d.date))   { showError('fg-date'); ok = false; }
-  if (!d.timeSlot)            { showError('fg-time'); ok = false; }
-  if (!d.reason)              { showError('fg-reason'); ok = false; }
+  if (!isValidDate(d.date))               { showError('fg-date'); ok = false; }
+  if (!d.timeSlot)                        { showError('fg-time'); ok = false; }
+  else if (!isSlotStillValid(d.date, d.timeSlot)) { showError('fg-time'); ok = false; }
+  if (!d.reason)                          { showError('fg-reason'); ok = false; }
   if (!ok) return;
 
   const btn = document.getElementById('formSubmitBtn');
@@ -1503,13 +1519,22 @@ function updateTimeSlots(selectId, selectedDate) {
 }
 
 const today = computeMinDate();
-document.getElementById('apptDate').min = today;
-document.getElementById('m-date').min = today;
+const apptDateEl = document.getElementById('apptDate');
+const mDateEl    = document.getElementById('m-date');
+apptDateEl.setAttribute('min', today);
+mDateEl.setAttribute('min', today);
 
-document.getElementById('apptDate').addEventListener('change', function() {
+function clampDateToMin(input) {
+  const min = input.getAttribute('min');
+  if (min && input.value && input.value < min) input.value = min;
+}
+
+apptDateEl.addEventListener('change', function() {
+  clampDateToMin(this);
   updateTimeSlots('apptTime', this.value);
 });
-document.getElementById('m-date').addEventListener('change', function() {
+mDateEl.addEventListener('change', function() {
+  clampDateToMin(this);
   updateTimeSlots('m-time', this.value);
 });
 
