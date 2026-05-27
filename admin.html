@@ -536,7 +536,8 @@ async function saveDetail(){
 
   try {
     await Promise.all(fetches);
-    await fetch(`${base}&action=notifyPatient&type=${enc(status.toLowerCase())}`);
+    const statusChanged = status !== prevStatus;
+    if (statusChanged) await fetch(`${base}&action=notifyPatient&type=${enc(status.toLowerCase())}`);
     appointments = appointments.map(a => a.ID === selectedId ? {
       ...a, Status:status, 'Doctor Notes':notes,
       ...(confirmedSlot ? {'Time Slot':confirmedSlot} : {}),
@@ -549,7 +550,7 @@ async function saveDetail(){
       Completed:   'Marked as completed.',
       Pending:     'Reset to pending.',
     };
-    showToast(toastMsg[status] || 'Appointment saved.');
+    showToast(statusChanged ? (toastMsg[status] || 'Appointment saved.') : 'Notes saved.');
   } catch { showToast('Save failed. Try again.', true); }
   finally {
     _saving = false;
