@@ -9,7 +9,7 @@ var CONTENT = {
   title:    "Consultant Psychiatrist",
   location: "Junagadh, Gujarat",
   tagline:  "Junagadh's Trusted Mind Doctor",
-  heroDesc: "Compassionate, evidence-based psychiatric care for every chapter of your mental health journey — from first consultation to long-term recovery. Psychiatric care delivered entirely online — so you can get expert help from wherever you are, at a time that works for you. You are not alone.",
+  heroDesc: "Compassionate, evidence-based psychiatric care for every chapter of your mental health journey — from first consultation to long-term recovery. Psychiatric care delivered entirely online via secure video teleconsultation — so you can get expert help from wherever you are, at a time that works for you. You are not alone.",
   acceptingPatients: true,   // shows/hides the "Accepting New Patients" badge
 
   // ── Contact ──
@@ -19,7 +19,7 @@ var CONTENT = {
 
   // ── About ──
   aboutQuote: "Mental illness is not a personal failing. My goal is to make every patient feel safe, understood, and hopeful about their path forward.",
-  aboutBio:   "Dr. Nidhish Kakkad is a consultant psychiatrist based in Junagadh, Gujarat, specialising in diagnosing and treating a wide spectrum of mental health conditions. He combines the latest evidence-based treatments with a deeply human, patient-first approach that puts dignity at the centre of every consultation.",
+  aboutBio:   "Dr. Nidhish Kakkad is a consultant psychiatrist based in Junagadh — one of the few specialists serving Gujarat's Saurashtra region. He treats the full spectrum of mental health conditions, from anxiety and depression to complex psychiatric illness, pairing current evidence-based care with a practice built on patient dignity at every step. Dr. Kakkad offers online consultations in Gujarati, Hindi, and English — extending specialist mental health support to patients across India and to NRIs worldwide who would otherwise struggle to find a psychiatrist in their own language.",
   languages:  ["Gujarati", "Hindi", "English"],
 
   // ── Stats ──
