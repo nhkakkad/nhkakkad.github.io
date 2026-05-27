@@ -15,7 +15,7 @@
 // ============================================================
 
 const SPREADSHEET_ID = '106EqzFsF_ixRnE3hhuZ2254vJAIQXzQurwMUP43lij4';  // found in the sheet URL
-const SECRET_TOKEN   = 'YOUR_SECRET_TOKEN_HERE';      // long random string — keep secret
+const SECRET_TOKEN   = 'ParthIsGreat05!';      // long random string — keep secret
 const DOCTOR_EMAIL   = 'nhk5596@gmail.com';     // where new booking alerts go
 
 const HEADERS = [
