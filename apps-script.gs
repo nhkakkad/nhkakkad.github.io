@@ -14,9 +14,9 @@
 //   7. Set the same SECRET_TOKEN as VITE_APPS_SCRIPT_TOKEN in .env
 // ============================================================
 
-const SPREADSHEET_ID = 'YOUR_GOOGLE_SHEET_ID_HERE';  // found in the sheet URL
+const SPREADSHEET_ID = '106EqzFsF_ixRnE3hhuZ2254vJAIQXzQurwMUP43lij4';  // found in the sheet URL
 const SECRET_TOKEN   = 'YOUR_SECRET_TOKEN_HERE';      // long random string — keep secret
-const DOCTOR_EMAIL   = 'kakkadnidhish@gmail.com';     // where new booking alerts go
+const DOCTOR_EMAIL   = 'nhk5596@gmail.com';     // where new booking alerts go
 
 const HEADERS = [
   'ID', 'Name', 'Email', 'Phone', 'Age', 'Gender',
