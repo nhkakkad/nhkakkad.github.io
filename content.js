@@ -14,7 +14,7 @@ var CONTENT = {
 
   // ── Contact ──
   phone:    "+91 95126 79105",
-  phoneRaw: "+919512679105",   // country code + number, no spaces
+  phoneRaw: "919512679105",    // digits only, no + or spaces — used for tel: and wa.me links
   email:    "nhk5596@gmail.com",
 
   // ── About ──

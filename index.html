@@ -964,14 +964,14 @@ footer { background:var(--deep); color:rgba(255,255,255,0.6); padding:60px; }
           <div class="book-contact-icon">📞</div>
           <div>
             <strong style="color:var(--white);display:block;">Call Me</strong>
-            <a href="tel:+919512679105" data-c="phone">+91 95126 79105</a>
+            <a href="tel:+919512679105" data-c="phone-href">Tap to Call</a>
           </div>
         </div>
         <div class="book-contact-item">
           <div class="book-contact-icon"><i class="fa-brands fa-whatsapp" style="font-size:20px;"></i></div>
           <div>
             <strong style="color:var(--white);display:block;">WhatsApp</strong>
-            <a href="https://wa.me/919512679105" data-c="whatsapp">+91 95126 79105</a>
+            <a href="https://wa.me/919512679105" data-c="whatsapp-href">Chat Now</a>
           </div>
         </div>
         <div class="book-contact-item">
@@ -1021,14 +1021,11 @@ footer { background:var(--deep); color:rgba(255,255,255,0.6); padding:60px; }
           <div class="form-group" id="fg-time">
             <label>Preferred Time</label>
             <select id="apptTime">
-              <option value="">Select time…</option>
-              <option>10:00 – 11:00 AM</option>
-              <option>11:00 – 12:00 PM</option>
-              <option>12:00 – 01:00 PM</option>
-              <option>02:00 – 03:00 PM</option>
-              <option>03:00 – 04:00 PM</option>
-              <option>04:00 – 05:00 PM</option>
-              <option>05:00 – 06:00 PM</option>
+              <option value="">Select preferred slot…</option>
+              <option>Morning (9 AM – 12 PM IST)</option>
+              <option>Afternoon (12 PM – 3 PM IST)</option>
+              <option>Evening (3 PM – 7 PM IST)</option>
+              <option>Night (7 PM – 9 PM IST)</option>
             </select>
             <span class="error-msg">Please select a time slot.</span>
           </div>
@@ -1058,14 +1055,14 @@ footer { background:var(--deep); color:rgba(255,255,255,0.6); padding:60px; }
         <button class="form-submit" onclick="submitForm()" id="formSubmitBtn">
           📅 Request Appointment
         </button>
-        <a href="https://wa.me/919512679105" class="whatsapp-btn" data-c="whatsapp">
+        <a href="https://wa.me/919512679105" class="whatsapp-btn" data-c="whatsapp-href">
           <i class="fa-brands fa-whatsapp" style="font-size:1.2em;"></i> Book via WhatsApp Instead
         </a>
       </div>
       <div class="modal-success" id="formSuccess">
         <div class="check">✅</div>
         <h3>Appointment Requested!</h3>
-        <p>Thank you! I will reach ouyt to you within 24 hours to confirm your slot.</p>
+        <p>Thank you! I will reach out to you within 24 hours to confirm your slot.</p>
         <br>
         <button class="form-submit" onclick="resetMainForm()" style="width:auto;padding:12px 28px;margin:0 auto;">Book Another</button>
       </div>
@@ -1169,7 +1166,7 @@ footer { background:var(--deep); color:rgba(255,255,255,0.6); padding:60px; }
       <div class="footer-col">
         <h4>Contact</h4>
         <ul>
-          <li><a href="tel:+919512679105" data-c="phone-footer"><i class="fa-solid fa-phone"></i> +91 95126 79105</a></li>
+          <li><a href="tel:+919512679105" data-c="phone-footer"><i class="fa-solid fa-phone"></i> Call Me</a></li>
           <li><a href="https://wa.me/919512679105" data-c="whatsapp-footer"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a></li>
           <li><a href="mailto:kakkadnidhish@gmail.com" data-c="email-footer"><i class="fa-solid fa-envelope"></i> Email Me</a></li>
         </ul>
@@ -1224,14 +1221,11 @@ footer { background:var(--deep); color:rgba(255,255,255,0.6); padding:60px; }
         <div class="form-group" id="m-fg-time">
           <label>Time</label>
           <select id="m-time">
-            <option value="">Select…</option>
-            <option>10:00 – 11:00 AM</option>
-            <option>11:00 – 12:00 PM</option>
-            <option>12:00 – 01:00 PM</option>
-            <option>02:00 – 03:00 PM</option>
-            <option>03:00 – 04:00 PM</option>
-            <option>04:00 – 05:00 PM</option>
-            <option>05:00 – 06:00 PM</option>
+            <option value="">Select preferred slot…</option>
+            <option>Morning (9 AM – 12 PM IST)</option>
+            <option>Afternoon (12 PM – 3 PM IST)</option>
+            <option>Evening (3 PM – 7 PM IST)</option>
+            <option>Night (7 PM – 9 PM IST)</option>
           </select>
           <span class="error-msg">Required.</span>
         </div>
@@ -1255,7 +1249,7 @@ footer { background:var(--deep); color:rgba(255,255,255,0.6); padding:60px; }
         <span class="error-msg">Required.</span>
       </div>
       <button class="form-submit" onclick="submitModal()" id="modalSubmitBtn">📅 Request Appointment</button>
-      <a href="https://wa.me/919512679105" class="whatsapp-btn" data-c="whatsapp">
+      <a href="https://wa.me/919512679105" class="whatsapp-btn" data-c="whatsapp-href">
         <i class="fa-brands fa-whatsapp" style="font-size:1.2em;"></i> Book via WhatsApp Instead
       </a>
     </div>
@@ -1308,6 +1302,12 @@ function generateContent() {
   // Contact links
   document.querySelectorAll('[data-c="phone"]').forEach(function(el) {
     el.href = 'tel:+' + C.phoneRaw; el.textContent = C.phone;
+  });
+  document.querySelectorAll('[data-c="phone-href"]').forEach(function(el) {
+    el.href = 'tel:+' + C.phoneRaw;
+  });
+  document.querySelectorAll('[data-c="whatsapp-href"]').forEach(function(el) {
+    el.href = 'https://wa.me/' + C.phoneRaw;
   });
   document.querySelectorAll('[data-c="phoneText"]').forEach(function(el) { el.textContent = C.phone; });
   document.querySelectorAll('[data-c="whatsapp"]').forEach(function(el) {
