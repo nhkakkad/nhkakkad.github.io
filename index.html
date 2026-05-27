@@ -1009,6 +1009,19 @@ footer { background:var(--deep); color:rgba(255,255,255,0.6); padding:60px; }
           </div>
         </div>
         <div class="form-row">
+          <div class="form-group" id="fg-age">
+            <label>Age</label>
+            <input type="number" min="1" max="120" placeholder="30" id="age"/>
+          </div>
+          <div class="form-group" id="fg-gender">
+            <label>Gender</label>
+            <select id="gender">
+              <option value="">Select…</option>
+              <option>Male</option><option>Female</option><option>Other</option><option>Prefer not to say</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
           <div class="form-group" id="fg-date">
             <label>Preferred Date</label>
             <input type="date" id="apptDate"/>
@@ -1179,6 +1192,19 @@ footer { background:var(--deep); color:rgba(255,255,255,0.6); padding:60px; }
         <label>Email</label>
         <input type="email" placeholder="parth@email.com" id="m-email"/>
         <span class="error-msg">Enter a valid email address.</span>
+      </div>
+      <div class="form-row">
+        <div class="form-group" id="m-fg-age">
+          <label>Age</label>
+          <input type="number" min="1" max="120" placeholder="30" id="m-age"/>
+        </div>
+        <div class="form-group" id="m-fg-gender">
+          <label>Gender</label>
+          <select id="m-gender">
+            <option value="">Select…</option>
+            <option>Male</option><option>Female</option><option>Other</option><option>Prefer not to say</option>
+          </select>
+        </div>
       </div>
       <div class="form-row">
         <div class="form-group" id="m-fg-date">
@@ -1434,6 +1460,8 @@ function collectData(prefix) {
     lname:    val(p + 'lname'),
     phone:    val(p + 'phone'),
     email:    val(p + 'email') || val('email') || '',
+    age:      val(p + 'age')    || val('age')    || '',
+    gender:   val(p + 'gender') || val('gender') || '',
     date:     val(p + 'date') || val('apptDate'),
     timeSlot: val(p + 'time') || val('apptTime'),
     reason:   val(p + 'reason') || val('reason'),
@@ -1492,9 +1520,10 @@ async function submitForm() {
   setAlert('formAlert','','');
 
   const d = {
-    fname:    val('fname'), lname: val('lname'), phone: val('phone'),
-    email:    val('email'), date:  val('apptDate'), timeSlot: val('apptTime'),
-    reason:   val('reason'), notes: val('notes'),
+    fname:    val('fname'),    lname:  val('lname'),    phone: val('phone'),
+    email:    val('email'),    age:    val('age'),       gender: val('gender'),
+    date:     val('apptDate'), timeSlot: val('apptTime'),
+    reason:   val('reason'),   notes:  val('notes'),
     submittedAt: new Date().toISOString(),
   };
   let ok = true;
@@ -1523,7 +1552,8 @@ async function submitForm() {
 function resetMainForm() {
   document.getElementById('formContent').style.display = '';
   document.getElementById('formSuccess').style.display = 'none';
-  ['fname','lname','phone','email','notes'].forEach(id => document.getElementById(id).value = '');
+  ['fname','lname','phone','email','age','notes'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('gender').value = '';
   document.getElementById('apptDate').value = '';
   updateTimeSlots('apptTime', '');
 }

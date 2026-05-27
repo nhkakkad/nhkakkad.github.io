@@ -283,24 +283,13 @@ tbody td{ padding:13px 16px; color:var(--text-dark); }
     <div class="detail-grid">
       <div class="detail-item"><div class="di-label">Email</div><div class="di-val" id="dm-email">—</div></div>
       <div class="detail-item"><div class="di-label">Phone</div><div class="di-val" id="dm-phone">—</div></div>
+      <div class="detail-item"><div class="di-label">Age</div><div class="di-val" id="dm-age">—</div></div>
+      <div class="detail-item"><div class="di-label">Gender</div><div class="di-val" id="dm-gender">—</div></div>
       <div class="detail-item"><div class="di-label">Preferred Date</div><div class="di-val" id="dm-date">—</div></div>
-      <div class="detail-item"><div class="di-label">Time Slot (IST)</div><div class="di-val" id="dm-time">—</div></div>
+      <div class="detail-item"><div class="di-label">Preferred Slot</div><div class="di-val" id="dm-time">—</div></div>
       <div class="detail-item"><div class="di-label">Submitted</div><div class="di-val" id="dm-submitted">—</div></div>
     </div>
     <div style="margin-bottom:20px;"><div class="di-label" style="margin-bottom:8px;">Reason for Consultation</div><div class="reason-box" id="dm-reason">—</div></div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
-      <div class="form-group" style="margin-bottom:0;">
-        <label>Age</label>
-        <input type="number" id="dm-age" min="1" max="120" placeholder="—"/>
-      </div>
-      <div class="form-group" style="margin-bottom:0;">
-        <label>Gender</label>
-        <select id="dm-gender">
-          <option value="">—</option>
-          <option>Male</option><option>Female</option><option>Other</option><option>Prefer not to say</option>
-        </select>
-      </div>
-    </div>
     <div class="form-group" id="dm-slot-group" style="display:none;">
       <label>Confirmed Time Slot (IST)</label>
       <select id="dm-confirmed-slot"></select>
@@ -420,18 +409,13 @@ function renderTable(){
       <td>${esc(a['Time Slot']||'—')}</td>
       <td>${esc(a.Reason||'—').substring(0,30)}${(a.Reason||'').length>30?'…':''}</td>
       <td><span class="badge badge-${(a.Status||'pending').toLowerCase()}">${esc(a.Status||'Pending')}</span></td>
-      <td onclick="event.stopPropagation()">
-        <select class="status-select" onchange="quickStatus('${a.ID}',this.value)">
-          ${['Pending','Confirmed','Completed','Cancelled'].map(s=>`<option${s===a.Status?' selected':''}>${s}</option>`).join('')}
-        </select>
-      </td>
     </tr>`).join('');
 
   document.getElementById('tableWrap').innerHTML = `
     <table>
       <thead><tr>
         <th>Name</th><th>Phone</th><th>Email</th><th>Date</th><th>Time (IST)</th>
-        <th>Reason</th><th>Status</th><th>Update</th>
+        <th>Reason</th><th>Status</th>
       </tr></thead>
       <tbody>${tbody}</tbody>
     </table>`;
@@ -463,15 +447,6 @@ function onStatusChange(val){
   document.getElementById('dm-slot-group').style.display = val === 'Confirmed' ? 'block' : 'none';
 }
 
-// ─── QUICK STATUS ─────────────────────────────────────────────────
-async function quickStatus(id, status){
-  try {
-    await fetch(`${SCRIPT_URL}?action=updateStatus&token=${encodeURIComponent(HARDCODED_TOKEN)}&id=${encodeURIComponent(id)}&status=${encodeURIComponent(status)}`);
-    appointments = appointments.map(a => a.ID === id ? {...a, Status:status} : a);
-    updateStats(); renderTable();
-    showToast(`Status updated to "${status}"`);
-  } catch { showToast('Update failed. Try again.', true); }
-}
 
 // ─── DETAIL MODAL ─────────────────────────────────────────────────
 function openDetail(id){
@@ -485,15 +460,17 @@ function openDetail(id){
   document.getElementById('dm-date').textContent    = fmtDate(a.Date);
   document.getElementById('dm-time').textContent    = a['Time Slot'] || '—';
   document.getElementById('dm-reason').textContent  = a.Reason || '—';
-  document.getElementById('dm-notes').value         = a['Doctor Notes'] || '';
-  document.getElementById('dm-age').value           = a.Age || '';
-  document.getElementById('dm-gender').value        = a.Gender || '';
+  const sheetStr = v => (v === 0 || v == null) ? '' : String(v);
+  document.getElementById('dm-notes').value         = sheetStr(a['Doctor Notes']);
+  document.getElementById('dm-age').textContent     = sheetStr(a.Age)  || '—';
+  document.getElementById('dm-gender').textContent  = sheetStr(a.Gender) || '—';
   document.getElementById('dm-submitted').textContent = fmtDate(a['Submitted At']);
   document.getElementById('dm-status-select').value = status;
   const badge = document.getElementById('dm-status-badge');
   badge.textContent = status;
   badge.className = `badge badge-${status.toLowerCase()}`;
   buildTimeSlots();
+  document.getElementById('dm-confirmed-slot').value = sheetStr(a['Time Slot']);
   onStatusChange(status);
   document.getElementById('detailOverlay').classList.add('open');
 }
@@ -504,8 +481,6 @@ async function saveDetail(){
   if (!selectedId) return;
   const status        = document.getElementById('dm-status-select').value;
   const notes         = document.getElementById('dm-notes').value;
-  const age           = document.getElementById('dm-age').value.trim();
-  const gender        = document.getElementById('dm-gender').value;
   const confirmedSlot = status === 'Confirmed' ? document.getElementById('dm-confirmed-slot').value : '';
 
   if (status === 'Confirmed' && !confirmedSlot) {
@@ -520,22 +495,20 @@ async function saveDetail(){
   const fetches = [
     fetch(`${base}&action=updateStatus&status=${enc(status)}`),
     fetch(`${base}&action=updateNotes&notes=${enc(notes)}`),
-    fetch(`${base}&action=updateField&field=${enc('Age')}&value=${enc(age)}`),
-    fetch(`${base}&action=updateField&field=${enc('Gender')}&value=${enc(gender)}`),
   ];
   if (confirmedSlot) fetches.push(fetch(`${base}&action=updateField&field=${enc('Time Slot')}&value=${enc(confirmedSlot)}`));
 
   try {
     await Promise.all(fetches);
-    if (status !== prevStatus && (status === 'Confirmed' || status === 'Cancelled')) {
+    if (status !== prevStatus) {
       await fetch(`${base}&action=notifyPatient&type=${enc(status.toLowerCase())}`);
     }
     appointments = appointments.map(a => a.ID === selectedId ? {
-      ...a, Status:status, 'Doctor Notes':notes, Age:age, Gender:gender,
+      ...a, Status:status, 'Doctor Notes':notes,
       ...(confirmedSlot ? {'Time Slot':confirmedSlot} : {}),
     } : a);
     updateStats(); renderTable(); closeDetailModal();
-    showToast(status === 'Confirmed' ? 'Confirmed & email sent.' : status === 'Cancelled' ? 'Cancelled & patient notified.' : 'Appointment saved.');
+    showToast(status === 'Confirmed' ? 'Confirmed & notifications sent.' : status === 'Cancelled' ? 'Cancelled & notifications sent.' : 'Appointment saved.');
   } catch { showToast('Save failed. Try again.', true); }
 }
 
