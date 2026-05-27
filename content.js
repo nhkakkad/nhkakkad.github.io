@@ -29,12 +29,12 @@ var CONTENT = {
   // ── Practice Hours ──
   // status: "open" | "limited" | "closed"
   hours: [
-    { day: "Monday",    time: "10:00 AM – 8:00 PM (IST)", status: "open"    },
-    { day: "Tuesday",   time: "10:00 AM – 8:00 PM (IST)", status: "open"    },
-    { day: "Wednesday", time: "10:00 AM – 8:00 PM (IST)", status: "open"    },
-    { day: "Thursday",  time: "10:00 AM – 8:00 PM (IST)", status: "open"    },
-    { day: "Friday",    time: "10:00 AM – 8:00 PM (IST)", status: "open"    },
-    { day: "Saturday",  time: "10:00 AM – 8:00 PM (IST)", status: "open"    },
+    { day: "Monday",    time: "10:00 AM – 9:00 PM (IST)", status: "open"    },
+    { day: "Tuesday",   time: "10:00 AM – 9:00 PM (IST)", status: "open"    },
+    { day: "Wednesday", time: "10:00 AM – 9:00 PM (IST)", status: "open"    },
+    { day: "Thursday",  time: "10:00 AM – 9:00 PM (IST)", status: "open"    },
+    { day: "Friday",    time: "10:00 AM – 9:00 PM (IST)", status: "open"    },
+    { day: "Saturday",  time: "10:00 AM – 9:00 PM (IST)", status: "open"    },
     { day: "Sunday",    time: "By appointment",       status: "limited" },
   ],
   teleconsultationAvailable: true,
