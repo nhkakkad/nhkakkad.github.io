@@ -664,12 +664,15 @@ footer { background:var(--bg-dark); color:rgba(255,255,255,0.45); padding:60px; 
 .nav-links.open {
   display:flex; flex-direction:column;
   position:fixed; top:0; left:0; right:0; bottom:0;
+  height:100vh; height:100dvh;
   background:var(--bg);
   align-items:center; justify-content:center;
-  gap:28px; z-index:999;
-  border-left:1px solid var(--border);
+  gap:28px; z-index:1001;
+  overflow-y:auto; overscroll-behavior:contain;
 }
 .nav-links.open a { font-size:18px; color:var(--ink); }
+/* Neutralise backdrop-filter stacking context so the fixed menu covers the full screen */
+nav.menu-open { backdrop-filter:none !important; background:transparent !important; }
 
 </style>
 <script type="application/ld+json">
@@ -1357,6 +1360,7 @@ function toggleMenu() {
   const isOpen = navLinks.classList.toggle('open');
   menuOverlay.classList.toggle('open', isOpen);
   document.body.style.overflow = isOpen ? 'hidden' : '';
+  document.getElementById('navbar').classList.toggle('menu-open', isOpen);
 }
 navLinks.querySelectorAll('a[href]').forEach(link => {
   link.addEventListener('click', () => { if (navLinks.classList.contains('open')) toggleMenu(); });
