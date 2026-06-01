@@ -189,6 +189,62 @@ tbody td{ padding:13px 16px; color:var(--text-dark); }
   table { font-size:13px; }
   thead th, tbody td { padding:10px 12px; }
 }
+
+/* ─── DIAGNOSIS SEARCHABLE DROPDOWN ─── */
+.diag-wrap{ position:relative; }
+.diag-trigger{
+  width:100%; padding:11px 14px;
+  border:1.5px solid rgba(31,22,53,0.15); border-radius:10px;
+  background:var(--cream); cursor:pointer;
+  display:flex; justify-content:space-between; align-items:center; gap:8px;
+  font-family:'DM Sans',sans-serif; font-size:14px; color:var(--text-light);
+  text-align:left; transition:border-color 0.2s, box-shadow 0.2s;
+}
+.diag-trigger.has-value{ color:var(--text-dark); }
+.diag-trigger.open{ border-color:var(--sage); box-shadow:0 0 0 3px rgba(94,158,140,0.12); background:var(--white); }
+.diag-trigger-text{ flex:1; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
+.diag-chevron{ font-size:10px; flex-shrink:0; color:var(--text-light); transition:transform 0.2s; }
+.diag-trigger.open .diag-chevron{ transform:rotate(180deg); }
+.diag-panel{
+  display:none; position:absolute; top:calc(100% + 4px); left:0; right:0; z-index:200;
+  background:var(--white); border:1.5px solid rgba(94,158,140,0.4); border-radius:10px;
+  box-shadow:0 8px 30px rgba(31,22,53,0.15); flex-direction:column; max-height:280px;
+}
+.diag-panel.open{ display:flex; }
+.diag-search-wrap{
+  padding:10px 10px 8px; border-bottom:1px solid rgba(31,22,53,0.08); flex-shrink:0;
+  position:relative;
+}
+.diag-search-wrap input{
+  width:100%; padding:8px 12px 8px 32px;
+  border:1.5px solid rgba(31,22,53,0.15); border-radius:8px;
+  font-size:13px; background:var(--cream);
+}
+.diag-search-wrap input:focus{ border-color:var(--sage); box-shadow:0 0 0 2px rgba(94,158,140,0.12); background:var(--white); }
+.diag-search-icon{
+  position:absolute; left:20px; top:50%; transform:translateY(-50%);
+  font-size:12px; color:var(--text-light); pointer-events:none;
+}
+.diag-list{ overflow-y:auto; flex:1; }
+.diag-cat-header{
+  padding:5px 12px 3px; font-size:10px; font-weight:700; letter-spacing:1px;
+  text-transform:uppercase; color:var(--text-light); background:var(--cream);
+  position:sticky; top:0; border-bottom:1px solid rgba(31,22,53,0.05);
+}
+.diag-opt{
+  padding:7px 14px; font-size:13px; cursor:pointer; color:var(--text-dark);
+  transition:background 0.12s; display:flex; align-items:baseline; gap:8px;
+}
+.diag-opt:hover{ background:rgba(94,158,140,0.1); }
+.diag-opt.selected{ background:rgba(94,158,140,0.15); }
+.diag-opt-code{ font-weight:600; color:var(--sage); font-size:12px; flex-shrink:0; }
+.diag-opt-name{ color:var(--text-dark); }
+.diag-empty{ padding:18px; text-align:center; color:var(--text-light); font-size:13px; }
+.diag-clear{
+  background:none; border:none; cursor:pointer; color:var(--text-light);
+  font-size:14px; flex-shrink:0; padding:0 2px; line-height:1;
+}
+.diag-clear:hover{ color:var(--danger); }
 </style>
 </head>
 <body>
@@ -296,6 +352,24 @@ tbody td{ padding:13px 16px; color:var(--text-dark); }
     <div class="form-group" id="dm-slot-group" style="display:none;">
       <label>Confirmed Time Slot (IST)</label>
       <select id="dm-confirmed-slot"></select>
+    </div>
+    <div class="form-group">
+      <label>ICD-11 Diagnosis</label>
+      <div class="diag-wrap" id="dm-diag-wrap">
+        <button type="button" class="diag-trigger" id="dm-diag-trigger" onclick="toggleDiagPanel()">
+          <span class="diag-trigger-text" id="dm-diag-display">— Select diagnosis —</span>
+          <button type="button" class="diag-clear" id="dm-diag-clear" style="display:none;" onclick="clearDiag(event)" title="Clear">✕</button>
+          <span class="diag-chevron">▾</span>
+        </button>
+        <div class="diag-panel" id="dm-diag-panel">
+          <div class="diag-search-wrap">
+            <span class="diag-search-icon">🔍</span>
+            <input type="text" id="dm-diag-search" placeholder="Search by code or name…" oninput="filterDiag(this.value)" autocomplete="off" onclick="event.stopPropagation()"/>
+          </div>
+          <div class="diag-list" id="dm-diag-list"></div>
+        </div>
+      </div>
+      <input type="hidden" id="dm-diag-value"/>
     </div>
     <div class="form-group">
       <label>Doctor's Notes</label>
@@ -468,6 +542,236 @@ function onStatusChange(val){
 }
 
 
+// ─── ICD-11 DIAGNOSIS DATA ────────────────────────────────────────
+const ICD11 = {
+  "Neurodevelopmental Disorders": [
+    { code:"6A00", name:"Intellectual Developmental Disorder" },
+    { code:"6A01", name:"Developmental Speech or Language Disorder" },
+    { code:"6A02", name:"Autism Spectrum Disorder" },
+    { code:"6A03", name:"Attention Deficit Hyperactivity Disorder (ADHD)" },
+    { code:"6A04", name:"Stereotyped Movement Disorder" },
+    { code:"6A05", name:"Tic Disorders" },
+    { code:"6A06", name:"Developmental Learning Disorder" },
+    { code:"6A0Y", name:"Other Specified Neurodevelopmental Disorder" },
+  ],
+  "Schizophrenia & Primary Psychotic Disorders": [
+    { code:"6A20", name:"Schizophrenia" },
+    { code:"6A21", name:"Schizoaffective Disorder" },
+    { code:"6A22", name:"Schizotypal Disorder" },
+    { code:"6A23", name:"Acute and Transient Psychotic Disorder" },
+    { code:"6A24", name:"Delusional Disorder" },
+    { code:"6A25", name:"Symptomatic Manifestations of Primary Psychotic Disorders" },
+    { code:"6A2Y", name:"Other Specified Primary Psychotic Disorder" },
+  ],
+  "Mood Disorders — Bipolar": [
+    { code:"6A40", name:"Bipolar Type I Disorder" },
+    { code:"6A41", name:"Bipolar Type II Disorder" },
+    { code:"6A42", name:"Cyclothymic Disorder" },
+    { code:"6A4Y", name:"Other Specified Bipolar or Related Disorder" },
+  ],
+  "Mood Disorders — Depressive": [
+    { code:"6A60", name:"Single Episode Depressive Disorder" },
+    { code:"6A61", name:"Recurrent Depressive Disorder" },
+    { code:"6A62", name:"Dysthymic Disorder" },
+    { code:"6A70", name:"Mixed Depressive and Anxiety Disorder" },
+    { code:"6A6Y", name:"Other Specified Depressive Disorder" },
+  ],
+  "Anxiety & Fear-Related Disorders": [
+    { code:"6B00", name:"Generalised Anxiety Disorder (GAD)" },
+    { code:"6B01", name:"Panic Disorder" },
+    { code:"6B02", name:"Agoraphobia" },
+    { code:"6B03", name:"Specific Phobia" },
+    { code:"6B04", name:"Social Anxiety Disorder" },
+    { code:"6B05", name:"Separation Anxiety Disorder" },
+    { code:"6B06", name:"Selective Mutism" },
+    { code:"6B0Y", name:"Other Specified Anxiety or Fear-Related Disorder" },
+  ],
+  "Obsessive-Compulsive & Related Disorders": [
+    { code:"6B20", name:"Obsessive-Compulsive Disorder (OCD)" },
+    { code:"6B21", name:"Body Dysmorphic Disorder" },
+    { code:"6B22", name:"Olfactory Reference Disorder" },
+    { code:"6B23", name:"Hypochondriasis / Health Anxiety Disorder" },
+    { code:"6B24", name:"Hoarding Disorder" },
+    { code:"6B25", name:"Body-Focused Repetitive Behaviour Disorder" },
+    { code:"6B2Y", name:"Other Specified Obsessive-Compulsive or Related Disorder" },
+  ],
+  "Disorders Specifically Associated with Stress": [
+    { code:"6B40", name:"Post-Traumatic Stress Disorder (PTSD)" },
+    { code:"6B41", name:"Complex Post-Traumatic Stress Disorder (CPTSD)" },
+    { code:"6B42", name:"Prolonged Grief Disorder" },
+    { code:"6B43", name:"Adjustment Disorder" },
+    { code:"6B44", name:"Reactive Attachment Disorder" },
+    { code:"6B45", name:"Disinhibited Social Engagement Disorder" },
+    { code:"6B4Y", name:"Other Specified Stress-Related Disorder" },
+  ],
+  "Dissociative Disorders": [
+    { code:"6B60", name:"Dissociative Neurological Symptom Disorder" },
+    { code:"6B61", name:"Dissociative Amnesia" },
+    { code:"6B62", name:"Trance Disorder" },
+    { code:"6B64", name:"Dissociative Identity Disorder" },
+    { code:"6B66", name:"Depersonalisation-Derealisation Disorder" },
+    { code:"6B6Y", name:"Other Specified Dissociative Disorder" },
+  ],
+  "Feeding & Eating Disorders": [
+    { code:"6B80", name:"Anorexia Nervosa" },
+    { code:"6B81", name:"Bulimia Nervosa" },
+    { code:"6B82", name:"Binge Eating Disorder" },
+    { code:"6B83", name:"Avoidant-Restrictive Food Intake Disorder (ARFID)" },
+    { code:"6B84", name:"Pica" },
+    { code:"6B85", name:"Rumination-Regurgitation Disorder" },
+    { code:"6B8Y", name:"Other Specified Feeding or Eating Disorder" },
+  ],
+  "Elimination Disorders": [
+    { code:"6C00", name:"Enuresis" },
+    { code:"6C01", name:"Encopresis" },
+  ],
+  "Bodily Distress & Experience Disorders": [
+    { code:"6C20", name:"Bodily Distress Disorder" },
+    { code:"6C21", name:"Body Integrity Dysphoria" },
+  ],
+  "Substance Use Disorders": [
+    { code:"6C40", name:"Disorders due to Alcohol Use" },
+    { code:"6C41", name:"Disorders due to Cannabis Use" },
+    { code:"6C43", name:"Disorders due to Opioid Use" },
+    { code:"6C44", name:"Disorders due to Sedative, Hypnotic or Anxiolytic Use" },
+    { code:"6C45", name:"Disorders due to Cocaine Use" },
+    { code:"6C46", name:"Disorders due to Stimulant Use (incl. Amphetamines)" },
+    { code:"6C4A", name:"Disorders due to Nicotine Use" },
+    { code:"6C4B", name:"Disorders due to Volatile Inhalant Use" },
+    { code:"6C4G", name:"Disorders due to Unknown Psychoactive Substance" },
+    { code:"6C4H", name:"Non-psychoactive Substance Misuse" },
+  ],
+  "Impulse Control & Behavioural Addictions": [
+    { code:"6C70", name:"Intermittent Explosive Disorder" },
+    { code:"6C71", name:"Pyromania" },
+    { code:"6C72", name:"Kleptomania" },
+    { code:"6C73", name:"Compulsive Sexual Behaviour Disorder" },
+    { code:"6C74", name:"Gambling Disorder" },
+    { code:"6C75", name:"Gaming Disorder" },
+    { code:"6C7Y", name:"Other Specified Impulse Control Disorder" },
+  ],
+  "Disruptive Behaviour & Dissocial Disorders": [
+    { code:"6C90", name:"Oppositional Defiant Disorder (ODD)" },
+    { code:"6C91", name:"Conduct-Dissocial Disorder" },
+    { code:"6C9Y", name:"Other Specified Disruptive Behaviour Disorder" },
+  ],
+  "Personality Disorders": [
+    { code:"6D10", name:"Personality Disorder — Mild" },
+    { code:"6D11", name:"Personality Disorder — Moderate" },
+    { code:"6D12", name:"Personality Disorder — Severe" },
+    { code:"6D10.1", name:"Borderline Pattern (BPD)" },
+    { code:"6D10.2", name:"Dissocial / Antisocial Pattern" },
+    { code:"6D10.3", name:"Anankastic / Obsessive-Compulsive Pattern" },
+    { code:"6D10.4", name:"Anxious-Avoidant Pattern" },
+    { code:"6D10.5", name:"Dependent Pattern" },
+    { code:"6D10.6", name:"Narcissistic Pattern" },
+    { code:"6D10.7", name:"Schizoid Pattern" },
+  ],
+  "Paraphilic Disorders": [
+    { code:"6D30", name:"Exhibitionistic Disorder" },
+    { code:"6D31", name:"Voyeuristic Disorder" },
+    { code:"6D32", name:"Paedophilic Disorder" },
+    { code:"6D33", name:"Coercive Sexual Sadism Disorder" },
+    { code:"6D34", name:"Frotteuristic Disorder" },
+    { code:"6D3Y", name:"Other Specified Paraphilic Disorder" },
+  ],
+  "Factitious Disorders": [
+    { code:"6D50", name:"Factitious Disorder Imposed on Self" },
+    { code:"6D51", name:"Factitious Disorder Imposed on Another" },
+  ],
+  "Neurocognitive Disorders": [
+    { code:"6D70", name:"Delirium" },
+    { code:"6D71", name:"Mild Neurocognitive Disorder" },
+    { code:"6D80", name:"Dementia due to Alzheimer Disease" },
+    { code:"6D81", name:"Vascular Dementia" },
+    { code:"6D82", name:"Dementia due to Lewy Body Disease" },
+    { code:"6D83", name:"Frontotemporal Dementia" },
+    { code:"6D84", name:"Dementia due to Parkinson Disease" },
+    { code:"6D85", name:"Dementia due to Huntington Disease" },
+    { code:"6D8Y", name:"Other Specified Dementia" },
+  ],
+  "Mental Disorders Associated with Pregnancy": [
+    { code:"6E20", name:"Mental/Behavioural Disorder Associated with Pregnancy" },
+    { code:"6E21", name:"Mental/Behavioural Disorder Associated with Puerperium" },
+  ],
+  "Sleep-Wake Disorders (Psychiatry-Relevant)": [
+    { code:"7A00", name:"Insomnia Disorder" },
+    { code:"7A01", name:"Hypersomnolence Disorder" },
+    { code:"7A20", name:"Narcolepsy" },
+    { code:"7B01", name:"Nightmare Disorder" },
+    { code:"7B02", name:"REM Sleep Behaviour Disorder" },
+  ],
+};
+
+let _diagValue = '';
+
+function toggleDiagPanel(forceClose) {
+  const panel   = document.getElementById('dm-diag-panel');
+  const trigger = document.getElementById('dm-diag-trigger');
+  const isOpen  = panel.classList.contains('open');
+  if (forceClose || isOpen) {
+    panel.classList.remove('open');
+    trigger.classList.remove('open');
+  } else {
+    panel.classList.add('open');
+    trigger.classList.add('open');
+    const search = document.getElementById('dm-diag-search');
+    search.value = '';
+    renderDiagList('');
+    search.focus();
+  }
+}
+
+function renderDiagList(query) {
+  const list = document.getElementById('dm-diag-list');
+  const q = query.toLowerCase().trim();
+  let html = '';
+  for (const [cat, items] of Object.entries(ICD11)) {
+    const filtered = q
+      ? items.filter(d => d.code.toLowerCase().includes(q) || d.name.toLowerCase().includes(q) || cat.toLowerCase().includes(q))
+      : items;
+    if (!filtered.length) continue;
+    html += `<div class="diag-cat-header">${cat}</div>`;
+    filtered.forEach(d => {
+      const val = `${d.code} — ${d.name}`;
+      html += `<div class="diag-opt${_diagValue === val ? ' selected' : ''}" onclick="selectDiag(${JSON.stringify(val)})">
+        <span class="diag-opt-code">${d.code}</span><span class="diag-opt-name">${d.name}</span>
+      </div>`;
+    });
+  }
+  list.innerHTML = html || '<div class="diag-empty">No results found</div>';
+}
+
+function filterDiag(query) { renderDiagList(query); }
+
+function selectDiag(val) {
+  _diagValue = val;
+  document.getElementById('dm-diag-display').textContent = val || '— Select diagnosis —';
+  document.getElementById('dm-diag-value').value = val;
+  document.getElementById('dm-diag-trigger').classList.toggle('has-value', !!val);
+  document.getElementById('dm-diag-clear').style.display = val ? 'inline-block' : 'none';
+  toggleDiagPanel(true);
+}
+
+function clearDiag(e) {
+  e.stopPropagation();
+  selectDiag('');
+}
+
+function loadDiagnosis(savedValue) {
+  _diagValue = savedValue || '';
+  document.getElementById('dm-diag-display').textContent = savedValue || '— Select diagnosis —';
+  document.getElementById('dm-diag-value').value = savedValue || '';
+  document.getElementById('dm-diag-trigger').classList.toggle('has-value', !!savedValue);
+  document.getElementById('dm-diag-clear').style.display = savedValue ? 'inline-block' : 'none';
+}
+
+// Close panel when clicking outside
+document.addEventListener('click', e => {
+  const wrap = document.getElementById('dm-diag-wrap');
+  if (wrap && !wrap.contains(e.target)) toggleDiagPanel(true);
+});
+
 // ─── DETAIL MODAL ─────────────────────────────────────────────────
 function openDetail(id){
   const a = appointments.find(x => x.ID === id);
@@ -487,6 +791,7 @@ function openDetail(id){
   document.getElementById('dm-patient-notes').textContent = sheetStr(a['Patient Notes']) || '—';
   const pnGroup = document.getElementById('dm-patient-notes-group');
   pnGroup.style.display = (sheetStr(a['Patient Notes'])) ? 'block' : 'none';
+  loadDiagnosis(sheetStr(a['Diagnosis']));
   document.getElementById('dm-submitted').textContent = fmtDate(a['Submitted At']);
   buildStatusOptions(status);
   const badge = document.getElementById('dm-status-badge');
@@ -498,7 +803,7 @@ function openDetail(id){
   document.getElementById('detailOverlay').classList.add('open');
 }
 function closeDetail(e){ if (e.target === document.getElementById('detailOverlay')) closeDetailModal(); }
-function closeDetailModal(){ document.getElementById('detailOverlay').classList.remove('open'); selectedId = null; }
+function closeDetailModal(){ toggleDiagPanel(true); document.getElementById('detailOverlay').classList.remove('open'); selectedId = null; }
 
 let _saving = false;
 async function saveDetail(){
@@ -528,9 +833,11 @@ async function saveDetail(){
   const enc  = v => encodeURIComponent(v);
   const base = `${SCRIPT_URL}?token=${enc(HARDCODED_TOKEN)}&id=${enc(selectedId)}`;
 
+  const diagnosis = document.getElementById('dm-diag-code').value;
   const fetches = [
     fetch(`${base}&action=updateStatus&status=${enc(status)}`),
     fetch(`${base}&action=updateNotes&notes=${enc(notes)}`),
+    fetch(`${base}&action=updateField&field=${enc('Diagnosis')}&value=${enc(diagnosis)}`),
   ];
   if (confirmedSlot) fetches.push(fetch(`${base}&action=updateField&field=${enc('Time Slot')}&value=${enc(confirmedSlot)}`));
 
@@ -539,7 +846,7 @@ async function saveDetail(){
     const statusChanged = status !== prevStatus;
     if (statusChanged) await fetch(`${base}&action=notifyPatient&type=${enc(status.toLowerCase())}`);
     appointments = appointments.map(a => a.ID === selectedId ? {
-      ...a, Status:status, 'Doctor Notes':notes,
+      ...a, Status:status, 'Doctor Notes':notes, Diagnosis:diagnosis,
       ...(confirmedSlot ? {'Time Slot':confirmedSlot} : {}),
     } : a);
     updateStats(); renderTable(); closeDetailModal();
