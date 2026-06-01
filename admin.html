@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Admin Panel — Dr. Nidhish Kakkad</title>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
-<script src="icd11-fallback.js"></script>
+<script src="icd11.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -555,235 +555,6 @@ function onStatusChange(val){
     (val === 'Confirmed' || val === 'Rescheduled') ? 'block' : 'none';
 }
 
-
-// ─── ICD-11 API ONLY (no local fallback) ─────────────────────────
-// Register at https://icd.who.int/icdapi to get credentials, then
-// paste them into ICD_CLIENT_ID / ICD_CLIENT_SECRET below.
-const _ICD11_PLACEHOLDER = {
-  "Neurodevelopmental Disorders": [
-    { code:"6A00", name:"Intellectual Developmental Disorder" },
-    { code:"6A01", name:"Developmental Speech or Language Disorder" },
-    { code:"6A02", name:"Autism Spectrum Disorder" },
-    { code:"6A03", name:"Attention Deficit Hyperactivity Disorder (ADHD)" },
-    { code:"6A04", name:"Stereotyped Movement Disorder" },
-    { code:"6A05", name:"Tic Disorders" },
-    { code:"6A06", name:"Developmental Learning Disorder" },
-    { code:"6A0Y", name:"Other Specified Neurodevelopmental Disorder" },
-  ],
-  "Schizophrenia & Primary Psychotic Disorders": [
-    { code:"6A20", name:"Schizophrenia" },
-    { code:"6A21", name:"Schizoaffective Disorder" },
-    { code:"6A22", name:"Schizotypal Disorder" },
-    { code:"6A23", name:"Acute and Transient Psychotic Disorder" },
-    { code:"6A24", name:"Delusional Disorder" },
-    { code:"6A25", name:"Symptomatic Manifestations of Primary Psychotic Disorders" },
-    { code:"6A2Y", name:"Other Specified Primary Psychotic Disorder" },
-  ],
-  "Mood Disorders — Bipolar": [
-    { code:"6A40", name:"Bipolar Type I Disorder" },
-    { code:"6A41", name:"Bipolar Type II Disorder" },
-    { code:"6A42", name:"Cyclothymic Disorder" },
-    { code:"6A4Y", name:"Other Specified Bipolar or Related Disorder" },
-  ],
-  "Mood Disorders — Depressive": [
-    { code:"6A60", name:"Single Episode Depressive Disorder" },
-    { code:"6A61", name:"Recurrent Depressive Disorder" },
-    { code:"6A62", name:"Dysthymic Disorder" },
-    { code:"6A70", name:"Mixed Depressive and Anxiety Disorder" },
-    { code:"6A6Y", name:"Other Specified Depressive Disorder" },
-  ],
-  "Anxiety & Fear-Related Disorders": [
-    { code:"6B00", name:"Generalised Anxiety Disorder (GAD)" },
-    { code:"6B01", name:"Panic Disorder" },
-    { code:"6B02", name:"Agoraphobia" },
-    { code:"6B03", name:"Specific Phobia" },
-    { code:"6B04", name:"Social Anxiety Disorder" },
-    { code:"6B05", name:"Separation Anxiety Disorder" },
-    { code:"6B06", name:"Selective Mutism" },
-    { code:"6B0Y", name:"Other Specified Anxiety or Fear-Related Disorder" },
-  ],
-  "Obsessive-Compulsive & Related Disorders": [
-    { code:"6B20", name:"Obsessive-Compulsive Disorder (OCD)" },
-    { code:"6B21", name:"Body Dysmorphic Disorder" },
-    { code:"6B22", name:"Olfactory Reference Disorder" },
-    { code:"6B23", name:"Hypochondriasis / Health Anxiety Disorder" },
-    { code:"6B24", name:"Hoarding Disorder" },
-    { code:"6B25", name:"Body-Focused Repetitive Behaviour Disorder" },
-    { code:"6B2Y", name:"Other Specified Obsessive-Compulsive or Related Disorder" },
-  ],
-  "Disorders Specifically Associated with Stress": [
-    { code:"6B40", name:"Post-Traumatic Stress Disorder (PTSD)" },
-    { code:"6B41", name:"Complex Post-Traumatic Stress Disorder (CPTSD)" },
-    { code:"6B42", name:"Prolonged Grief Disorder" },
-    { code:"6B43", name:"Adjustment Disorder" },
-    { code:"6B44", name:"Reactive Attachment Disorder" },
-    { code:"6B45", name:"Disinhibited Social Engagement Disorder" },
-    { code:"6B4Y", name:"Other Specified Stress-Related Disorder" },
-  ],
-  "Dissociative Disorders": [
-    { code:"6B60", name:"Dissociative Neurological Symptom Disorder" },
-    { code:"6B61", name:"Dissociative Amnesia" },
-    { code:"6B62", name:"Trance Disorder" },
-    { code:"6B64", name:"Dissociative Identity Disorder" },
-    { code:"6B66", name:"Depersonalisation-Derealisation Disorder" },
-    { code:"6B6Y", name:"Other Specified Dissociative Disorder" },
-  ],
-  "Feeding & Eating Disorders": [
-    { code:"6B80", name:"Anorexia Nervosa" },
-    { code:"6B81", name:"Bulimia Nervosa" },
-    { code:"6B82", name:"Binge Eating Disorder" },
-    { code:"6B83", name:"Avoidant-Restrictive Food Intake Disorder (ARFID)" },
-    { code:"6B84", name:"Pica" },
-    { code:"6B85", name:"Rumination-Regurgitation Disorder" },
-    { code:"6B8Y", name:"Other Specified Feeding or Eating Disorder" },
-  ],
-  "Elimination Disorders": [
-    { code:"6C00", name:"Enuresis" },
-    { code:"6C01", name:"Encopresis" },
-  ],
-  "Bodily Distress & Experience Disorders": [
-    { code:"6C20", name:"Bodily Distress Disorder" },
-    { code:"6C21", name:"Body Integrity Dysphoria" },
-  ],
-  "Substance Use Disorders": [
-    { code:"6C40", name:"Disorders due to Alcohol Use" },
-    { code:"6C41", name:"Disorders due to Cannabis Use" },
-    { code:"6C43", name:"Disorders due to Opioid Use" },
-    { code:"6C44", name:"Disorders due to Sedative, Hypnotic or Anxiolytic Use" },
-    { code:"6C45", name:"Disorders due to Cocaine Use" },
-    { code:"6C46", name:"Disorders due to Stimulant Use (incl. Amphetamines)" },
-    { code:"6C4A", name:"Disorders due to Nicotine Use" },
-    { code:"6C4B", name:"Disorders due to Volatile Inhalant Use" },
-    { code:"6C4G", name:"Disorders due to Unknown Psychoactive Substance" },
-    { code:"6C4H", name:"Non-psychoactive Substance Misuse" },
-  ],
-  "Impulse Control & Behavioural Addictions": [
-    { code:"6C70", name:"Intermittent Explosive Disorder" },
-    { code:"6C71", name:"Pyromania" },
-    { code:"6C72", name:"Kleptomania" },
-    { code:"6C73", name:"Compulsive Sexual Behaviour Disorder" },
-    { code:"6C74", name:"Gambling Disorder" },
-    { code:"6C75", name:"Gaming Disorder" },
-    { code:"6C7Y", name:"Other Specified Impulse Control Disorder" },
-  ],
-  "Disruptive Behaviour & Dissocial Disorders": [
-    { code:"6C90", name:"Oppositional Defiant Disorder (ODD)" },
-    { code:"6C91", name:"Conduct-Dissocial Disorder" },
-    { code:"6C9Y", name:"Other Specified Disruptive Behaviour Disorder" },
-  ],
-  "Personality Disorders": [
-    { code:"6D10", name:"Personality Disorder — Mild" },
-    { code:"6D11", name:"Personality Disorder — Moderate" },
-    { code:"6D12", name:"Personality Disorder — Severe" },
-    { code:"6D10.1", name:"Borderline Pattern (BPD)" },
-    { code:"6D10.2", name:"Dissocial / Antisocial Pattern" },
-    { code:"6D10.3", name:"Anankastic / Obsessive-Compulsive Pattern" },
-    { code:"6D10.4", name:"Anxious-Avoidant Pattern" },
-    { code:"6D10.5", name:"Dependent Pattern" },
-    { code:"6D10.6", name:"Narcissistic Pattern" },
-    { code:"6D10.7", name:"Schizoid Pattern" },
-  ],
-  "Paraphilic Disorders": [
-    { code:"6D30", name:"Exhibitionistic Disorder" },
-    { code:"6D31", name:"Voyeuristic Disorder" },
-    { code:"6D32", name:"Paedophilic Disorder" },
-    { code:"6D33", name:"Coercive Sexual Sadism Disorder" },
-    { code:"6D34", name:"Frotteuristic Disorder" },
-    { code:"6D3Y", name:"Other Specified Paraphilic Disorder" },
-  ],
-  "Factitious Disorders": [
-    { code:"6D50", name:"Factitious Disorder Imposed on Self" },
-    { code:"6D51", name:"Factitious Disorder Imposed on Another" },
-  ],
-  "Neurocognitive Disorders": [
-    { code:"6D70", name:"Delirium" },
-    { code:"6D71", name:"Mild Neurocognitive Disorder" },
-    { code:"6D80", name:"Dementia due to Alzheimer Disease" },
-    { code:"6D81", name:"Vascular Dementia" },
-    { code:"6D82", name:"Dementia due to Lewy Body Disease" },
-    { code:"6D83", name:"Frontotemporal Dementia" },
-    { code:"6D84", name:"Dementia due to Parkinson Disease" },
-    { code:"6D85", name:"Dementia due to Huntington Disease" },
-    { code:"6D8Y", name:"Other Specified Dementia" },
-  ],
-  "Mental Disorders Associated with Pregnancy": [
-    { code:"6E20", name:"Mental/Behavioural Disorder Associated with Pregnancy" },
-    { code:"6E21", name:"Mental/Behavioural Disorder Associated with Puerperium" },
-  ],
-  "Sleep-Wake Disorders (Psychiatry-Relevant)": [
-    { code:"7A00", name:"Insomnia Disorder" },
-    { code:"7A01", name:"Hypersomnolence Disorder" },
-    { code:"7A20", name:"Narcolepsy" },
-    { code:"7B01", name:"Nightmare Disorder" },
-    { code:"7B02", name:"REM Sleep Behaviour Disorder" },
-  ],
-};
-
-// ─── ICD-11 SEARCH — static fallback only ────────────────────────
-const _icdTimers = {};
-
-function icdRenderResults(which, items) {
-  const dd  = document.getElementById(`icd-${which}-dropdown`);
-  const cur = document.getElementById(`icd-${which}-value`).value;
-  if (!items.length) {
-    dd.innerHTML = '<div class="icd-status">No results found</div>';
-  } else {
-    dd.innerHTML = items.map(e => {
-      const val = `${e.theCode} — ${e.title}`;
-      return `<div class="icd-opt${cur===val?' selected':''}" onmousedown="icdSelect('${which}',${JSON.stringify(val)})"><span class="icd-opt-code">${e.theCode}</span><span class="icd-opt-name">${e.title}</span></div>`;
-    }).join('');
-  }
-  dd.classList.add('open');
-}
-
-function icdSearch(which, query) {
-  clearTimeout(_icdTimers[which]);
-  const dd = document.getElementById(`icd-${which}-dropdown`);
-  if (!query || query.length < 2) { dd.classList.remove('open'); return; }
-  _icdTimers[which] = setTimeout(() => {
-    const q    = query.toLowerCase().trim();
-    const hits = ICD11_FALLBACK.filter(e =>
-      e.theCode.toLowerCase().includes(q) || e.title.toLowerCase().includes(q)
-    ).slice(0, 50);
-    icdRenderResults(which, hits);
-  }, 200);
-}
-
-function icdFocus(which) {
-  const val = document.getElementById(`icd-${which}-input`).value;
-  if (val && val.length >= 2) icdSearch(which, val);
-}
-
-function icdSelect(which, val) {
-  document.getElementById(`icd-${which}-input`).value  = val;
-  document.getElementById(`icd-${which}-value`).value  = val;
-  document.getElementById(`icd-${which}-clear`).style.display = val ? 'inline-block' : 'none';
-  document.getElementById(`icd-${which}-dropdown`).classList.remove('open');
-}
-
-function icdClear(which) {
-  icdSelect(which, '');
-  document.getElementById(`icd-${which}-input`).focus();
-}
-
-function loadDiagnosis(primary, secondary, tertiary) {
-  icdSelect('primary',   primary   || '');
-  icdSelect('secondary', secondary || '');
-  icdSelect('tertiary',  tertiary  || '');
-}
-
-function icdCloseAll() {
-  ['primary','secondary','tertiary'].forEach(w => document.getElementById(`icd-${w}-dropdown`).classList.remove('open'));
-}
-
-document.addEventListener('click', e => {
-  ['primary','secondary','tertiary'].forEach(w => {
-    const wrap = document.getElementById(`icd-${w}-wrap`);
-    if (wrap && !wrap.contains(e.target))
-      document.getElementById(`icd-${w}-dropdown`).classList.remove('open');
-  });
-});
-
 // ─── DETAIL MODAL ─────────────────────────────────────────────────
 function openDetail(id){
   const a = appointments.find(x => x.ID === id);
@@ -881,6 +652,86 @@ async function saveDetail(){
     if (saveBtn) { saveBtn.disabled = false; saveBtn.innerHTML = '💾 Save'; }
   }
 }
+
+// ─── ICD-11 SEARCH ────────────────────────────────────────────────
+let _icdFlat = null;
+function icdFlat() {
+  if (_icdFlat) return _icdFlat;
+  _icdFlat = [];
+  for (const [cat, items] of Object.entries(_ICD11_COMPLETE))
+    for (const item of items) _icdFlat.push({ ...item, cat });
+  return _icdFlat;
+}
+
+function icdSearch(field, query) {
+  const dropdown = document.getElementById(`icd-${field}-dropdown`);
+  const clearBtn = document.getElementById(`icd-${field}-clear`);
+  const hidden   = document.getElementById(`icd-${field}-value`);
+  clearBtn.style.display = query ? 'block' : 'none';
+  if (!query) { hidden.value = ''; dropdown.classList.remove('open'); return; }
+  const q = query.toLowerCase();
+  const matches = icdFlat().filter(item =>
+    item.code.toLowerCase().includes(q) || item.name.toLowerCase().includes(q)
+  ).slice(0, 120);
+  if (!matches.length) {
+    dropdown.innerHTML = `<div class="icd-status">No results for "${query}"</div>`;
+    dropdown.classList.add('open');
+    return;
+  }
+  const bycat = {};
+  for (const m of matches) { if (!bycat[m.cat]) bycat[m.cat] = []; bycat[m.cat].push(m); }
+  let html = '';
+  for (const [cat, items] of Object.entries(bycat)) {
+    html += `<div class="icd-cat-header">${cat}</div>`;
+    for (const item of items) {
+      const sel = hidden.value === `${item.code} ${item.name}`;
+      html += `<div class="icd-opt${sel?' selected':''}" onclick="icdSelect('${field}',${JSON.stringify(item.code)},${JSON.stringify(item.name)})"><span class="icd-opt-code">${item.code}</span><span class="icd-opt-name">${item.name}</span></div>`;
+    }
+  }
+  dropdown.innerHTML = html;
+  dropdown.classList.add('open');
+}
+
+function icdFocus(field) {
+  ['primary','secondary','tertiary'].filter(f => f !== field).forEach(f =>
+    document.getElementById(`icd-${f}-dropdown`).classList.remove('open')
+  );
+  const input    = document.getElementById(`icd-${field}-input`);
+  const dropdown = document.getElementById(`icd-${field}-dropdown`);
+  if (input.value) { icdSearch(field, input.value); return; }
+  dropdown.innerHTML = '<div class="icd-status">Type to search ICD-11 codes or names…</div>';
+  dropdown.classList.add('open');
+}
+
+function icdSelect(field, code, name) {
+  document.getElementById(`icd-${field}-input`).value  = `${code}  ${name}`;
+  document.getElementById(`icd-${field}-value`).value  = `${code} ${name}`;
+  document.getElementById(`icd-${field}-clear`).style.display = 'block';
+  document.getElementById(`icd-${field}-dropdown`).classList.remove('open');
+}
+
+function icdClear(field) {
+  document.getElementById(`icd-${field}-input`).value  = '';
+  document.getElementById(`icd-${field}-value`).value  = '';
+  document.getElementById(`icd-${field}-clear`).style.display = 'none';
+  document.getElementById(`icd-${field}-dropdown`).classList.remove('open');
+}
+
+function icdCloseAll() {
+  ['primary','secondary','tertiary'].forEach(f =>
+    document.getElementById(`icd-${f}-dropdown`).classList.remove('open')
+  );
+}
+
+function loadDiagnosis(primary, secondary, tertiary) {
+  [['primary',primary],['secondary',secondary],['tertiary',tertiary]].forEach(([field, val]) => {
+    document.getElementById(`icd-${field}-input`).value  = val || '';
+    document.getElementById(`icd-${field}-value`).value  = val || '';
+    document.getElementById(`icd-${field}-clear`).style.display = val ? 'block' : 'none';
+  });
+}
+
+document.addEventListener('click', e => { if (!e.target.closest('.icd-wrap')) icdCloseAll(); });
 
 // ─── TOAST ────────────────────────────────────────────────────────
 let toastTimer;
