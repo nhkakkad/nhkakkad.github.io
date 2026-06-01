@@ -719,28 +719,8 @@ const _ICD11_PLACEHOLDER = {
   ],
 };
 
-// ─── WHO ICD-11 API — token proxied through Apps Script to avoid CORS ────
-let _icdToken = null, _icdTokenExpiry = 0;
+// ─── ICD-11 SEARCH — static fallback only ────────────────────────
 const _icdTimers = {};
-
-async function getIcdToken() {
-  if (_icdToken && Date.now() < _icdTokenExpiry - 60000) return { token: _icdToken };
-  try {
-    const res = await fetch(`${SCRIPT_URL}?action=getIcdToken&token=${encodeURIComponent(HARDCODED_TOKEN)}`);
-    const d   = await res.json();
-    if (d.error) return { error: d.error };
-    _icdToken       = d.token;
-    _icdTokenExpiry = Date.now() + (d.expires_in || 3600) * 1000;
-    return { token: _icdToken };
-  } catch (e) {
-    return { error: e.message || 'Failed to fetch ICD token via proxy' };
-  }
-}
-
-function icdTitle(t) {
-  if (!t) return '';
-  return typeof t === 'object' ? (t['@value'] || '') : String(t);
-}
 
 function icdRenderResults(which, items) {
   const dd  = document.getElementById(`icd-${which}-dropdown`);
@@ -749,55 +729,24 @@ function icdRenderResults(which, items) {
     dd.innerHTML = '<div class="icd-status">No results found</div>';
   } else {
     dd.innerHTML = items.map(e => {
-      const code = e.theCode || '';
-      const name = icdTitle(e.title);
-      const val  = code ? `${code} — ${name}` : name;
-      return `<div class="icd-opt${cur===val?' selected':''}" onmousedown="icdSelect('${which}',${JSON.stringify(val)})">${code?`<span class="icd-opt-code">${code}</span>`:''}<span class="icd-opt-name">${name}</span></div>`;
+      const val = `${e.theCode} — ${e.title}`;
+      return `<div class="icd-opt${cur===val?' selected':''}" onmousedown="icdSelect('${which}',${JSON.stringify(val)})"><span class="icd-opt-code">${e.theCode}</span><span class="icd-opt-name">${e.title}</span></div>`;
     }).join('');
   }
   dd.classList.add('open');
-}
-
-function icdShowError(which, msg) {
-  const dd = document.getElementById(`icd-${which}-dropdown`);
-  dd.innerHTML = `<div class="icd-status">⚠️ ${msg}</div>`;
-  dd.classList.add('open');
-}
-
-function icdSearchFallback(which, query) {
-  if (typeof ICD11_FALLBACK === 'undefined') { icdShowError(which, 'Static fallback not loaded'); return; }
-  const q   = query.toLowerCase().trim();
-  const hits = ICD11_FALLBACK.filter(e =>
-    e.theCode.toLowerCase().includes(q) || e.title.toLowerCase().includes(q)
-  ).slice(0, 40);
-  icdRenderResults(which, hits);
 }
 
 function icdSearch(which, query) {
   clearTimeout(_icdTimers[which]);
   const dd = document.getElementById(`icd-${which}-dropdown`);
   if (!query || query.length < 2) { dd.classList.remove('open'); return; }
-  dd.innerHTML = '<div class="icd-status">Searching…</div>';
-  dd.classList.add('open');
-  _icdTimers[which] = setTimeout(async () => {
-    const { token, error } = await getIcdToken();
-    if (!token) {
-      // API unavailable — search static fallback
-      icdSearchFallback(which, query);
-      return;
-    }
-    try {
-      const res = await fetch(
-        `https://id.who.int/icd/release/11/2024-01/mms/search?q=${encodeURIComponent(query)}&flatResults=true&includeKeywordResult=false`,
-        { headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json', 'Accept-Language': 'en', 'API-Version': 'v2' } }
-      );
-      if (!res.ok) { icdSearchFallback(which, query); return; }
-      const data = await res.json();
-      const hits = data.destinationEntities || [];
-      if (!hits.length) icdSearchFallback(which, query);
-      else icdRenderResults(which, hits);
-    } catch { icdSearchFallback(which, query); }
-  }, 400);
+  _icdTimers[which] = setTimeout(() => {
+    const q    = query.toLowerCase().trim();
+    const hits = ICD11_FALLBACK.filter(e =>
+      e.theCode.toLowerCase().includes(q) || e.title.toLowerCase().includes(q)
+    ).slice(0, 50);
+    icdRenderResults(which, hits);
+  }, 200);
 }
 
 function icdFocus(which) {
