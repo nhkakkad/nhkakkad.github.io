@@ -69,10 +69,14 @@ nav.scrolled {
 .nav-logo { display:flex; align-items:center; gap:12px; text-decoration:none; }
 .nav-logo-icon {
   width:36px; height:36px;
-  background:var(--accent); border-radius:var(--r);
-  display:flex; align-items:center; justify-content:center;
-  font-size:18px; flex-shrink:0;
+  border-radius:var(--r); flex-shrink:0;
+  overflow:hidden; display:block;
 }
+.nav-logo-icon img {
+  width:100%; height:100%; object-fit:cover; display:block;
+}
+footer .nav-logo-text { color:var(--white); }
+footer .nav-logo-text span { color:var(--accent-light); }
 .nav-logo-text {
   font-family:'Cormorant Garamond',serif;
   font-size:19px; font-weight:600;
@@ -527,29 +531,60 @@ section { position:relative; }
 .form-alert.success { background:#f0fdf4; border:1px solid #bbf7d0; border-radius:var(--r-sm); color:#15803d; display:block; }
 
 /* ─── HOURS ─── */
-.hours-table { border:1px solid var(--border); border-radius:var(--r-lg); overflow:hidden; }
-.hours-header { background:var(--ink); padding:14px 20px; color:var(--white); display:flex; align-items:center; gap:12px; }
-.hours-header-icon {
-  width:30px; height:30px;
-  display:flex; align-items:center; justify-content:center; font-size:14px; flex-shrink:0;
+/* ─── HOURS GRID ─── */
+.hours-grid {
+  display:grid; grid-template-columns:repeat(7,1fr); gap:8px;
+  margin-top:0;
 }
-.hours-header-text h3 { font-family:'Cormorant Garamond',serif; font-size:17px; font-weight:400; }
-.hours-header-text p { font-size:10px; color:rgba(255,255,255,0.4); letter-spacing:1.5px; text-transform:uppercase; margin-top:1px; }
-.hours-body { padding:0; }
-.hours-row { display:flex; align-items:center; gap:10px; padding:10px 20px; border-bottom:1px solid var(--border); transition:background 0.15s; }
-.hours-row:last-child { border-bottom:none; }
-.hours-row:hover { background:var(--accent-pale); }
-.hours-dot { width:6px; height:6px; border-radius:50%; flex-shrink:0; }
-.hours-dot.open    { background:var(--accent); }
-.hours-dot.limited { background:var(--amber); }
-.hours-dot.closed  { background:var(--border); }
-.hours-row .day  { font-weight:500; color:var(--ink); font-size:13px; flex:1; }
-.hours-row .time { font-size:12px; color:var(--ink-light); }
-.hours-row.today { background:var(--accent-pale); }
-.hours-row.today .day { color:var(--accent); font-weight:600; }
-.hours-footer { padding:10px 20px; background:var(--accent-pale); border-top:1px solid var(--border); display:flex; align-items:center; gap:8px; }
-.hours-footer i { color:var(--accent); font-size:12px; }
-.hours-footer span { font-size:11px; color:var(--accent); font-weight:500; letter-spacing:0.3px; }
+.hours-day-card {
+  background:var(--bg-off); border:1px solid var(--border);
+  border-radius:var(--r); padding:16px 10px 14px;
+  display:flex; flex-direction:column; align-items:center; gap:10px;
+  text-align:center; transition:border-color 0.2s, background 0.2s;
+}
+.hours-day-card:hover { background:var(--accent-pale); border-color:var(--accent); }
+.hours-day-card.today {
+  background:var(--accent); border-color:var(--accent);
+}
+.hours-day-abbr {
+  font-size:11px; font-weight:700; letter-spacing:2.5px;
+  text-transform:uppercase; color:var(--ink-light);
+}
+.hours-day-card.today .hours-day-abbr { color:rgba(255,255,255,0.7); }
+.hours-day-num {
+  font-family:'Cormorant Garamond',serif;
+  font-size:34px; font-weight:300; line-height:1;
+  color:var(--ink);
+}
+.hours-day-card.today .hours-day-num { color:var(--white); }
+.hours-status-badge {
+  font-size:9px; font-weight:700; letter-spacing:1.5px;
+  text-transform:uppercase; padding:3px 8px;
+  border-radius:var(--r-sm);
+}
+.hours-status-badge.open    { background:var(--accent); color:var(--white); }
+.hours-status-badge.limited { background:var(--amber);  color:var(--white); }
+.hours-status-badge.closed  { background:var(--border); color:var(--ink-light); }
+.hours-day-card.today .hours-status-badge.open { background:rgba(255,255,255,0.25); color:var(--white); }
+.hours-slots { display:flex; flex-direction:column; gap:4px; width:100%; }
+.hours-slot {
+  font-size:10px; color:var(--ink-mid);
+  background:var(--bg); border:1px solid var(--border);
+  border-radius:var(--r-sm); padding:4px 6px;
+  line-height:1.4; letter-spacing:0.2px;
+}
+.hours-day-card.today .hours-slot {
+  background:rgba(255,255,255,0.15); border-color:rgba(255,255,255,0.2);
+  color:var(--white);
+}
+.hours-tele-note {
+  margin-top:14px; display:flex; align-items:center; gap:8px;
+  font-size:11px; color:var(--accent); letter-spacing:0.3px;
+}
+@media(max-width:640px){
+  .hours-grid { grid-template-columns:repeat(4,1fr); }
+  .hours-grid .hours-day-card:nth-child(n+5) { display:none; }
+}
 
 /* ─── PATIENT INFO ─── */
 #patient-info { background:var(--bg-off); border-top:1px solid var(--border); }
@@ -733,7 +768,7 @@ nav.menu-open { backdrop-filter:none !important; background:transparent !importa
 <!-- ═══════════════════════ NAV ═══════════════════════ -->
 <nav id="navbar">
   <a href="#home" class="nav-logo">
-    <div class="nav-logo-icon">👨‍⚕️</div>
+    <div class="nav-logo-icon"><img src="public/Nidhish.jpg" alt="Dr. Nidhish Kakkad"/></div>
     <div class="nav-logo-text">
       Dr. Nidhish Kakkad
       <span>Psychiatrist</span>
@@ -1084,7 +1119,7 @@ nav.menu-open { backdrop-filter:none !important; background:transparent !importa
     <div class="footer-top">
       <div class="footer-brand">
         <a href="#home" class="nav-logo" style="text-decoration:none;">
-          <div class="nav-logo-icon">👨‍⚕️</div>
+          <div class="nav-logo-icon"><img src="public/Nidhish.jpg" alt="Dr. Nidhish Kakkad"/></div>
           <div class="nav-logo-text">
             Dr. Nidhish Kakkad
             <span>Psychiatrist</span>
@@ -1327,28 +1362,31 @@ function generateContent() {
     }).join('');
   }
 
-  // Hours table
+  // Hours grid
   var hoursEl = document.getElementById('hoursTable');
   if (hoursEl && C.hours) {
-    var todayIdx = new Date(Date.now() + 5.5 * 3600000).getUTCDay(); // day in IST
+    var todayIdx = new Date(Date.now() + 5.5 * 3600000).getUTCDay();
     var dayMap = { Monday:1, Tuesday:2, Wednesday:3, Thursday:4, Friday:5, Saturday:6, Sunday:0 };
-    var rows = C.hours.map(function(h) {
+    var dayAbbr = { Monday:'MON', Tuesday:'TUE', Wednesday:'WED', Thursday:'THU', Friday:'FRI', Saturday:'SAT', Sunday:'SUN' };
+    var dayNums = { Monday:'M', Tuesday:'T', Wednesday:'W', Thursday:'T', Friday:'F', Saturday:'S', Sunday:'S' };
+    function fmtSlot(s) {
+      return s.replace(/\(IST\)/g,'').replace(/00\s*(AM|PM)/g,'$1').replace(/\s+/g,' ').trim();
+    }
+    var cards = C.hours.map(function(h) {
       var isToday = dayMap[h.day] === todayIdx;
-      return '<div class="hours-row' + (isToday ? ' today' : '') + '">' +
-        '<span class="hours-dot ' + h.status + '"></span>' +
-        '<span class="day">' + h.day + (isToday ? ' <small style="color:var(--sage);font-size:10px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;">Today</small>' : '') + '</span>' +
-        '<span class="time">' + h.time + '</span>' +
+      var slots = h.time.split(/\s*&\s*/).map(fmtSlot);
+      var slotHtml = slots.map(function(s){ return '<span class="hours-slot">' + s + '</span>'; }).join('');
+      return '<div class="hours-day-card' + (isToday ? ' today' : '') + '">' +
+        '<span class="hours-day-abbr">' + dayAbbr[h.day] + '</span>' +
+        '<span class="hours-day-num">' + h.day[0] + '</span>' +
+        '<span class="hours-status-badge ' + h.status + '">' + (h.status === 'limited' ? 'Limited' : 'Open') + '</span>' +
+        '<div class="hours-slots">' + slotHtml + '</div>' +
       '</div>';
     }).join('');
     var tele = C.teleconsultationAvailable
-      ? '<div class="hours-footer"><i class="fa-solid fa-video"></i><span>Teleconsultation available — book online or call</span></div>'
+      ? '<div class="hours-tele-note"><i class="fa-solid fa-video"></i><span>Teleconsultation available worldwide</span></div>'
       : '';
-    hoursEl.innerHTML =
-      '<div class="hours-header">' +
-        '<div class="hours-header-icon">🕒</div>' +
-        '<div class="hours-header-text"><h3>Practice Hours</h3><p>Teleconsultation</p></div>' +
-      '</div>' +
-      '<div class="hours-body">' + rows + '</div>' ;
+    hoursEl.innerHTML = '<div class="hours-grid">' + cards + '</div>' + tele;
   }
 }
 generateContent();
