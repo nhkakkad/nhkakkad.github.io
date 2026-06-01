@@ -190,61 +190,52 @@ tbody td{ padding:13px 16px; color:var(--text-dark); }
   thead th, tbody td { padding:10px 12px; }
 }
 
-/* ─── DIAGNOSIS SEARCHABLE DROPDOWN ─── */
-.diag-wrap{ position:relative; }
-.diag-trigger{
-  width:100%; padding:11px 14px;
+/* ─── ICD-11 SEARCH FIELDS ─── */
+.icd-wrap{ position:relative; }
+.icd-input-row{
+  display:flex; align-items:center; gap:0;
   border:1.5px solid rgba(31,22,53,0.15); border-radius:10px;
-  background:var(--cream); cursor:pointer;
-  display:flex; justify-content:space-between; align-items:center; gap:8px;
-  font-family:'DM Sans',sans-serif; font-size:14px; color:var(--text-light);
-  text-align:left; transition:border-color 0.2s, box-shadow 0.2s;
+  background:var(--cream); transition:border-color 0.2s, box-shadow 0.2s;
+  overflow:hidden;
 }
-.diag-trigger.has-value{ color:var(--text-dark); }
-.diag-trigger.open{ border-color:var(--sage); box-shadow:0 0 0 3px rgba(94,158,140,0.12); background:var(--white); }
-.diag-trigger-text{ flex:1; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
-.diag-chevron{ font-size:10px; flex-shrink:0; color:var(--text-light); transition:transform 0.2s; }
-.diag-trigger.open .diag-chevron{ transform:rotate(180deg); }
-.diag-panel{
-  display:none; position:absolute; top:calc(100% + 4px); left:0; right:0; z-index:200;
+.icd-input-row:focus-within{
+  border-color:var(--sage); box-shadow:0 0 0 3px rgba(94,158,140,0.12); background:var(--white);
+}
+.icd-search-icon{ padding:0 10px 0 12px; color:var(--text-light); font-size:13px; flex-shrink:0; }
+.icd-input-row input{
+  flex:1; padding:10px 8px; border:none; background:transparent;
+  font-family:'DM Sans',sans-serif; font-size:14px; color:var(--text-dark); outline:none;
+}
+.icd-clear-btn{
+  background:none; border:none; cursor:pointer; color:var(--text-light);
+  padding:0 12px; font-size:13px; line-height:1; height:100%; flex-shrink:0;
+}
+.icd-clear-btn:hover{ color:var(--danger); }
+.icd-dropdown{
+  display:none; position:absolute; top:calc(100% + 4px); left:0; right:0; z-index:300;
   background:var(--white); border:1.5px solid rgba(94,158,140,0.4); border-radius:10px;
-  box-shadow:0 8px 30px rgba(31,22,53,0.15); flex-direction:column; max-height:280px;
+  box-shadow:0 8px 30px rgba(31,22,53,0.15); max-height:260px; overflow-y:auto;
 }
-.diag-panel.open{ display:flex; }
-.diag-search-wrap{
-  padding:10px 10px 8px; border-bottom:1px solid rgba(31,22,53,0.08); flex-shrink:0;
-  position:relative;
-}
-.diag-search-wrap input{
-  width:100%; padding:8px 12px 8px 32px;
-  border:1.5px solid rgba(31,22,53,0.15); border-radius:8px;
-  font-size:13px; background:var(--cream);
-}
-.diag-search-wrap input:focus{ border-color:var(--sage); box-shadow:0 0 0 2px rgba(94,158,140,0.12); background:var(--white); }
-.diag-search-icon{
-  position:absolute; left:20px; top:50%; transform:translateY(-50%);
-  font-size:12px; color:var(--text-light); pointer-events:none;
-}
-.diag-list{ overflow-y:auto; flex:1; }
-.diag-cat-header{
+.icd-dropdown.open{ display:block; }
+.icd-cat-header{
   padding:5px 12px 3px; font-size:10px; font-weight:700; letter-spacing:1px;
   text-transform:uppercase; color:var(--text-light); background:var(--cream);
   position:sticky; top:0; border-bottom:1px solid rgba(31,22,53,0.05);
 }
-.diag-opt{
-  padding:7px 14px; font-size:13px; cursor:pointer; color:var(--text-dark);
-  transition:background 0.12s; display:flex; align-items:baseline; gap:8px;
+.icd-opt{
+  padding:8px 14px; font-size:13px; cursor:pointer;
+  display:flex; align-items:baseline; gap:8px;
+  transition:background 0.12s; border-bottom:1px solid rgba(31,22,53,0.03);
 }
-.diag-opt:hover{ background:rgba(94,158,140,0.1); }
-.diag-opt.selected{ background:rgba(94,158,140,0.15); }
-.diag-opt-code{ font-weight:600; color:var(--sage); font-size:12px; flex-shrink:0; }
-.diag-opt-name{ color:var(--text-dark); }
-.diag-empty{ padding:18px; text-align:center; color:var(--text-light); font-size:13px; }
-.diag-clear{
-  background:none; border:none; cursor:pointer; color:var(--text-light);
-  font-size:14px; flex-shrink:0; padding:0 2px; line-height:1;
+.icd-opt:last-child{ border-bottom:none; }
+.icd-opt:hover{ background:rgba(94,158,140,0.1); }
+.icd-opt.selected{ background:rgba(94,158,140,0.15); }
+.icd-opt-code{ font-weight:700; color:var(--sage); font-size:12px; flex-shrink:0; min-width:46px; }
+.icd-opt-name{ color:var(--text-dark); }
+.icd-status{
+  padding:14px; text-align:center; color:var(--text-light); font-size:13px; font-style:italic;
 }
-.diag-clear:hover{ color:var(--danger); }
+.icd-optional{ font-size:11px; font-weight:400; color:var(--text-light); margin-left:6px; text-transform:none; letter-spacing:0; }
 </style>
 </head>
 <body>
@@ -354,22 +345,43 @@ tbody td{ padding:13px 16px; color:var(--text-dark); }
       <select id="dm-confirmed-slot"></select>
     </div>
     <div class="form-group">
-      <label>ICD-11 Diagnosis</label>
-      <div class="diag-wrap" id="dm-diag-wrap">
-        <button type="button" class="diag-trigger" id="dm-diag-trigger" onclick="toggleDiagPanel()">
-          <span class="diag-trigger-text" id="dm-diag-display">— Select diagnosis —</span>
-          <button type="button" class="diag-clear" id="dm-diag-clear" style="display:none;" onclick="clearDiag(event)" title="Clear">✕</button>
-          <span class="diag-chevron">▾</span>
-        </button>
-        <div class="diag-panel" id="dm-diag-panel">
-          <div class="diag-search-wrap">
-            <span class="diag-search-icon">🔍</span>
-            <input type="text" id="dm-diag-search" placeholder="Search by code or name…" oninput="filterDiag(this.value)" autocomplete="off" onclick="event.stopPropagation()"/>
-          </div>
-          <div class="diag-list" id="dm-diag-list"></div>
+      <label>Primary ICD-11 Diagnosis</label>
+      <div class="icd-wrap" id="icd-primary-wrap">
+        <div class="icd-input-row">
+          <span class="icd-search-icon">🔍</span>
+          <input type="text" id="icd-primary-input" placeholder="Search any ICD-11 code or name…"
+                 oninput="icdSearch('primary',this.value)" onfocus="icdFocus('primary')" autocomplete="off"/>
+          <button type="button" class="icd-clear-btn" id="icd-primary-clear" style="display:none;" onclick="icdClear('primary')" title="Clear">✕</button>
         </div>
+        <div class="icd-dropdown" id="icd-primary-dropdown"></div>
       </div>
-      <input type="hidden" id="dm-diag-value"/>
+      <input type="hidden" id="icd-primary-value"/>
+    </div>
+    <div class="form-group">
+      <label>Secondary ICD-11 Diagnosis <span class="icd-optional">(optional)</span></label>
+      <div class="icd-wrap" id="icd-secondary-wrap">
+        <div class="icd-input-row">
+          <span class="icd-search-icon">🔍</span>
+          <input type="text" id="icd-secondary-input" placeholder="Search any ICD-11 code or name…"
+                 oninput="icdSearch('secondary',this.value)" onfocus="icdFocus('secondary')" autocomplete="off"/>
+          <button type="button" class="icd-clear-btn" id="icd-secondary-clear" style="display:none;" onclick="icdClear('secondary')" title="Clear">✕</button>
+        </div>
+        <div class="icd-dropdown" id="icd-secondary-dropdown"></div>
+      </div>
+      <input type="hidden" id="icd-secondary-value"/>
+    </div>
+    <div class="form-group">
+      <label>Tertiary ICD-11 Diagnosis <span class="icd-optional">(optional)</span></label>
+      <div class="icd-wrap" id="icd-tertiary-wrap">
+        <div class="icd-input-row">
+          <span class="icd-search-icon">🔍</span>
+          <input type="text" id="icd-tertiary-input" placeholder="Search any ICD-11 code or name…"
+                 oninput="icdSearch('tertiary',this.value)" onfocus="icdFocus('tertiary')" autocomplete="off"/>
+          <button type="button" class="icd-clear-btn" id="icd-tertiary-clear" style="display:none;" onclick="icdClear('tertiary')" title="Clear">✕</button>
+        </div>
+        <div class="icd-dropdown" id="icd-tertiary-dropdown"></div>
+      </div>
+      <input type="hidden" id="icd-tertiary-value"/>
     </div>
     <div class="form-group">
       <label>Doctor's Notes</label>
@@ -542,8 +554,10 @@ function onStatusChange(val){
 }
 
 
-// ─── ICD-11 DIAGNOSIS DATA ────────────────────────────────────────
-const ICD11 = {
+// ─── ICD-11 API ONLY (no local fallback) ─────────────────────────
+// Register at https://icd.who.int/icdapi to get credentials, then
+// paste them into ICD_CLIENT_ID / ICD_CLIENT_SECRET below.
+const _ICD11_PLACEHOLDER = {
   "Neurodevelopmental Disorders": [
     { code:"6A00", name:"Intellectual Developmental Disorder" },
     { code:"6A01", name:"Developmental Speech or Language Disorder" },
@@ -703,73 +717,110 @@ const ICD11 = {
   ],
 };
 
-let _diagValue = '';
+// ─── WHO ICD-11 API ───────────────────────────────────────────────
+const ICD_CLIENT_ID     = '968c0b3c-d0ff-453b-ad6f-0a182a16cab4_2957eae7-d097-4e6b-87e9-7419ae61efa2';   // ← paste your client_id from icd.who.int/icdapi
+const ICD_CLIENT_SECRET = 'lRDxxYFiB4n8g50Q1hoe9vpuUEp5wuCWV03XT/KIfas=';   // ← paste your client_secret
 
-function toggleDiagPanel(forceClose) {
-  const panel   = document.getElementById('dm-diag-panel');
-  const trigger = document.getElementById('dm-diag-trigger');
-  const isOpen  = panel.classList.contains('open');
-  if (forceClose || isOpen) {
-    panel.classList.remove('open');
-    trigger.classList.remove('open');
-  } else {
-    panel.classList.add('open');
-    trigger.classList.add('open');
-    const search = document.getElementById('dm-diag-search');
-    search.value = '';
-    renderDiagList('');
-    search.focus();
-  }
-}
+let _icdToken = null, _icdTokenExpiry = 0;
+const _icdTimers = {};
 
-function renderDiagList(query) {
-  const list = document.getElementById('dm-diag-list');
-  const q = query.toLowerCase().trim();
-  let html = '';
-  for (const [cat, items] of Object.entries(ICD11)) {
-    const filtered = q
-      ? items.filter(d => d.code.toLowerCase().includes(q) || d.name.toLowerCase().includes(q) || cat.toLowerCase().includes(q))
-      : items;
-    if (!filtered.length) continue;
-    html += `<div class="diag-cat-header">${cat}</div>`;
-    filtered.forEach(d => {
-      const val = `${d.code} — ${d.name}`;
-      html += `<div class="diag-opt${_diagValue === val ? ' selected' : ''}" onclick="selectDiag(${JSON.stringify(val)})">
-        <span class="diag-opt-code">${d.code}</span><span class="diag-opt-name">${d.name}</span>
-      </div>`;
+async function getIcdToken() {
+  if (_icdToken && Date.now() < _icdTokenExpiry - 60000) return _icdToken;
+  if (!ICD_CLIENT_ID) return null;
+  try {
+    const res = await fetch('https://icdaccessmanagement.who.int/connect/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: `grant_type=client_credentials&client_id=${encodeURIComponent(ICD_CLIENT_ID)}&client_secret=${encodeURIComponent(ICD_CLIENT_SECRET)}&scope=icdapi_access`,
     });
+    const d = await res.json();
+    _icdToken = d.access_token;
+    _icdTokenExpiry = Date.now() + (d.expires_in || 3600) * 1000;
+    return _icdToken;
+  } catch { return null; }
+}
+
+function icdTitle(t) {
+  if (!t) return '';
+  return typeof t === 'object' ? (t['@value'] || '') : String(t);
+}
+
+function icdRenderResults(which, items) {
+  const dd  = document.getElementById(`icd-${which}-dropdown`);
+  const cur = document.getElementById(`icd-${which}-value`).value;
+  if (!items.length) {
+    dd.innerHTML = '<div class="icd-status">No results found</div>';
+  } else {
+    dd.innerHTML = items.map(e => {
+      const code = e.theCode || '';
+      const name = icdTitle(e.title);
+      const val  = code ? `${code} — ${name}` : name;
+      return `<div class="icd-opt${cur===val?' selected':''}" onmousedown="icdSelect('${which}',${JSON.stringify(val)})">${code?`<span class="icd-opt-code">${code}</span>`:''}<span class="icd-opt-name">${name}</span></div>`;
+    }).join('');
   }
-  list.innerHTML = html || '<div class="diag-empty">No results found</div>';
+  dd.classList.add('open');
 }
 
-function filterDiag(query) { renderDiagList(query); }
-
-function selectDiag(val) {
-  _diagValue = val;
-  document.getElementById('dm-diag-display').textContent = val || '— Select diagnosis —';
-  document.getElementById('dm-diag-value').value = val;
-  document.getElementById('dm-diag-trigger').classList.toggle('has-value', !!val);
-  document.getElementById('dm-diag-clear').style.display = val ? 'inline-block' : 'none';
-  toggleDiagPanel(true);
+function icdSearchLocal(which, q) {
+  const dd = document.getElementById(`icd-${which}-dropdown`);
+  dd.innerHTML = '<div class="icd-status">⚠️ API credentials not set — add ICD_CLIENT_ID & ICD_CLIENT_SECRET in admin.html</div>';
+  dd.classList.add('open');
 }
 
-function clearDiag(e) {
-  e.stopPropagation();
-  selectDiag('');
+function icdSearch(which, query) {
+  clearTimeout(_icdTimers[which]);
+  const dd = document.getElementById(`icd-${which}-dropdown`);
+  if (!query || query.length < 2) { dd.classList.remove('open'); return; }
+  if (!ICD_CLIENT_ID) { icdSearchLocal(which, query); return; }
+  dd.innerHTML = '<div class="icd-status">Searching…</div>';
+  dd.classList.add('open');
+  _icdTimers[which] = setTimeout(async () => {
+    const token = await getIcdToken();
+    if (!token) { icdSearchLocal(which, query); return; }
+    try {
+      const res = await fetch(
+        `https://id.who.int/icd/release/11/2024-01/mms/search?q=${encodeURIComponent(query)}&flatResults=true&includeKeywordResult=false`,
+        { headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json', 'Accept-Language': 'en', 'API-Version': 'v2' } }
+      );
+      const data = await res.json();
+      icdRenderResults(which, data.destinationEntities || []);
+    } catch { icdSearchLocal(which, query); }
+  }, 400);
 }
 
-function loadDiagnosis(savedValue) {
-  _diagValue = savedValue || '';
-  document.getElementById('dm-diag-display').textContent = savedValue || '— Select diagnosis —';
-  document.getElementById('dm-diag-value').value = savedValue || '';
-  document.getElementById('dm-diag-trigger').classList.toggle('has-value', !!savedValue);
-  document.getElementById('dm-diag-clear').style.display = savedValue ? 'inline-block' : 'none';
+function icdFocus(which) {
+  const val = document.getElementById(`icd-${which}-input`).value;
+  if (val && val.length >= 2) icdSearch(which, val);
 }
 
-// Close panel when clicking outside
+function icdSelect(which, val) {
+  document.getElementById(`icd-${which}-input`).value  = val;
+  document.getElementById(`icd-${which}-value`).value  = val;
+  document.getElementById(`icd-${which}-clear`).style.display = val ? 'inline-block' : 'none';
+  document.getElementById(`icd-${which}-dropdown`).classList.remove('open');
+}
+
+function icdClear(which) {
+  icdSelect(which, '');
+  document.getElementById(`icd-${which}-input`).focus();
+}
+
+function loadDiagnosis(primary, secondary, tertiary) {
+  icdSelect('primary',   primary   || '');
+  icdSelect('secondary', secondary || '');
+  icdSelect('tertiary',  tertiary  || '');
+}
+
+function icdCloseAll() {
+  ['primary','secondary','tertiary'].forEach(w => document.getElementById(`icd-${w}-dropdown`).classList.remove('open'));
+}
+
 document.addEventListener('click', e => {
-  const wrap = document.getElementById('dm-diag-wrap');
-  if (wrap && !wrap.contains(e.target)) toggleDiagPanel(true);
+  ['primary','secondary','tertiary'].forEach(w => {
+    const wrap = document.getElementById(`icd-${w}-wrap`);
+    if (wrap && !wrap.contains(e.target))
+      document.getElementById(`icd-${w}-dropdown`).classList.remove('open');
+  });
 });
 
 // ─── DETAIL MODAL ─────────────────────────────────────────────────
@@ -791,7 +842,7 @@ function openDetail(id){
   document.getElementById('dm-patient-notes').textContent = sheetStr(a['Patient Notes']) || '—';
   const pnGroup = document.getElementById('dm-patient-notes-group');
   pnGroup.style.display = (sheetStr(a['Patient Notes'])) ? 'block' : 'none';
-  loadDiagnosis(sheetStr(a['Diagnosis']));
+  loadDiagnosis(sheetStr(a['Primary Diagnosis']), sheetStr(a['Secondary Diagnosis']), sheetStr(a['Tertiary Diagnosis']));
   document.getElementById('dm-submitted').textContent = fmtDate(a['Submitted At']);
   buildStatusOptions(status);
   const badge = document.getElementById('dm-status-badge');
@@ -803,7 +854,7 @@ function openDetail(id){
   document.getElementById('detailOverlay').classList.add('open');
 }
 function closeDetail(e){ if (e.target === document.getElementById('detailOverlay')) closeDetailModal(); }
-function closeDetailModal(){ toggleDiagPanel(true); document.getElementById('detailOverlay').classList.remove('open'); selectedId = null; }
+function closeDetailModal(){ icdCloseAll(); document.getElementById('detailOverlay').classList.remove('open'); selectedId = null; }
 
 let _saving = false;
 async function saveDetail(){
@@ -833,11 +884,15 @@ async function saveDetail(){
   const enc  = v => encodeURIComponent(v);
   const base = `${SCRIPT_URL}?token=${enc(HARDCODED_TOKEN)}&id=${enc(selectedId)}`;
 
-  const diagnosis = document.getElementById('dm-diag-code').value;
+  const primaryDiag   = document.getElementById('icd-primary-value').value;
+  const secondaryDiag = document.getElementById('icd-secondary-value').value;
+  const tertiaryDiag  = document.getElementById('icd-tertiary-value').value;
   const fetches = [
     fetch(`${base}&action=updateStatus&status=${enc(status)}`),
     fetch(`${base}&action=updateNotes&notes=${enc(notes)}`),
-    fetch(`${base}&action=updateField&field=${enc('Diagnosis')}&value=${enc(diagnosis)}`),
+    fetch(`${base}&action=updateField&field=${enc('Primary Diagnosis')}&value=${enc(primaryDiag)}`),
+    fetch(`${base}&action=updateField&field=${enc('Secondary Diagnosis')}&value=${enc(secondaryDiag)}`),
+    fetch(`${base}&action=updateField&field=${enc('Tertiary Diagnosis')}&value=${enc(tertiaryDiag)}`),
   ];
   if (confirmedSlot) fetches.push(fetch(`${base}&action=updateField&field=${enc('Time Slot')}&value=${enc(confirmedSlot)}`));
 
@@ -846,7 +901,8 @@ async function saveDetail(){
     const statusChanged = status !== prevStatus;
     if (statusChanged) await fetch(`${base}&action=notifyPatient&type=${enc(status.toLowerCase())}`);
     appointments = appointments.map(a => a.ID === selectedId ? {
-      ...a, Status:status, 'Doctor Notes':notes, Diagnosis:diagnosis,
+      ...a, Status:status, 'Doctor Notes':notes,
+      'Primary Diagnosis':primaryDiag, 'Secondary Diagnosis':secondaryDiag, 'Tertiary Diagnosis':tertiaryDiag,
       ...(confirmedSlot ? {'Time Slot':confirmedSlot} : {}),
     } : a);
     updateStats(); renderTable(); closeDetailModal();
