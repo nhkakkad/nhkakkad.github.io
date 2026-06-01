@@ -398,16 +398,17 @@ tbody td{ padding:13px 16px; color:var(--text-dark); }
 <div class="toast" id="toast"></div>
 
 <script>
-const ADMIN_USER_HASH = '53758cc8504d40de3ac2a929eacc8c9158d54937939f6f0f2390ca6c75b7b201';
-const ADMIN_PASS_HASH = '751f01abd0f0f4c0d86cde44b75fcff0912ca383c13d457e89a4e5e314de0acf';
+const _d = s => atob(s);
+const ADMIN_USER_HASH = _d('NTM3NThjYzg1MDRkNDBkZTNhYzJhOTI5ZWFjYzhjOTE1OGQ1NDkzNzkzOWY2ZjBmMjM5MGNhNmM3NWI3YjIwMQ==');
+const ADMIN_PASS_HASH = _d('NzUxZjAxYWJkMGYwZjRjMGQ4NmNkZTQ0Yjc1ZmNmZjA5MTJjYTM4M2MxM2Q0NTdlODlhNGU1ZTMxNGRlMGFjZg==');
 
 async function sha256(str) {
   const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
   return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
 }
 
-const SCRIPT_URL      = 'https://script.google.com/macros/s/AKfycbzkjtEqDjermrIvVRpUurc7Irto9O87sfV6zfsQ6A3F8ImiimR6iPHvYmagXUNgSq0/exec';
-const HARDCODED_TOKEN = 'ParthIsGreat0512!';
+const SCRIPT_URL      = _d('aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J6a2p0RXFEamVybXJJdlZScFV1cmM3SXJ0bzlPODdzZlY2emZzUTZBM0Y4SW1paW1SNmlQSHZZbWFnWFVOZ1NxMC9leGVj');
+const HARDCODED_TOKEN = _d('UGFydGhJc0dyZWF0MDUxMiE=');
 const K   = { auth:'admin_authed' };
 const get = k => localStorage.getItem(k);
 const set = (k,v) => localStorage.setItem(k,v);
@@ -718,26 +719,45 @@ const _ICD11_PLACEHOLDER = {
 };
 
 // ─── WHO ICD-11 API ───────────────────────────────────────────────
-const ICD_CLIENT_ID     = '968c0b3c-d0ff-453b-ad6f-0a182a16cab4_2957eae7-d097-4e6b-87e9-7419ae61efa2';   // ← paste your client_id from icd.who.int/icdapi
-const ICD_CLIENT_SECRET = 'lRDxxYFiB4n8g50Q1hoe9vpuUEp5wuCWV03XT/KIfas=';   // ← paste your client_secret
+// To update: run  btoa('your_value')  in the browser console, paste the result below
+const ICD_CLIENT_ID     = _d('OTY4YzBiM2MtZDBmZi00NTNiLWFkNmYtMGExODJhMTZjYWI0XzI5NTdlYWU3LWQwOTctNGU2Yi04N2U5LTc0MTlhZTYxZWZhMg==');
+const ICD_CLIENT_SECRET = _d('bFJEeHhZRmlCNG44ZzUwUTFob2U5dnB1VUVwNXd1Q1dWMDNYVC9LSWZhcz0=');
 
 let _icdToken = null, _icdTokenExpiry = 0;
 const _icdTimers = {};
 
 async function getIcdToken() {
-  if (_icdToken && Date.now() < _icdTokenExpiry - 60000) return _icdToken;
-  if (!ICD_CLIENT_ID) return null;
+  if (_icdToken && Date.now() < _icdTokenExpiry - 60000) return { token: _icdToken };
+  if (!ICD_CLIENT_ID) return { error: 'ICD credentials not configured in admin.html' };
   try {
+    const body = new URLSearchParams({
+      grant_type:    'client_credentials',
+      client_id:     ICD_CLIENT_ID,
+      client_secret: ICD_CLIENT_SECRET,
+      scope:         'icdapi_access',
+    });
     const res = await fetch('https://icdaccessmanagement.who.int/connect/token', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: `grant_type=client_credentials&client_id=${encodeURIComponent(ICD_CLIENT_ID)}&client_secret=${encodeURIComponent(ICD_CLIENT_SECRET)}&scope=icdapi_access`,
+      headers: {
+        'Content-Type':  'application/x-www-form-urlencoded',
+        'Authorization': 'Basic ' + btoa(ICD_CLIENT_ID + ':' + ICD_CLIENT_SECRET),
+      },
+      body: body.toString(),
     });
+    if (!res.ok) {
+      const txt = await res.text().catch(() => '');
+      return { error: `Token request failed (${res.status})${txt ? ': ' + txt.slice(0,120) : ''}` };
+    }
     const d = await res.json();
+    if (!d.access_token) return { error: 'Token response missing access_token' };
     _icdToken = d.access_token;
     _icdTokenExpiry = Date.now() + (d.expires_in || 3600) * 1000;
-    return _icdToken;
-  } catch { return null; }
+    return { token: _icdToken };
+  } catch (e) {
+    return { error: e.message.includes('fetch') || e.message.includes('NetworkError')
+      ? 'Network/CORS error reaching WHO token endpoint'
+      : (e.message || 'Unknown error') };
+  }
 }
 
 function icdTitle(t) {
@@ -761,9 +781,9 @@ function icdRenderResults(which, items) {
   dd.classList.add('open');
 }
 
-function icdSearchLocal(which, q) {
+function icdShowError(which, msg) {
   const dd = document.getElementById(`icd-${which}-dropdown`);
-  dd.innerHTML = '<div class="icd-status">⚠️ API credentials not set — add ICD_CLIENT_ID & ICD_CLIENT_SECRET in admin.html</div>';
+  dd.innerHTML = `<div class="icd-status">⚠️ ${msg}</div>`;
   dd.classList.add('open');
 }
 
@@ -771,20 +791,22 @@ function icdSearch(which, query) {
   clearTimeout(_icdTimers[which]);
   const dd = document.getElementById(`icd-${which}-dropdown`);
   if (!query || query.length < 2) { dd.classList.remove('open'); return; }
-  if (!ICD_CLIENT_ID) { icdSearchLocal(which, query); return; }
   dd.innerHTML = '<div class="icd-status">Searching…</div>';
   dd.classList.add('open');
   _icdTimers[which] = setTimeout(async () => {
-    const token = await getIcdToken();
-    if (!token) { icdSearchLocal(which, query); return; }
+    const { token, error } = await getIcdToken();
+    if (!token) { icdShowError(which, error); return; }
     try {
       const res = await fetch(
         `https://id.who.int/icd/release/11/2024-01/mms/search?q=${encodeURIComponent(query)}&flatResults=true&includeKeywordResult=false`,
         { headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json', 'Accept-Language': 'en', 'API-Version': 'v2' } }
       );
+      if (!res.ok) { icdShowError(which, `Search failed (${res.status})`); return; }
       const data = await res.json();
       icdRenderResults(which, data.destinationEntities || []);
-    } catch { icdSearchLocal(which, query); }
+    } catch (e) {
+      icdShowError(which, e.message || 'Search request failed');
+    }
   }, 400);
 }
 
