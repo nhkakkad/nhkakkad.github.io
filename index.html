@@ -1580,24 +1580,25 @@ function updateTimeSlots(selectId, selectedDate) {
   if (!sel) return;
   if (!selectedDate) {
     sel.disabled = true;
-    sel.options[0].textContent = 'Select a date first…';
-    sel.value = '';
+    sel.innerHTML = '<option value="">Select a date first…</option>';
     return;
   }
-  sel.disabled = false;
-  sel.options[0].textContent = 'Select preferred slot…';
-  const now = istNow();
+  const now      = istNow();
   const todayIST = now.toISOString().slice(0, 10);
-  const curH = now.getUTCHours() + now.getUTCMinutes() / 60;
-  const selDay = dateToISTDay(selectedDate);
-  Array.from(sel.options).forEach(opt => {
-    if (!opt.value) return;
-    const slotH = SLOT_STARTS[opt.value];
-    const wrongDay = !(SLOT_DAYS[opt.value] || []).includes(selDay);
-    const tooSoon  = selectedDate === todayIST && (slotH === undefined || slotH < curH + 6);
-    opt.disabled = wrongDay || tooSoon;
+  const curH     = now.getUTCHours() + now.getUTCMinutes() / 60;
+  const selDay   = dateToISTDay(selectedDate);
+  const prevVal  = sel.value;
+  sel.innerHTML  = '<option value="">Select preferred slot…</option>';
+  Object.entries(SLOT_STARTS).forEach(([slot, slotH]) => {
+    const wrongDay = !(SLOT_DAYS[slot] || []).includes(selDay);
+    const tooSoon  = selectedDate === todayIST && slotH < curH + 6;
+    if (wrongDay || tooSoon) return;
+    const opt = document.createElement('option');
+    opt.value = opt.textContent = slot;
+    sel.appendChild(opt);
   });
-  if (sel.selectedIndex > 0 && sel.options[sel.selectedIndex].disabled) sel.value = '';
+  sel.disabled = false;
+  if (prevVal && Array.from(sel.options).some(o => o.value === prevVal)) sel.value = prevVal;
 }
 
 const today = computeMinDate();
