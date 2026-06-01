@@ -29,13 +29,13 @@ var CONTENT = {
   // ── Practice Hours ──
   // status: "open" | "limited" | "closed"
   hours: [
-    { day: "Monday",    time: "02:00 PM – 04:00 PM & 07:00 PM - 10:00 PM (IST)", status: "open"    },
-    { day: "Tuesday",   time: "02:00 PM – 04:00 PM & 07:00 PM - 10:00 PM (IST)", status: "open"    },
-    { day: "Wednesday", time: "02:00 PM – 04:00 PM & 07:00 PM - 10:00 PM (IST)", status: "open"    },
-    { day: "Thursday",  time: "02:00 PM – 04:00 PM & 07:00 PM - 10:00 PM (IST)", status: "open"    },
-    { day: "Friday",    time: "02:00 PM – 04:00 PM & 07:00 PM - 10:00 PM (IST)", status: "open"    },
+    { day: "Monday",    time: "02:00 PM – 04:00 PM (IST) & 07:00 PM - 10:00 PM (IST)", status: "open"    },
+    { day: "Tuesday",   time: "02:00 PM – 04:00 PM (IST) & 07:00 PM - 10:00 PM (IST)", status: "open"    },
+    { day: "Wednesday", time: "02:00 PM – 04:00 PM (IST) & 07:00 PM - 10:00 PM (IST)", status: "open"    },
+    { day: "Thursday",  time: "02:00 PM – 04:00 PM (IST) & 07:00 PM - 10:00 PM (IST)", status: "open"    },
+    { day: "Friday",    time: "02:00 PM – 04:00 PM (IST) & 07:00 PM - 10:00 PM (IST)", status: "open"    },
     { day: "Saturday",  time: "02:00 PM – 10:00 PM (IST)", status: "open"    },
-    { day: "Sunday",    time: "10:00 AM - 04:00 PM (IST)",       status: "limited" },
+    { day: "Sunday",    time: "10:00 AM - 04:00 PM (IST)", status: "limited" },
   ],
   teleconsultationAvailable: true,
 
@@ -74,7 +74,7 @@ var CONTENT = {
     { stars: 4.5, quote: "I was nervous about doing a video consultation but Dr. Kakkad made it feel completely natural. My panic attacks are far less frequent now and I finally feel in control again.", detail: "Anxiety & Panic", tele: true, featured: true },
     { stars: 5,   quote: "Our daughter was struggling and we didn't know where to turn. Dr. Kakkad explained everything clearly, answered all our questions, and never made us feel like we were overreacting.", detail: "Parent of patient", tele: false },
     { stars: 4.5, quote: "I wasn't sure about speaking to a psychiatrist online, but the session was completely private and judgement-free. I only wish I had reached out months earlier.", detail: "First consultation", tele: true },
-    { stars: 5,   quote: "Work stress had completely taken over my life. After a few sessions with Dr. Kakkad I had practical strategies to manage it. The difference has been remarkable.", detail: "Stress & Burnout", tele: true },
+    { stars: 5,   quote: "Work stress had completely taken over my life. After a few sessions with Dr. Kakkad I had practical strategies to manage it. The difference has been remarkable.", detail: "Stress & Burnout", tele: true, featured: true },
     { stars: 4.5, quote: "I'd been struggling with insomnia for two years. Dr. Kakkad identified an underlying condition I hadn't considered and within six weeks my sleep had improved significantly.", detail: "Sleep disorder", tele: false },
     { stars: 5,   quote: "My GP referred me after months without the right diagnosis. Dr. Kakkad identified the issue in the first session. The correct treatment has changed everything.", detail: "Referred patient", tele: false },
   ],
