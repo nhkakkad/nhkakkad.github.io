@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Admin Panel — Dr. Nidhish Kakkad</title>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
+<script src="icd11-fallback.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -718,45 +719,21 @@ const _ICD11_PLACEHOLDER = {
   ],
 };
 
-// ─── WHO ICD-11 API ───────────────────────────────────────────────
-// To update: run  btoa('your_value')  in the browser console, paste the result below
-const ICD_CLIENT_ID     = _d('OTY4YzBiM2MtZDBmZi00NTNiLWFkNmYtMGExODJhMTZjYWI0XzI5NTdlYWU3LWQwOTctNGU2Yi04N2U5LTc0MTlhZTYxZWZhMg==');
-const ICD_CLIENT_SECRET = _d('bFJEeHhZRmlCNG44ZzUwUTFob2U5dnB1VUVwNXd1Q1dWMDNYVC9LSWZhcz0=');
-
+// ─── WHO ICD-11 API — token proxied through Apps Script to avoid CORS ────
 let _icdToken = null, _icdTokenExpiry = 0;
 const _icdTimers = {};
 
 async function getIcdToken() {
   if (_icdToken && Date.now() < _icdTokenExpiry - 60000) return { token: _icdToken };
-  if (!ICD_CLIENT_ID) return { error: 'ICD credentials not configured in admin.html' };
   try {
-    const body = new URLSearchParams({
-      grant_type:    'client_credentials',
-      client_id:     ICD_CLIENT_ID,
-      client_secret: ICD_CLIENT_SECRET,
-      scope:         'icdapi_access',
-    });
-    const res = await fetch('https://icdaccessmanagement.who.int/connect/token', {
-      method: 'POST',
-      headers: {
-        'Content-Type':  'application/x-www-form-urlencoded',
-        'Authorization': 'Basic ' + btoa(ICD_CLIENT_ID + ':' + ICD_CLIENT_SECRET),
-      },
-      body: body.toString(),
-    });
-    if (!res.ok) {
-      const txt = await res.text().catch(() => '');
-      return { error: `Token request failed (${res.status})${txt ? ': ' + txt.slice(0,120) : ''}` };
-    }
-    const d = await res.json();
-    if (!d.access_token) return { error: 'Token response missing access_token' };
-    _icdToken = d.access_token;
+    const res = await fetch(`${SCRIPT_URL}?action=getIcdToken&token=${encodeURIComponent(HARDCODED_TOKEN)}`);
+    const d   = await res.json();
+    if (d.error) return { error: d.error };
+    _icdToken       = d.token;
     _icdTokenExpiry = Date.now() + (d.expires_in || 3600) * 1000;
     return { token: _icdToken };
   } catch (e) {
-    return { error: e.message.includes('fetch') || e.message.includes('NetworkError')
-      ? 'Network/CORS error reaching WHO token endpoint'
-      : (e.message || 'Unknown error') };
+    return { error: e.message || 'Failed to fetch ICD token via proxy' };
   }
 }
 
@@ -787,6 +764,15 @@ function icdShowError(which, msg) {
   dd.classList.add('open');
 }
 
+function icdSearchFallback(which, query) {
+  if (typeof ICD11_FALLBACK === 'undefined') { icdShowError(which, 'Static fallback not loaded'); return; }
+  const q   = query.toLowerCase().trim();
+  const hits = ICD11_FALLBACK.filter(e =>
+    e.theCode.toLowerCase().includes(q) || e.title.toLowerCase().includes(q)
+  ).slice(0, 40);
+  icdRenderResults(which, hits);
+}
+
 function icdSearch(which, query) {
   clearTimeout(_icdTimers[which]);
   const dd = document.getElementById(`icd-${which}-dropdown`);
@@ -795,18 +781,22 @@ function icdSearch(which, query) {
   dd.classList.add('open');
   _icdTimers[which] = setTimeout(async () => {
     const { token, error } = await getIcdToken();
-    if (!token) { icdShowError(which, error); return; }
+    if (!token) {
+      // API unavailable — search static fallback
+      icdSearchFallback(which, query);
+      return;
+    }
     try {
       const res = await fetch(
         `https://id.who.int/icd/release/11/2024-01/mms/search?q=${encodeURIComponent(query)}&flatResults=true&includeKeywordResult=false`,
         { headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json', 'Accept-Language': 'en', 'API-Version': 'v2' } }
       );
-      if (!res.ok) { icdShowError(which, `Search failed (${res.status})`); return; }
+      if (!res.ok) { icdSearchFallback(which, query); return; }
       const data = await res.json();
-      icdRenderResults(which, data.destinationEntities || []);
-    } catch (e) {
-      icdShowError(which, e.message || 'Search request failed');
-    }
+      const hits = data.destinationEntities || [];
+      if (!hits.length) icdSearchFallback(which, query);
+      else icdRenderResults(which, hits);
+    } catch { icdSearchFallback(which, query); }
   }, 400);
 }
 
