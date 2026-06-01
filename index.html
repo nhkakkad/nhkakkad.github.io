@@ -1033,31 +1033,22 @@ footer { background:var(--deep); color:rgba(255,255,255,0.6); padding:60px; }
             <label>Preferred Time</label>
             <select id="apptTime" disabled>
               <option value="">Select a date first…</option>
-              <option>Morning (9 AM – 12 PM IST)</option>
-              <option>Afternoon (12 PM – 3 PM IST)</option>
-              <option>Evening (3 PM – 7 PM IST)</option>
-              <option>Night (7 PM – 9 PM IST)</option>
+              <option>Morning (10:00 AM – 12:00 PM IST)</option>
+              <option>Afternoon (2:00 PM – 4:00 PM IST)</option>
+              <option>Evening (7:00 PM – 10:00 PM IST)</option>
             </select>
             <span class="error-msg">Please select a time slot.</span>
           </div>
         </div>
         <div class="form-group" id="fg-reason">
-          <label>Reason for Consultation</label>
+          <label>Consultation Type</label>
           <select id="reason">
-            <option value="">Select a service…</option>
-            <option>Initial Consultation</option>
-            <option>Depression & Anxiety</option>
-            <option>OCD (Obsessive-Compulsive Disorder)</option>
-            <option>Bipolar Disorder</option>
-            <option>PTSD & Trauma</option>
-            <option>Sleep Disorders</option>
-            <option>Schizophrenia / Psychosis</option>
-            <option>Child & Adolescent Issues</option>
-            <option>Addiction / Substance Use</option>
-            <option>Follow-up Appointment</option>
-            <option>Other</option>
+            <option value="">Select consultation type…</option>
+            <option>First Consultation (30 mins)</option>
+            <option>Follow-up Consultation (15 mins)</option>
+            <option>Counselling/Therapy Session (55 mins)</option>
           </select>
-          <span class="error-msg">Please select a reason.</span>
+          <span class="error-msg">Please select a consultation type.</span>
         </div>
         <div class="form-group">
           <label>Additional Notes</label>
@@ -1218,31 +1209,22 @@ footer { background:var(--deep); color:rgba(255,255,255,0.6); padding:60px; }
           <label>Preferred Time</label>
           <select id="m-time" disabled>
             <option value="">Select a date first…</option>
-            <option>Morning (9 AM – 12 PM IST)</option>
-            <option>Afternoon (12 PM – 3 PM IST)</option>
-            <option>Evening (3 PM – 7 PM IST)</option>
-            <option>Night (7 PM – 9 PM IST)</option>
+            <option>Morning (10:00 AM – 12:00 PM IST)</option>
+            <option>Afternoon (2:00 PM – 4:00 PM IST)</option>
+            <option>Evening (7:00 PM – 10:00 PM IST)</option>
           </select>
           <span class="error-msg">Required.</span>
         </div>
       </div>
       <div class="form-group" id="m-fg-reason">
-        <label>Reason for Consultation</label>
+        <label>Consultation Type</label>
         <select id="m-reason">
-          <option value="">Select a service…</option>
-          <option>Initial Consultation</option>
-          <option>Depression &amp; Anxiety</option>
-          <option>OCD</option>
-          <option>Bipolar Disorder</option>
-          <option>PTSD &amp; Trauma</option>
-          <option>Sleep Disorders</option>
-          <option>Schizophrenia / Psychosis</option>
-          <option>Child &amp; Adolescent Issues</option>
-          <option>Addiction / Substance Use</option>
-          <option>Follow-up Appointment</option>
-          <option>Other</option>
+          <option value="">Select consultation type…</option>
+          <option>First Consultation (30 mins)</option>
+          <option>Follow-up Consultation (15 mins)</option>
+          <option>Counselling/Therapy Session (55 mins)</option>
         </select>
-        <span class="error-msg">Required.</span>
+        <span class="error-msg">Please select a consultation type.</span>
       </div>
       <div class="form-group">
         <label>Additional Notes</label>
@@ -1558,27 +1540,41 @@ function resetMainForm() {
 
 // ─── IST DATE / TIME-SLOT LOGIC ───────────────────────────────────
 // Slot start hours in IST (24-h)
+// Slot start hours (IST, 24h) — must match option text exactly
 const SLOT_STARTS = {
-  'Morning (9 AM – 12 PM IST)':   9,
-  'Afternoon (12 PM – 3 PM IST)': 12,
-  'Evening (3 PM – 7 PM IST)':    15,
-  'Night (7 PM – 9 PM IST)':      19,
+  'Morning (10:00 AM – 12:00 PM IST)':  10,
+  'Afternoon (2:00 PM – 4:00 PM IST)':  14,
+  'Evening (7:00 PM – 10:00 PM IST)':   19,
+};
+// Days each slot is available: 0=Sun,1=Mon…6=Sat
+const SLOT_DAYS = {
+  'Morning (10:00 AM – 12:00 PM IST)':  [0],             // Sunday only
+  'Afternoon (2:00 PM – 4:00 PM IST)':  [1,2,3,4,5,6],   // Mon–Sat
+  'Evening (7:00 PM – 10:00 PM IST)':   [1,2,3,4,5,6],   // Mon–Sat
 };
 
 function istNow() {
   return new Date(Date.now() + 5.5 * 3600000);
 }
 
-// Earliest bookable date: today if any slot is ≥6 h away, else tomorrow
+function dateToISTDay(dateStr) {
+  const [y,m,d] = dateStr.split('-').map(Number);
+  return new Date(Date.UTC(y, m-1, d)).getUTCDay();
+}
+
+// Earliest bookable date: today if any slot is valid today, else tomorrow
 function computeMinDate() {
   const now = istNow();
   const todayIST = now.toISOString().slice(0, 10);
   const curH = now.getUTCHours() + now.getUTCMinutes() / 60;
-  const anyToday = Object.values(SLOT_STARTS).some(h => h >= curH + 6);
+  const todayDay = now.getUTCDay();
+  const anyToday = Object.entries(SLOT_STARTS).some(([slot, h]) =>
+    (SLOT_DAYS[slot] || []).includes(todayDay) && h >= curH + 6
+  );
   return anyToday ? todayIST : new Date(now.getTime() + 86400000).toISOString().slice(0, 10);
 }
 
-// Enable/disable options in a time-select based on chosen date
+// Enable/disable options based on chosen date (day-of-week + 6h advance rule)
 function updateTimeSlots(selectId, selectedDate) {
   const sel = document.getElementById(selectId);
   if (!sel) return;
@@ -1593,12 +1589,14 @@ function updateTimeSlots(selectId, selectedDate) {
   const now = istNow();
   const todayIST = now.toISOString().slice(0, 10);
   const curH = now.getUTCHours() + now.getUTCMinutes() / 60;
+  const selDay = dateToISTDay(selectedDate);
   Array.from(sel.options).forEach(opt => {
     if (!opt.value) return;
     const slotH = SLOT_STARTS[opt.value];
-    opt.disabled = selectedDate === todayIST && (slotH === undefined || slotH < curH + 6);
+    const wrongDay = !(SLOT_DAYS[opt.value] || []).includes(selDay);
+    const tooSoon  = selectedDate === todayIST && (slotH === undefined || slotH < curH + 6);
+    opt.disabled = wrongDay || tooSoon;
   });
-  // Clear selection if chosen slot became unavailable
   if (sel.selectedIndex > 0 && sel.options[sel.selectedIndex].disabled) sel.value = '';
 }
 
