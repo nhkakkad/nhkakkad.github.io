@@ -36857,7 +36857,8 @@ function icdSearch(field, query) {
     html += `<div class="icd-cat-header">${cat}</div>`;
     for (const item of items) {
       const sel = hidden.value === `${item.code} ${item.name}`;
-      html += `<div class="icd-opt${sel?' selected':''}" onclick="icdSelect('${field}',${JSON.stringify(item.code)},${JSON.stringify(item.name)})"><span class="icd-opt-code">${item.code}</span><span class="icd-opt-name">${item.name}</span></div>`;
+      const escAttr = s => s.replace(/&/g,'&amp;').replace(/"/g,'&quot;');
+      html += `<div class="icd-opt${sel?' selected':''}" data-field="${field}" data-code="${escAttr(item.code)}" data-name="${escAttr(item.name)}"><span class="icd-opt-code">${item.code}</span><span class="icd-opt-name">${item.name}</span></div>`;
     }
   }
   dropdown.innerHTML = html;
@@ -36903,7 +36904,11 @@ function loadDiagnosis(primary, secondary, tertiary) {
   });
 }
 
-document.addEventListener('click', e => { if (!e.target.closest('.icd-wrap')) icdCloseAll(); });
+document.addEventListener('click', e => {
+  const opt = e.target.closest('.icd-opt');
+  if (opt) { icdSelect(opt.dataset.field, opt.dataset.code, opt.dataset.name); return; }
+  if (!e.target.closest('.icd-wrap')) icdCloseAll();
+});
 
 // ─── TOAST ────────────────────────────────────────────────────────
 let toastTimer;
