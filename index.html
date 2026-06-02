@@ -436,8 +436,8 @@ section { position:relative; }
   border-radius:var(--r-lg);
   padding:36px; transition:border-color 0.2s; position:relative; box-sizing:border-box;
 }
-@media(min-width:640px){ .testimonial-card { flex:0 0 calc(50% - 1px); } }
-@media(min-width:1024px){ .testimonial-card { flex:0 0 calc(33.333% - 1px); } }
+@media(min-width:640px){ .testimonial-card { flex:0 0 calc((100% - 20px) / 2); } }
+@media(min-width:1024px){ .testimonial-card { flex:0 0 calc((100% - 40px) / 3); } }
 .testimonial-card:hover { border-color:var(--accent); }
 .testimonial-card.featured { background:var(--accent); border-color:var(--accent); }
 .stars { color:var(--amber); font-size:13px; margin-bottom:20px; display:flex; gap:3px; }
