@@ -1399,22 +1399,35 @@ function generateContent() {
     var localStatus = {};   // jsDay → 'open'|'limited'|'closed'
     for (var d = 0; d < 7; d++) { localSlots[d] = []; localStatus[d] = 'closed'; }
 
+    function addSlot(day, s, e, stat) {
+      localSlots[day].push({ start: s, end: e, status: stat });
+      if (localStatus[day] === 'closed' ||
+         (localStatus[day] === 'limited' && stat === 'open')) {
+        localStatus[day] = stat;
+      }
+    }
+
     C.hours.forEach(function(h) {
       h.time.split(/\s*&\s*/).forEach(function(slotStr) {
         var tokens = slotStr.match(/\d{1,2}:\d{2}\s*(?:AM|PM)/gi) || [];
         if (tokens.length < 2) return;
-        var refBase  = REF_MON_UTC + dayOffsetMs[h.day];
-        var startMs  = parseISTms(tokens[0]);
-        var endMs    = parseISTms(tokens[1]);
+        var refBase   = REF_MON_UTC + dayOffsetMs[h.day];
+        var startMs   = parseISTms(tokens[0]);
+        var endMs     = parseISTms(tokens[1]);
         if (startMs === null || endMs === null) return;
         var startDate = new Date(refBase + startMs - IST_OFFSET);
         var endDate   = new Date(refBase + endMs   - IST_OFFSET);
-        var localDay  = startDate.getDay();
-        localSlots[localDay].push({ start: startDate, end: endDate, status: h.status });
-        // Highest priority: open > limited > closed
-        if (localStatus[localDay] === 'closed' ||
-           (localStatus[localDay] === 'limited' && h.status === 'open')) {
-          localStatus[localDay] = h.status;
+        var startDay  = startDate.getDay();
+        var endDay    = endDate.getDay();
+
+        if (startDay !== endDay) {
+          // Slot crosses local midnight — split into two pieces
+          // Local midnight = start of endDate's local calendar day
+          var midnight = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate(), 0, 0, 0);
+          addSlot(startDay, startDate, midnight, h.status); // e.g. Sat 10:30 PM → 12:00 AM
+          addSlot(endDay,   midnight,  endDate,  h.status); // e.g. Sun 12:00 AM → 2:30 AM
+        } else {
+          addSlot(startDay, startDate, endDate, h.status);
         }
       });
     });
@@ -1433,9 +1446,7 @@ function generateContent() {
       var status  = localStatus[jsDay];
       var slotHtml = slots.length
         ? slots.map(function(s) {
-            var endDay = s.end.getDay();
-            var daySuffix = endDay !== jsDay ? ' <span class="slot-day-shift">(+1 day)</span>' : '';
-            return '<span class="hours-slot">' + fmt(s.start) + ' – ' + fmt(s.end) + daySuffix + '</span>';
+            return '<span class="hours-slot">' + fmt(s.start) + ' – ' + fmt(s.end) + '</span>';
           }).join('')
         : '<span class="hours-slot hours-slot-closed">Closed</span>';
       return '<div class="hours-day-card' + (isToday ? ' today' : '') + (status === 'closed' ? ' closed' : '') + '">' +
@@ -1640,6 +1651,13 @@ function nowIST() {
 
 // Converts an IST slot label like "Morning (10:00 AM – 12:00 PM IST)"
 // to show local-timezone times while keeping the original as the option value.
+function localTimeOfDay(hour) {
+  if (hour >= 5  && hour < 12) return 'Morning';
+  if (hour >= 12 && hour < 17) return 'Afternoon';
+  if (hour >= 17 && hour < 21) return 'Evening';
+  return 'Night';
+}
+
 function localizeSlotLabel(istLabel) {
   if (_FORM_IS_IST) return istLabel;
   const m = istLabel.match(/(\d{1,2}:\d{2}\s*[AP]M)\s*[–\-]\s*(\d{1,2}:\d{2}\s*[AP]M)/i);
@@ -1652,11 +1670,11 @@ function localizeSlotLabel(istLabel) {
     if (t[3].toUpperCase()==='AM' && h===12)  h=0;
     return h*3600000 + min*60000;
   }
-  const base = Date.now() - (Date.now() % 86400000); // start of today UTC
+  const base   = Date.now() - (Date.now() % 86400000);
   const startD = new Date(base + parseMs(m[1]) - _IST_MS);
   const endD   = new Date(base + parseMs(m[2]) - _IST_MS);
-  const fmt = d => d.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});
-  const name = istLabel.split('(')[0].trim();
+  const fmt    = d => d.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});
+  const name   = localTimeOfDay(startD.getHours());
   return name + ' (' + fmt(startD) + ' – ' + fmt(endD) + ' ' + _FORM_TZ_ABR + ')';
 }
 
