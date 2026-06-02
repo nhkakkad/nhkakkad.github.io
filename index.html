@@ -104,6 +104,7 @@ footer .nav-logo-text span { color:var(--accent-light); }
 .nav-mobile-toggle {
   display:none; background:none; border:none;
   color:var(--ink); font-size:22px; cursor:pointer;
+  position:relative; z-index:1002;
 }
 .menu-overlay {
   display:none; position:fixed; inset:0;
@@ -580,6 +581,9 @@ section { position:relative; }
 .hours-tele-note {
   margin-top:14px; display:flex; align-items:center; gap:8px;
   font-size:11px; color:var(--accent); letter-spacing:0.3px;
+}
+.slot-day-shift {
+  font-size:9px; opacity:0.7; font-style:italic;
 }
 @media(max-width:640px){
   .hours-grid { grid-template-columns:repeat(4,1fr); }
@@ -1366,20 +1370,84 @@ function generateContent() {
     }).join('');
   }
 
-  // Hours grid
+  // Hours grid — timezone-aware
   var hoursEl = document.getElementById('hoursTable');
   if (hoursEl && C.hours) {
-    var todayIdx = new Date(Date.now() + 5.5 * 3600000).getUTCDay();
-    var dayMap = { Monday:1, Tuesday:2, Wednesday:3, Thursday:4, Friday:5, Saturday:6, Sunday:0 };
+    // Detect user timezone
+    var _userTZ   = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    var _isIST    = _userTZ === 'Asia/Calcutta' || _userTZ === 'Asia/Kolkata';
+    var _tzAbbr   = (new Intl.DateTimeFormat('en', {timeZoneName:'short'})
+                      .formatToParts(new Date())
+                      .find(function(p){ return p.type === 'timeZoneName'; }) || {}).value || '';
+
+    // "Today" in the user's local timezone
+    var todayLocalDay = new Date().getDay(); // 0=Sun … 6=Sat
+    // "Today" in IST (for fallback)
+    var todayISTDay   = new Date(Date.now() + 5.5 * 3600000).getUTCDay();
+
+    // day name → JS .getDay() index (0=Sun)
+    var dayToJS = { Monday:1, Tuesday:2, Wednesday:3, Thursday:4, Friday:5, Saturday:6, Sunday:0 };
     var dayAbbr = { Monday:'MON', Tuesday:'TUE', Wednesday:'WED', Thursday:'THU', Friday:'FRI', Saturday:'SAT', Sunday:'SUN' };
-    var dayNums = { Monday:'M', Tuesday:'T', Wednesday:'W', Thursday:'T', Friday:'F', Saturday:'S', Sunday:'S' };
-    function fmtSlot(s) {
-      return s.replace(/\(IST\)/g,'').replace(/00\s*(AM|PM)/g,'$1').replace(/\s+/g,' ').trim();
+
+    // Reference Monday = 2024-01-01 UTC (verified Monday)
+    var REF_MON_UTC = Date.UTC(2024, 0, 1); // Mon Jan 1 2024
+    // day name → offset in ms from that Monday
+    var dayOffsetMs = { Monday:0, Tuesday:864e5, Wednesday:1728e5, Thursday:2592e5, Friday:3456e5, Saturday:4320e5, Sunday:5184e5 };
+    var IST_OFFSET  = (5 * 60 + 30) * 60000; // 5h30m in ms
+
+    function parseISTHHMM(tok) {
+      var m = tok.match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i);
+      if (!m) return null;
+      var h = parseInt(m[1]), min = parseInt(m[2]), ap = m[3].toUpperCase();
+      if (ap === 'PM' && h !== 12) h += 12;
+      if (ap === 'AM' && h === 12) h = 0;
+      return h * 3600000 + min * 60000;
     }
+
+    // Convert one IST slot string (e.g. "02:00 PM – 04:00 PM (IST)") to local display
+    function convertSlot(slotStr, dayName) {
+      var tokens = slotStr.match(/\d{1,2}:\d{2}\s*(?:AM|PM)/gi) || [];
+      if (!tokens.length) return slotStr;
+
+      var refDayUTC = REF_MON_UTC + dayOffsetMs[dayName];
+
+      var localDates = tokens.map(function(tok) {
+        var msFromMidnight = parseISTHHMM(tok);
+        if (msFromMidnight === null) return null;
+        return new Date(refDayUTC + msFromMidnight - IST_OFFSET);
+      }).filter(Boolean);
+
+      if (!localDates.length) return slotStr;
+
+      var fmt = function(d) {
+        return d.toLocaleTimeString([], { hour:'numeric', minute:'2-digit' });
+      };
+
+      var timeStr = localDates.map(fmt).join(' – ');
+
+      // Detect day shift: compare local weekday of start time vs IST weekday
+      var istJSDay   = dayToJS[dayName];
+      var localJSDay = localDates[0].getDay();
+      var suffix = '';
+      if (localJSDay !== istJSDay) {
+        // +1 or -1 day?
+        var shift = (localJSDay - istJSDay + 7) % 7;
+        suffix = shift === 1 ? ' <span class="slot-day-shift">(next day)</span>'
+                             : ' <span class="slot-day-shift">(prev day)</span>';
+      }
+
+      return timeStr + ' ' + (_isIST ? 'IST' : _tzAbbr) + suffix;
+    }
+
+    var dayMap = { Monday:1, Tuesday:2, Wednesday:3, Thursday:4, Friday:5, Saturday:6, Sunday:0 };
+
     var cards = C.hours.map(function(h) {
-      var isToday = dayMap[h.day] === todayIdx;
-      var slots = h.time.split(/\s*&\s*/).map(fmtSlot);
-      var slotHtml = slots.map(function(s){ return '<span class="hours-slot">' + s + '</span>'; }).join('');
+      // "today" uses local day so the highlight matches the visitor's clock
+      var isToday = dayToJS[h.day] === todayLocalDay;
+      var rawSlots = h.time.split(/\s*&\s*/);
+      var slotHtml = rawSlots.map(function(s) {
+        return '<span class="hours-slot">' + convertSlot(s.trim(), h.day) + '</span>';
+      }).join('');
       return '<div class="hours-day-card' + (isToday ? ' today' : '') + '">' +
         '<span class="hours-day-abbr">' + dayAbbr[h.day] + '</span>' +
         '<span class="hours-day-num">' + h.day[0] + '</span>' +
@@ -1387,8 +1455,10 @@ function generateContent() {
         '<div class="hours-slots">' + slotHtml + '</div>' +
       '</div>';
     }).join('');
+
+    var tzNote = _isIST ? '' : ' &middot; shown in ' + _tzAbbr;
     var tele = C.teleconsultationAvailable
-      ? '<div class="hours-tele-note"><i class="fa-solid fa-video"></i><span>Teleconsultation available worldwide</span></div>'
+      ? '<div class="hours-tele-note"><i class="fa-solid fa-video"></i><span>Teleconsultation available worldwide' + tzNote + '</span></div>'
       : '';
     hoursEl.innerHTML = '<div class="hours-grid">' + cards + '</div>' + tele;
   }
@@ -1403,6 +1473,7 @@ function toggleMenu() {
   menuOverlay.classList.toggle('open', isOpen);
   document.body.style.overflow = isOpen ? 'hidden' : '';
   document.getElementById('navbar').classList.toggle('menu-open', isOpen);
+  document.getElementById('menuToggle').textContent = isOpen ? '✕' : '☰';
 }
 navLinks.querySelectorAll('a[href]').forEach(link => {
   link.addEventListener('click', () => { if (navLinks.classList.contains('open')) toggleMenu(); });
@@ -1563,15 +1634,18 @@ function resetMainForm() {
 // Slot start hours (IST, 24h) — must match option text exactly
 const SLOT_STARTS = {
   'Morning (10:00 AM – 12:00 PM IST)':  10,
+  'Noon (12:00 PM – 2:00 PM IST)':  12,
   'Afternoon (2:00 PM – 4:00 PM IST)':  14,
-  'Evening (7:00 PM – 10:00 PM IST)':   19,
+  'Evening (4:00 PM – 7:00 PM IST)':  16,
+  'Late Evening (7:00 PM – 10:00 PM IST)':   19,
 };
 // Days each slot is available: 0=Sun,1=Mon…6=Sat
 const SLOT_DAYS = {
   'Morning (10:00 AM – 12:00 PM IST)':  [0],             // Sunday only
   'Noon (12:00 PM – 2:00 PM IST)':  [0],   // Sunday only 
   'Afternoon (2:00 PM – 4:00 PM IST)':  [0,1,2,3,4,5,6],   // Mon–Sat
-  'Evening (7:00 PM – 10:00 PM IST)':   [1,2,3,4,5,6],   // Mon–Sat
+  'Evening (4:00 PM – 7:00 PM IST)':   [],   // Mon–Sat
+  'Late Evening (7:00 PM – 10:00 PM IST)':   [1,2,3,4,5,6],   // Mon–Sat
 };
 
 function istNow() {
