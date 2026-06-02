@@ -583,7 +583,9 @@ section { position:relative; }
 }
 @media(max-width:640px){
   .hours-grid { grid-template-columns:repeat(4,1fr); }
-  .hours-grid .hours-day-card:nth-child(n+5) { display:none; }
+}
+@media(max-width:480px){
+  .hours-grid { grid-template-columns:repeat(2,1fr); }
 }
 
 /* ─── PATIENT INFO ─── */
@@ -666,7 +668,9 @@ footer { background:var(--bg-dark); color:rgba(255,255,255,0.45); padding:60px; 
 /* ─── RESPONSIVE ─── */
 @media(max-width:1024px){
   .hero-content,.about-inner,.book-inner,.why-layout{ grid-template-columns:1fr; }
-  .hero-visual{ display:none; }
+  .hero-visual{ display:flex; justify-content:center; }
+  .hero-visual-img-wrap{ width:280px; height:280px; }
+  .hero-content{ padding:100px 30px 60px; gap:40px; }
   nav{ padding:20px 30px; }
   nav.scrolled{ padding:14px 30px; }
   .nav-links{ display:none; }
