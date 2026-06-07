@@ -46,6 +46,7 @@
 
 * { margin:0; padding:0; box-sizing:border-box; }
 html { scroll-behavior:smooth; }
+img { -webkit-user-drag:none; user-select:none; }
 body {
   font-family:'DM Sans',sans-serif;
   background:var(--bg);
@@ -1855,6 +1856,18 @@ window.addEventListener('resize', () => {
 buildDots();
 goTo(0);
 autoPlay();
+
+// ─── IMAGE PROTECTION ─────────────────────────────────────────────
+// Suppress context menu on images (blocks "Save image as" / "Open in new tab")
+document.addEventListener('contextmenu', e => {
+  if (e.target.tagName === 'IMG' || e.target.closest('.hero-visual, .about-images, .nav-logo-icon')) {
+    e.preventDefault();
+  }
+});
+// Block drag-to-save
+document.addEventListener('dragstart', e => { if (e.target.tagName === 'IMG') e.preventDefault(); });
+// Mark all images as non-draggable
+document.querySelectorAll('img').forEach(img => img.setAttribute('draggable', 'false'));
 </script>
 </body>
 </html>
