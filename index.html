@@ -330,10 +330,16 @@ section { position:relative; }
 /* ─── ABOUT ─── */
 #about { background:var(--bg-dark); overflow:hidden; border-top:1px solid var(--border-dark); }
 .about-inner { display:grid; grid-template-columns:1fr 1fr; gap:100px; align-items:center; }
-.about-images { position:relative; }
+.about-images { position:relative; display:flex; align-items:flex-end; }
 .about-img-main {
-  width:85%; aspect-ratio:3/4; object-fit:cover;
-  border-radius:var(--r); display:block;
+  width:100%; height:auto; display:block;
+  border-radius:0;
+  -webkit-mask-image:linear-gradient(to bottom, black 55%, transparent 95%),
+                     linear-gradient(to right, transparent 0%, black 8%);
+  -webkit-mask-composite:source-in;
+  mask-image:linear-gradient(to bottom, black 55%, transparent 95%),
+             linear-gradient(to right, transparent 0%, black 8%);
+  mask-composite:intersect;
 }
 .about-exp-badge {
   position:absolute; top:30px; right:0;
