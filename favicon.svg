@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Rounded square background in brand accent -->
+  <rect width="32" height="32" rx="7" fill="#2e7d6e"/>
+  <!-- Bold geometric "N" — path-drawn so it renders at any size without font fallback -->
+  <path d="M7 6 L7 26 L11 26 L11 14 L21 26 L25 26 L25 6 L21 6 L21 18 L11 6 Z" fill="white"/>
+</svg>
