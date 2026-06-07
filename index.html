@@ -1021,12 +1021,12 @@ nav.menu-open { backdrop-filter:none !important; background:transparent !importa
         <div class="form-row">
           <div class="form-group" id="fg-fname">
             <label>First Name</label>
-            <input type="text" placeholder="Parth" id="fname"/>
+            <input type="text" placeholder="First name" id="fname"/>
             <span class="error-msg">Please enter your first name.</span>
           </div>
           <div class="form-group" id="fg-lname">
             <label>Last Name</label>
-            <input type="text" placeholder="Bhatt" id="lname"/>
+            <input type="text" placeholder="Last name" id="lname"/>
             <span class="error-msg">Please enter your last name.</span>
           </div>
         </div>
@@ -1038,14 +1038,15 @@ nav.menu-open { backdrop-filter:none !important; background:transparent !importa
           </div>
           <div class="form-group" id="fg-email">
             <label>Email</label>
-            <input type="email" placeholder="parth@email.com" id="email"/>
+            <input type="email" placeholder="id@email.com" id="email"/>
             <span class="error-msg">Enter a valid email address.</span>
           </div>
         </div>
         <div class="form-row">
           <div class="form-group" id="fg-age">
-            <label>Age</label>
-            <input type="number" min="1" max="120" placeholder="30" id="age"/>
+            <label>Date of Birth</label>
+            <input type="date" id="age"/>
+            <span class="error-msg">Patient must be at least 5 years old.</span>
           </div>
           <div class="form-group" id="fg-gender">
             <label>Gender</label>
@@ -1199,12 +1200,12 @@ nav.menu-open { backdrop-filter:none !important; background:transparent !importa
       <div class="form-row">
         <div class="form-group" id="m-fg-fname">
           <label>First Name</label>
-          <input type="text" placeholder="Parth" id="m-fname"/>
+          <input type="text" placeholder="First name" id="m-fname"/>
           <span class="error-msg">Required.</span>
         </div>
         <div class="form-group" id="m-fg-lname">
           <label>Last Name</label>
-          <input type="text" placeholder="Bhatt" id="m-lname"/>
+          <input type="text" placeholder="Last name" id="m-lname"/>
           <span class="error-msg">Required.</span>
         </div>
       </div>
@@ -1215,13 +1216,14 @@ nav.menu-open { backdrop-filter:none !important; background:transparent !importa
       </div>
       <div class="form-group" id="m-fg-email">
         <label>Email</label>
-        <input type="email" placeholder="parth@email.com" id="m-email"/>
+        <input type="email" placeholder="id@email.com" id="m-email"/>
         <span class="error-msg">Enter a valid email address.</span>
       </div>
       <div class="form-row">
         <div class="form-group" id="m-fg-age">
-          <label>Age</label>
-          <input type="number" min="1" max="120" placeholder="30" id="m-age"/>
+          <label>Date of Birth</label>
+          <input type="date" id="m-age"/>
+          <span class="error-msg">Patient must be at least 5 years old.</span>
         </div>
         <div class="form-group" id="m-fg-gender">
           <label>Gender</label>
@@ -1532,6 +1534,13 @@ function showError(id) {
 function val(id) { return (document.getElementById(id)?.value || '').trim(); }
 function isValidPhone(p) { var t = p.trim(); if (!t.startsWith('+')) return false; var d = t.replace(/[\s\-().+]/g,''); return d.length >= 7 && d.length <= 15 && /^\d+$/.test(d); }
 function isValidDate(d) { return d && d >= today; }
+function isValidDOB(dob) {
+  if (!dob) return true; // optional field — blank is fine
+  const born = new Date(dob);
+  const minAge = new Date();
+  minAge.setFullYear(minAge.getFullYear() - 5);
+  return born <= minAge; // must be born at least 5 years ago
+}
 function isSlotStillValid(date, timeSlot) {
   if (!date || !timeSlot) return false;
   const slotH = SLOT_STARTS[timeSlot];
@@ -1572,7 +1581,7 @@ async function sendToSheets(data) {
 
 // ─── MODAL FORM ──────────────────────────────────────────────────
 async function submitModal() {
-  const errorIds = ['m-fg-fname','m-fg-lname','m-fg-phone','m-fg-email','m-fg-date','m-fg-time','m-fg-reason'];
+  const errorIds = ['m-fg-fname','m-fg-lname','m-fg-phone','m-fg-email','m-fg-age','m-fg-date','m-fg-time','m-fg-reason'];
   clearErrors(errorIds);
   setAlert('modalAlert','','');
 
@@ -1582,6 +1591,7 @@ async function submitModal() {
   if (!d.lname)               { showError('m-fg-lname'); ok = false; }
   if (!isValidPhone(d.phone)) { showError('m-fg-phone'); ok = false; }
   if (!isValidEmail(d.email)) { showError('m-fg-email'); ok = false; }
+  if (!isValidDOB(d.age))     { showError('m-fg-age');   ok = false; }
   if (!isValidDate(d.date))               { showError('m-fg-date'); ok = false; }
   if (!d.timeSlot)                        { showError('m-fg-time'); ok = false; }
   else if (!isSlotStillValid(d.date, d.timeSlot)) { showError('m-fg-time'); ok = false; }
@@ -1592,6 +1602,7 @@ async function submitModal() {
   btn.disabled = true; btn.textContent = 'Submitting…';
   try {
     await sendToSheets(d);
+    saveVisitorName(d.fname, d.lname);
     document.getElementById('modalForm').style.display = 'none';
     document.getElementById('modalSuccess').style.display = 'block';
   } catch {
@@ -1603,7 +1614,7 @@ async function submitModal() {
 
 // ─── SECTION FORM ────────────────────────────────────────────────
 async function submitForm() {
-  const errorIds = ['fg-fname','fg-lname','fg-phone','fg-email','fg-date','fg-time','fg-reason'];
+  const errorIds = ['fg-fname','fg-lname','fg-phone','fg-email','fg-age','fg-date','fg-time','fg-reason'];
   clearErrors(errorIds);
   setAlert('formAlert','','');
 
@@ -1620,6 +1631,7 @@ async function submitForm() {
   if (!d.lname)               { showError('fg-lname'); ok = false; }
   if (!isValidPhone(d.phone)) { showError('fg-phone'); ok = false; }
   if (!isValidEmail(d.email)) { showError('fg-email'); ok = false; }
+  if (!isValidDOB(d.age))     { showError('fg-age');   ok = false; }
   if (!isValidDate(d.date))               { showError('fg-date'); ok = false; }
   if (!d.timeSlot)                        { showError('fg-time'); ok = false; }
   else if (!isSlotStillValid(d.date, d.timeSlot)) { showError('fg-time'); ok = false; }
@@ -1630,6 +1642,7 @@ async function submitForm() {
   btn.disabled = true; btn.textContent = 'Submitting…';
   try {
     await sendToSheets(d);
+    saveVisitorName(d.fname, d.lname);
     document.getElementById('formContent').style.display = 'none';
     document.getElementById('formSuccess').style.display = 'block';
   } catch {
@@ -1762,6 +1775,17 @@ const mDateEl    = document.getElementById('m-date');
 apptDateEl.setAttribute('min', today);
 mDateEl.setAttribute('min', today);
 
+// DOB: max = today minus 5 years
+const _maxDOB = (function() {
+  const d = new Date();
+  d.setFullYear(d.getFullYear() - 5);
+  return d.toISOString().slice(0, 10);
+})();
+['age','m-age'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.setAttribute('max', _maxDOB);
+});
+
 function clampDateToMin(input) {
   const min = input.getAttribute('min');
   if (min && input.value && input.value < min) input.value = min;
@@ -1775,6 +1799,26 @@ mDateEl.addEventListener('change', function() {
   clampDateToMin(this);
   updateTimeSlots('m-time', this.value);
 });
+
+// ─── VISITOR NAME PLACEHOLDERS ────────────────────────────────────
+(function applyVisitorPlaceholders() {
+  const fn = localStorage.getItem('v_fname');
+  const ln = localStorage.getItem('v_lname');
+  if (!fn && !ln) return;
+  ['fname','m-fname'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el && fn) el.placeholder = fn;
+  });
+  ['lname','m-lname'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el && ln) el.placeholder = ln;
+  });
+})();
+
+function saveVisitorName(fname, lname) {
+  if (fname) localStorage.setItem('v_fname', fname);
+  if (lname) localStorage.setItem('v_lname', lname);
+}
 
 // ─── FOOTER YEAR ──────────────────────────────────────────────────
 document.getElementById('yr').textContent = new Date().getFullYear();
